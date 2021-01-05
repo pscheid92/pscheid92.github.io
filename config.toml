@@ -1,0 +1,4 @@
+baseURL = "https://patrickscheid.de"
+languageCode = "en-us"
+title = "Patrick Scheid"
+theme = 'introduction'
