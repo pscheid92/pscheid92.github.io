@@ -72,6 +72,34 @@ Patrick Scheid
                     <div class="fade-in three">
                         <div class="social-icons">
     
+    <a href="https://github.com/pscheid92" >
+        <i class="fab fab fa-github"></i>
+    </a>
+    
+    <a href="https://twitter.com/pscheid92" >
+        <i class="fab fab fa-twitter"></i>
+    </a>
+    
+    <a href="https://stackoverflow.com/users/3533066/pscheid" >
+        <i class="fab fab fa-stack-overflow"></i>
+    </a>
+    
+    <a href="https://www.xing.com/profile/Patrick_Scheid2" >
+        <i class="fab fab fa-xing"></i>
+    </a>
+    
+    <a href="https://www.linkedin.com/in/pscheid92/" >
+        <i class="fab fab fa-linkedin-in"></i>
+    </a>
+    
+    <a href="https://keybase.io/pscheid92" >
+        <i class="fab fab fa-keybase"></i>
+    </a>
+    
+    <a href="mailto:patrick.scheid@protonmail.com" >
+        <i class="fas fab fa-paper-plane"></i>
+    </a>
+    
 </div>
 
                     </div>
@@ -167,6 +195,16 @@ Patrick Scheid
 <script src="https://patrickscheid.de/js/bundleOwlCarousel.afccb665ffddf92101a8bc04b924a4a5b9a36c0ad0ad61024da751cdd8fd1ed9.js" integrity="sha256-r8y2Zf/d&#43;SEBqLwEuSSkpbmjbArQrWECTadRzdj9Htk="></script>
 
 
+        
+        <script>
+            function update_localtime() {
+                const time = new Date().toLocaleTimeString('en-US', { timeZone: 'Europe\/Berlin', timeStyle: 'short' });
+                document.getElementById('time').innerHTML = time;
+            }
+            update_localtime();
+            
+            setInterval(update_localtime, 1000);
+        </script>
         
     </body>
 
