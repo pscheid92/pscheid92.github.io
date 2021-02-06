@@ -2,3 +2,44 @@ baseURL = "https://patrickscheid.de"
 languageCode = "en-us"
 title = "Patrick Scheid"
 theme = 'introduction'
+DefaultContentLanguage = "en"
+
+[params]
+    themeStyle = "auto"
+    showRSSButton = false
+    email = "p.scheid92@gmail.com"
+
+    [params.home]
+        localTime = true
+        timeZone = "Europe/Berlin"
+        timeFormat = "en-US"
+
+    [[params.social]]
+        url = "https://github.com/pscheid92"
+        icon = "github"
+        icon_pack = "fab"
+    [[params.social]]
+        url = "https://twitter.com/pscheid92"
+        icon = "twitter"
+        icon_pack = "fab"
+    [[params.social]]
+        url = "https://stackoverflow.com/users/3533066/pscheid"
+        icon = "stack-overflow"
+        icon_pack = "fab"
+    [[params.social]]
+        url   = "https://www.xing.com/profile/Patrick_Scheid2"
+        icon = "xing"
+        icon_pack = "fab"
+    [[params.social]]
+        url   = "https://www.linkedin.com/in/pscheid92/"
+        icon  = "linkedin-in"
+        icon_pack = "fab"
+    [[params.social]]
+        url = "https://keybase.io/pscheid92"
+        icon = "keybase"
+        icon_pack = "fab"
+    [[params.social]]
+        url = "mailto:patrick.scheid@protonmail.com"
+        icon = "paper-plane"
+        icon_pack = "fas"
+
