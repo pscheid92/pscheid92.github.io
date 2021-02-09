@@ -4,4 +4,11 @@ draft: false
 weight: 0
 ---
 
-This site is still under construction.
+Backend Developer & Scrum Master
+
+with a foible for clean code, data and humans.
+
+
+
+
+
