@@ -2,6 +2,7 @@
 title: "Hello, I'm Patrick"
 draft: false
 weight: 0
+headless: true
 ---
 
 Backend Developer & Scrum Master
