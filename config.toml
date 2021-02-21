@@ -5,6 +5,7 @@ theme = 'introduction'
 DefaultContentLanguage = "en"
 
 [params]
+    favicon = "favicon.ico"
     themeStyle = "auto"
     showRSSButton = false
     email = "p.scheid92@gmail.com"
