@@ -1,0 +1,11 @@
+:root {
+  --main-width: var(--nav-width);
+}
+
+.chroma .lnt { 
+  color: #fff;
+}
+
+.chroma .ln { 
+  color: #fff;
+}
