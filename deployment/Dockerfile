@@ -1,4 +1,4 @@
-FROM --platform=linux/arm64 alpine:latest as build
+FROM alpine:latest as build
 
 RUN apk add --no-cache --repository=https://dl-cdn.alpinelinux.org/alpine/edge/community hugo
 
