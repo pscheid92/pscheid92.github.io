@@ -16,9 +16,8 @@ params:
   env: production
   title: Patrick Scheid
   description: >
-    Patrick Scheid, experienced people-focused, product-minded backend developer in Munich.
-    Leveraging a background as a Product Owner and Scrum Master for comprehensive tech solutions.
-    Currently I work as an interim engineering manager.
+    Patrick Scheid, experienced people-focused, product-minded engineering manager in Munich.
+    Leveraging a background as a Software Engineer, Product Owner and Scrum Master for comprehensive tech solutions.
 
   keywords: [Blog, Portfolio, PaperMod]
   DateFormat: "January 2, 2006"
@@ -58,17 +57,15 @@ params:
     enabled: true
     title: Patrick Scheid
     subtitle: |
-      **Software Engineer**
+      **Engineering Manager**
 
       **People-Centric & Product-Minded**
     
     introduction: |
       {{< rawhtml >}}
       <div class="profile-introduction"> 
-        I'm a software engineer specialised in backend development.
-        With my experience as a Product Owner, Scrum Master, and Data Scientist, I bring a unique perspective to software development.
+        With my experience as a Software Engineer, Product Owner, Scrum Master, and Data Scientist, I bring a unique perspective to software development.
         Based in Munich, I'm passionate about building solutions that add real value to customers.
-        Currently I work as an interim engineering manager.
       </div>
       {{< /rawhtml >}} 
 
