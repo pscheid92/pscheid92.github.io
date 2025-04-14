@@ -1,12 +1,14 @@
 baseURL: "https://patrickscheid.de"
 title: "Patrick Scheid"
-paginate: 5
 theme: PaperMod
 
 enableRobotsTXT: true
 buildDrafts: false
 buildFuture: false
 buildExpired: false
+
+pagination:
+  pagerSize: 5
 
 minify:
   disableXML: true
