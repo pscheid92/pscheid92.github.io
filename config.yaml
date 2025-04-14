@@ -7,6 +7,10 @@ buildDrafts: false
 buildFuture: false
 buildExpired: false
 
+caches:
+  images:
+    dir: :cacheDir/images
+
 pagination:
   pagerSize: 5
 
