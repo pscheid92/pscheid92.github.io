@@ -1,0 +1,16 @@
+---
+import HeaderLink from "./HeaderLink.astro";
+---
+
+<div class="header-links" {...Astro.props}>
+    <HeaderLink href="/">Home</HeaderLink>
+    <HeaderLink href="/blog">Blog</HeaderLink>
+    <HeaderLink href="/about">About</HeaderLink>
+</div>
+
+<style>
+    .header-links {
+        display: flex;
+        gap: 0.25em;
+    }
+</style>

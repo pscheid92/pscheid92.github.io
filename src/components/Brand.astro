@@ -1,0 +1,40 @@
+---
+import Image from 'astro/components/Image.astro';
+
+interface Props {
+    title: string;
+    image: ImageMetadata;
+}
+
+const {title, image, ...props} = Astro.props;
+---
+
+<a class="brand" href="/" {...props}>
+    <Image class="brand-image" src={image} alt="Logo"/>
+    <span class="brand-title">{title}</span>
+</a>
+
+<style>
+    .brand {
+        margin: 0;
+        padding: 0;
+        color: var(--black);
+        font-size: 1em;
+        text-decoration: none;
+
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5em;
+    }
+
+    .brand-image {
+        height: 50px;
+        width: 50px;
+    }
+
+    @media (max-width: 720px) {
+        .brand-title {
+            display: none;
+        }
+    }
+</style>
