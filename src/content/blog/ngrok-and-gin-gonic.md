@@ -2,7 +2,7 @@
 title: 'Using ngrok-go with gin-gonic'
 description: 'An article showing how to combine gin-gonic and ngrok-go to expose your local http server via ngrok to the public internet.'
 pubDate: 'May 20 2023'
-heroImage: '../../assets/blog-placeholder-2.jpg'
+heroImage: '../../assets/blog-placeholder.jpg'
 ---
 
 In this brief tutorial, we're going to discuss how to utilize the newly released [ngrok-go](https://ngrok.com/blog-post/ngrok-go) library alongside `gin-gonic`. The `ngrok-go` library provides a way to expose local servers to the internet, which can be highly beneficial during development and testing phases. On the other hand, `gin-gonic` is a highly-regarded web framework for building APIs in Go, recognized for its minimalistic design and excellent performance. When combined, these tools can significantly enhance the efficiency of your web application development process.

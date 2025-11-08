@@ -6,32 +6,6 @@ import {SITE_DESCRIPTION, SITE_TITLE} from '../consts';
 ---
 
 <Layout title={SITE_TITLE} description={SITE_DESCRIPTION}>
-    <style>
-        .hero {
-            text-align: center;
-            padding: 2em 0 3em;
-        }
-
-        .hero-avatar {
-            border-radius: 50%;
-            margin: 0 auto 1.5em;
-            display: block;
-            box-shadow: var(--box-shadow);
-        }
-
-        .hero h1 {
-            font-size: 2.5rem;
-            margin-bottom: 0.5em;
-            line-height: 1.2;
-        }
-
-        .hero p {
-            font-size: 1.2rem;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-    </style>
-
     <section class="hero">
         <Image src={Avatar} alt="Patrick Scheid" class="hero-avatar" width={360} height={360} loading="eager" fetchpriority="high" decoding="async"/>
         <h1>Hi, I'm {SITE_TITLE}</h1>
@@ -39,3 +13,29 @@ import {SITE_DESCRIPTION, SITE_TITLE} from '../consts';
         <p>People-Centric & Product-Minded</p>
     </section>
 </Layout>
+
+<style>
+    .hero {
+        text-align: center;
+        padding: 2em 0 3em;
+    }
+
+    .hero-avatar {
+        border-radius: 50%;
+        margin: 0 auto 1.5em;
+        display: block;
+        box-shadow: var(--box-shadow);
+    }
+
+    .hero h1 {
+        font-size: 2.5rem;
+        margin-bottom: 0.5em;
+        line-height: 1.2;
+    }
+
+    .hero p {
+        font-size: 1.2rem;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+</style>
