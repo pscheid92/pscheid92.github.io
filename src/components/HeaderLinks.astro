@@ -2,15 +2,108 @@
 import HeaderLink from "./HeaderLink.astro";
 ---
 
-<div class="header-links" {...Astro.props}>
-    <HeaderLink href="/">Home</HeaderLink>
-    <HeaderLink href="/blog">Blog</HeaderLink>
-    <HeaderLink href="/about">About</HeaderLink>
+<div class="header-links-wrapper" {...Astro.props}>
+    <div class="header-links">
+        <HeaderLink href="/">Home</HeaderLink>
+        <HeaderLink href="/blog">Blog</HeaderLink>
+        <HeaderLink href="/about">About</HeaderLink>
+    </div>
+
+    <button class="menu-toggle" aria-label="Toggle menu" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
 </div>
 
+<script>
+    const menuToggle = document.querySelector('.menu-toggle');
+    const headerLinks = document.querySelector('.header-links');
+
+    menuToggle?.addEventListener('click', () => {
+        const isExpanded = menuToggle.getAttribute('aria-expanded') === 'true';
+        menuToggle.setAttribute('aria-expanded', String(!isExpanded));
+        headerLinks?.classList.toggle('open');
+    });
+</script>
+
 <style>
+    .nav-links-wrapper {
+        display: flex;
+        align-items: center;
+    }
+
     .header-links {
         display: flex;
         gap: 0.25em;
+    }
+
+    .menu-toggle {
+        display: none;
+        flex-direction: column;
+        gap: 6px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 12px;
+        z-index: 1000;
+    }
+
+    .menu-toggle span {
+        display: block;
+        width: 32px;
+        height: 4px;
+        background-color: #000;
+        border-radius: 2px;
+        transition: all 0.3s ease;
+    }
+
+    .menu-toggle[aria-expanded="true"] span:nth-child(1) {
+        transform: translateY(10px) rotate(45deg);
+    }
+
+    .menu-toggle[aria-expanded="true"] span:nth-child(2) {
+        opacity: 0;
+    }
+
+    .menu-toggle[aria-expanded="true"] span:nth-child(3) {
+        transform: translateY(-10px) rotate(-45deg);
+    }
+
+    @media (max-width: 720px) {
+        .menu-toggle {
+            display: flex;
+        }
+
+        .header-links {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: white;
+            z-index: 999;
+            padding-top: 80px;
+            overflow-y: auto;
+            display: none;
+            flex-direction: column;
+            gap: 2em;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header-links.open {
+            display: flex;
+        }
+
+        .header-links :global(a) {
+            font-size: 2rem;
+            padding: 0.5em 1em;
+            border-bottom: none;
+        }
+
+        .header-links :global(a.active) {
+            font-weight: bold;
+        }
     }
 </style>

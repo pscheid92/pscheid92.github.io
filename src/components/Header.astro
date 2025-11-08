@@ -9,8 +9,8 @@ import HeaderLinks from "./HeaderLinks.astro";
 <header>
     <nav>
         <Brand title={SITE_TITLE} image={logo}/>
-        <HeaderLinks id="header-links"/>
-        <Socials id="social-links"/>
+        <HeaderLinks/>
+        <Socials/>
     </nav>
 </header>
 
@@ -29,12 +29,8 @@ import HeaderLinks from "./HeaderLinks.astro";
     }
 
     @media (max-width: 720px) {
-        #social-links {
+        nav > :global(.social-links) {
             display: none;
-        }
-
-        #header-links {
-            justify-self: flex-end;
         }
     }
 </style>
