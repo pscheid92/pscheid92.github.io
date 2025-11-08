@@ -33,7 +33,7 @@ import {SITE_DESCRIPTION, SITE_TITLE} from '../consts';
     </style>
 
     <section class="hero">
-        <Image src={Avatar} alt="Patrick Scheid" class="hero-avatar" width={360} height={360}/>
+        <Image src={Avatar} alt="Patrick Scheid" class="hero-avatar" width={360} height={360} loading="eager" fetchpriority="high" decoding="async"/>
         <h1>Hi, I'm {SITE_TITLE}</h1>
         <p>Engineering Manager </p>
         <p>People-Centric & Product-Minded</p>
