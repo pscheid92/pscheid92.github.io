@@ -1,0 +1,35 @@
+---
+import {Icon} from "astro-icon/components";
+---
+
+<div class="social-links" { ...Astro.props}>
+    <a href="https://www.linkedin.com/in/pscheid92/" target="_blank" aria-label="LinkedIn">
+        <Icon name="simple-icons:linkedin" size="32"/>
+    </a>
+
+    <a href="https://github.com/pscheid92" target="_blank" aria-label="GitHub">
+        <Icon name="simple-icons:github" size="32"/>
+    </a>
+
+    <a href="mailto:patrick@patrickscheid.de" target="_blank" aria-label="Email">
+        <Icon name="simple-icons:gmail" size="32"/>
+    </a>
+</div>
+
+<style>
+    .social-links {
+        display: flex;
+        justify-content: center;
+        gap: 1em;
+        margin-top: 1em;
+    }
+
+    .social-links a {
+        text-decoration: none;
+        color: rgb(var(--gray));
+    }
+
+    .social-links a:hover {
+        color: rgb(var(--gray-dark));
+    }
+</style>

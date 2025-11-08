@@ -1,0 +1,90 @@
+---
+import {Image} from 'astro:assets';
+import Avatar from '../assets/avatar.webp';
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout
+        title="About Me"
+        description="People-focused, product-minded engineering manager in Munich"
+>
+    <style>
+        .about-header {
+            text-align: center;
+            margin: 2em 0;
+        }
+
+        .avatar {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            margin: 0 auto 1em;
+            display: block;
+            box-shadow: var(--box-shadow);
+        }
+
+        .prose {
+            width: 720px;
+            max-width: calc(100% - 2em);
+            margin: auto;
+            padding: 1em;
+            color: rgb(var(--gray-dark));
+        }
+    </style>
+
+    <article class="prose">
+        <div class="about-header">
+            <Image src={Avatar} alt="Patrick Scheid" class="avatar" width={200} height={200}/>
+            <h1>About Me</h1>
+            <hr/>
+        </div>
+
+        <p>
+            Hi, I'm Patrick Scheid, an experienced people-focused, product-minded engineering manager based in Munich.
+            I believe in building not just great software, but great teams that deliver comprehensive tech solutions
+            with purpose and impact.
+        </p>
+
+        <p>
+            With my experience as a Software Engineer, Product Owner, Scrum Master, and Data Scientist, I bring a
+            unique perspective to software development. I'm passionate about building solutions that add real value
+            to customers.
+        </p>
+
+        <h2>Background</h2>
+        <p>
+            My journey in tech has given me a unique perspective shaped by diverse roles across the software development
+            lifecycle. I've worn many hats throughout my career—Software Engineer, Product Owner, Scrum Master, and
+            Data Scientist—each experience enriching my understanding of how successful products and teams are built.
+        </p>
+
+        <h2>Engineering Leadership</h2>
+        <p>
+            As an engineering manager, I focus on the intersection of people and product. I believe the best technical
+            solutions emerge when teams are empowered, aligned, and deeply connected to the problems they're solving.
+            My leadership approach combines technical expertise with a strong emphasis on team growth, psychological
+            safety, and strategic product thinking.
+        </p>
+
+        <h2>Philosophy</h2>
+        <p>
+            I'm passionate about creating environments where engineers can do their best work. This means fostering
+            clear communication, removing blockers, and ensuring that everyone understands not just the "what" and
+            "how," but more importantly, the "why" behind what we build.
+        </p>
+
+        <p>
+            My experience as a Product Owner taught me to think in terms of user value and business impact. As a
+            Scrum Master, I learned the power of iterative improvement and team dynamics. As a Software Engineer,
+            I built the technical foundation that helps me make informed decisions and earn credibility with my teams.
+            And as a Data Scientist, I developed an appreciation for data-driven decision making and the importance
+            of extracting meaningful insights from complex information.
+        </p>
+
+        <h2>Let's Connect</h2>
+        <p>
+            I'm always interested in connecting with fellow technologists, leaders, and anyone passionate about
+            building better products and teams. Feel free to reach out!
+        </p>
+    </article>
+</Layout>

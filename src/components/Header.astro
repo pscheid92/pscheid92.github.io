@@ -1,0 +1,104 @@
+---
+import Image from 'astro/components/Image.astro';
+import {SITE_TITLE} from '../consts';
+import HeaderLink from './HeaderLink.astro';
+import Socials from "./Socials.astro";
+import logo from "../assets/logo.png";
+---
+
+<header>
+    <nav>
+        <h2>
+            <a class="brand" href="/">
+                <Image src={logo} alt="Logo"/>
+                <span class="site-title">{SITE_TITLE}</span>
+            </a>
+        </h2>
+
+        <div class="internal-links">
+            <HeaderLink href="/">Home</HeaderLink>
+            <HeaderLink href="/blog">Blog</HeaderLink>
+            <HeaderLink href="/about">About</HeaderLink>
+        </div>
+
+        <Socials id="header-socials"/>
+    </nav>
+</header>
+
+<style>
+    header {
+        margin: 0;
+        padding: 0 1em;
+        background: white;
+        box-shadow: 0 2px 8px rgba(var(--black), 5%);
+    }
+
+    h2 {
+        margin: 0;
+        font-size: 1em;
+    }
+
+    h2 a,
+    h2 a.active {
+        text-decoration: none;
+    }
+
+    nav {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        align-items: center;
+        gap: 1em;
+    }
+
+    .internal-links {
+        justify-self: center;
+    }
+
+    #header-socials {
+        justify-self: end;
+    }
+
+    nav a {
+        padding: 1em 0.5em;
+        color: var(--black);
+        border-bottom: 4px solid transparent;
+        text-decoration: none;
+    }
+
+    nav a.active {
+        text-decoration: none;
+        border-bottom-color: var(--accent);
+    }
+
+    @media (max-width: 720px) {
+        nav {
+            grid-template-columns: auto 1fr;
+        }
+
+        .internal-links {
+            justify-self: end;
+        }
+
+        #header-socials {
+            display: none;
+        }
+    }
+
+    .brand {
+        display: flex;
+        align-items: center;
+        gap: 0.5em;
+    }
+
+    .brand img {
+        height: 50px;
+        width: auto;
+        flex-shrink: 0;
+    }
+
+    @media (max-width: 720px) {
+        .brand .site-title {
+            display: none;
+        }
+    }
+</style>
