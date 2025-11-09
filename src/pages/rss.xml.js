@@ -1,12 +1,11 @@
 import { getCollection } from 'astro:content';
 import rss from '@astrojs/rss';
-import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 
 export async function GET(context) {
 	const posts = await getCollection('blog');
 	return rss({
-		title: SITE_TITLE,
-		description: SITE_DESCRIPTION,
+		title: 'Patrick Scheid - Engineering Manager',
+		description: 'Engineering Manager at DeepL in Munich. Leading teams at the intersection of AI research and product development with a focus on clarity, empathy, and pragmatic problem-solving.',
 		site: context.site,
 		items: posts.map((post) => ({
 			...post.data,

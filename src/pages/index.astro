@@ -2,10 +2,12 @@
 import {Image} from 'astro:assets';
 import Avatar from '../assets/avatar.webp';
 import Layout from '../layouts/Layout.astro';
-import {SITE_DESCRIPTION, SITE_TITLE} from '../consts';
 ---
 
-<Layout title={SITE_TITLE} description={SITE_DESCRIPTION}>
+<Layout
+    title="Patrick Scheid - Engineering Manager"
+    description="Engineering Manager at DeepL in Munich. Leading teams at the intersection of AI research and product development with a focus on clarity, empathy, and pragmatic problem-solving."
+>
     <section class="hero">
         <Image src={Avatar} alt="Patrick Scheid" class="hero-avatar" width={360} height={360} loading="eager" fetchpriority="high" decoding="async"/>
         <h1>Hi, I'm Patrick!</h1>
