@@ -8,9 +8,14 @@ import {SITE_DESCRIPTION, SITE_TITLE} from '../consts';
 <Layout title={SITE_TITLE} description={SITE_DESCRIPTION}>
     <section class="hero">
         <Image src={Avatar} alt="Patrick Scheid" class="hero-avatar" width={360} height={360} loading="eager" fetchpriority="high" decoding="async"/>
-        <h1>Hi, I'm {SITE_TITLE}</h1>
-        <p>Engineering Manager </p>
-        <p>People-Centric & Product-Minded</p>
+        <h1>Hi, I'm Patrick!</h1>
+
+        <p class="position">Engineering Manager @ DeepL</p>
+
+        <p class="introduction">
+            I lead a team at the intersection of research and product readiness with clarity, empathy, and a pragmatic mindset.
+            I draw on broad experience in data science, product management, and software engineering.
+        </p>
     </section>
 </Layout>
 
@@ -22,7 +27,7 @@ import {SITE_DESCRIPTION, SITE_TITLE} from '../consts';
 
     .hero-avatar {
         border-radius: 50%;
-        margin: 0 auto 1.5em;
+        margin: 0 auto 0.75em;
         display: block;
         box-shadow: var(--box-shadow);
     }
@@ -34,8 +39,18 @@ import {SITE_DESCRIPTION, SITE_TITLE} from '../consts';
     }
 
     .hero p {
-        font-size: 1.2rem;
-        max-width: 600px;
         margin: 0 auto;
+    }
+
+    .hero .position {
+        font-size: 1.3rem;
+        margin: 1em auto;
+    }
+
+    .hero .introduction {
+        font-size: 1.25rem;
+        line-height: 1.6;
+        text-align: center;
+        max-width: 38rem;
     }
 </style>

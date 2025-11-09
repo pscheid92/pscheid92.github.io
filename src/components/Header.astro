@@ -8,9 +8,11 @@ import HeaderLinks from "./HeaderLinks.astro";
 
 <header>
     <nav>
-        <Brand title={SITE_TITLE} image={logo}/>
-        <HeaderLinks/>
-        <Socials/>
+        <div class="nav-content">
+            <Brand title={SITE_TITLE} image={logo}/>
+            <HeaderLinks/>
+            <Socials/>
+        </div>
     </nav>
 </header>
 
@@ -24,12 +26,25 @@ import HeaderLinks from "./HeaderLinks.astro";
 
     nav {
         display: flex;
+        justify-content: center;
+    }
+
+    .nav-content {
+        width: 100%;
+        max-width: 60rem;
+        display: flex;
         justify-content: space-between;
         align-items: center;
     }
 
-    @media (max-width: 720px) {
-        nav > :global(.social-links) {
+    @media (min-width: 600px) {
+        .nav-content {
+            width: 90%;
+        }
+    }
+
+    @media (max-width: 900px) {
+        .nav-content > :global(.social-links) {
             display: none;
         }
     }

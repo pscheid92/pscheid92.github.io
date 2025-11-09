@@ -32,7 +32,11 @@ const {title, image, ...props} = Astro.props;
         width: 50px;
     }
 
-    @media (max-width: 720px) {
+    .brand-title {
+        white-space: nowrap;
+    }
+
+    @media (max-width: 900px) {
         .brand-title {
             display: none;
         }
