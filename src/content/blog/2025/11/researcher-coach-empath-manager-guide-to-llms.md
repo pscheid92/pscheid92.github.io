@@ -32,7 +32,7 @@ I like to feed it with vague goals or inhibiting patterns so that it can come up
 
 * **When to use:**\
 Decision-making, planning, goal-setting, and iterative improvements. Also useful as a contrasting perspective when ChatGPT's analysis feels too neat.
-* 
+
 * **Watch-outs:**\
 It errs on the side of action. Don’t jump in here if the problem is fuzzy, as it risks executing the wrong plan.
 
