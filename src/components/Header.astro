@@ -36,6 +36,20 @@ import HeaderLinks from "./HeaderLinks.astro";
         align-items: center;
     }
 
+    .nav-content > :global(*) {
+        flex: 1;
+    }
+
+    .nav-content > :global(:first-child) {
+        justify-content: flex-start;
+        display: flex;
+    }
+
+    .nav-content > :global(:last-child) {
+        justify-content: flex-end;
+        display: flex;
+    }
+
     @media (min-width: 600px) {
         .nav-content {
             width: 90%;
