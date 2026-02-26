@@ -7,6 +7,7 @@ import Layout from '../layouts/Layout.astro';
 <Layout
     title="Patrick Scheid - Senior Software Engineer"
     description="Senior Software Engineer at DeepL in Munich. Combining software engineering, data science, product management, and engineering leadership to build AI-powered products."
+    pageClass="page-home"
 >
     <section class="hero">
         <Image src={Avatar} alt="Patrick Scheid" class="hero-avatar" width={360} height={360} loading="eager" fetchpriority="high" decoding="async"/>
@@ -19,6 +20,37 @@ import Layout from '../layouts/Layout.astro';
             to build products that matter. Currently working at the intersection of AI research and product development
             with a focus on clarity, empathy, and pragmatic problem-solving.
         </p>
+    </section>
+
+    <section class="highlights">
+        <h2>What I Bring</h2>
+        <div class="highlights-grid">
+            <div class="highlight-card">
+                <span class="highlight-icon" aria-hidden="true">🤖</span>
+                <h3>AI / ML</h3>
+                <p>Bridging AI research and production systems, turning cutting-edge models into user-facing features.</p>
+            </div>
+            <div class="highlight-card">
+                <span class="highlight-icon" aria-hidden="true">⚙️</span>
+                <h3>Backend Engineering</h3>
+                <p>Designing scalable cloud backends, microservices, and infrastructure with Go, Kubernetes, and PostgreSQL.</p>
+            </div>
+            <div class="highlight-card">
+                <span class="highlight-icon" aria-hidden="true">📊</span>
+                <h3>Data Science</h3>
+                <p>Extracting insights from complex data and building data-driven solutions that inform product decisions.</p>
+            </div>
+            <div class="highlight-card">
+                <span class="highlight-icon" aria-hidden="true">📦</span>
+                <h3>Product Management</h3>
+                <p>Shaping APIs into API-as-a-Product offerings, balancing user value with business impact.</p>
+            </div>
+            <div class="highlight-card">
+                <span class="highlight-icon" aria-hidden="true">🧭</span>
+                <h3>Engineering Leadership</h3>
+                <p>Facilitating team dynamics, iterative delivery, and continuous improvement across engineering teams.</p>
+            </div>
+        </div>
     </section>
 </Layout>
 
@@ -55,5 +87,64 @@ import Layout from '../layouts/Layout.astro';
         line-height: 1.6;
         text-align: center;
         max-width: 38rem;
+    }
+
+    .highlights {
+        padding: 1em 0 3em;
+    }
+
+    .highlights h2 {
+        text-align: center;
+        margin-bottom: 1.5em;
+    }
+
+    .highlights-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        justify-content: center;
+    }
+
+    .highlight-card {
+        flex: 0 1 calc(33.333% - 1rem);
+        background: var(--color-surface);
+        border: 1px solid var(--color-border);
+        border-radius: 12px;
+        padding: 1.5em;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .highlight-card:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--box-shadow);
+    }
+
+    .highlight-icon {
+        font-size: 2rem;
+        display: block;
+        margin-bottom: 0.5em;
+    }
+
+    .highlight-card h3 {
+        margin-bottom: 0.5em;
+    }
+
+    .highlight-card p {
+        color: var(--color-text-muted);
+        font-size: 0.95rem;
+        line-height: 1.5;
+        margin: 0;
+    }
+
+    @media (max-width: 720px) {
+        .highlight-card {
+            flex: 0 1 calc(50% - 0.75rem);
+        }
+    }
+
+    @media (max-width: 480px) {
+        .highlight-card {
+            flex: 0 1 100%;
+        }
     }
 </style>

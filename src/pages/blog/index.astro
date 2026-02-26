@@ -9,12 +9,8 @@ const posts = (await getCollection('blog')).sort(
 );
 ---
 
-<Layout title="Blog - Patrick Scheid" description="Articles and insights on engineering management, software development, team leadership, and AI product development by Patrick Scheid.">
+<Layout title="Blog - Patrick Scheid" description="Articles and insights on engineering management, software development, team leadership, and AI product development by Patrick Scheid." pageClass="page-blog">
     <style>
-        main {
-            width: 960px;
-        }
-
         ul {
             display: flex;
             flex-wrap: wrap;
@@ -47,6 +43,10 @@ const posts = (await getCollection('blog')).sort(
             font-size: 2.369rem;
         }
 
+        ul li:first-child .description {
+            -webkit-line-clamp: 3;
+        }
+
         ul li img {
             margin-bottom: 0.5rem;
             border-radius: 12px;
@@ -58,18 +58,29 @@ const posts = (await getCollection('blog')).sort(
 
         .title {
             margin: 0;
-            color: rgb(var(--black));
+            color: var(--color-text-heading);
             line-height: 1;
         }
 
         .date {
             margin: 0;
-            color: rgb(var(--gray));
+            color: var(--color-text-muted);
+        }
+
+        .description {
+            margin: 0.5em 0 0;
+            color: var(--color-text-muted);
+            font-size: 0.95rem;
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
 
         ul li a:hover h4,
         ul li a:hover .date {
-            color: rgb(var(--accent));
+            color: var(--color-accent);
         }
 
         ul a:hover img {
@@ -109,6 +120,9 @@ const posts = (await getCollection('blog')).sort(
                                 <p class="date">
                                     <FormattedDate date={post.data.pubDate}/>
                                 </p>
+                                {post.data.description && (
+                                    <p class="description">{post.data.description}</p>
+                                )}
                             </a>
                         </li>
                 ))

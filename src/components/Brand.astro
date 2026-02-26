@@ -18,7 +18,7 @@ const {title, image, ...props} = Astro.props;
     .brand {
         margin: 0;
         padding: 0;
-        color: var(--black);
+        color: var(--color-text-heading);
         font-size: 1em;
         text-decoration: none;
 
@@ -30,6 +30,11 @@ const {title, image, ...props} = Astro.props;
     .brand-image {
         height: 50px;
         width: 50px;
+        transition: filter 0.3s ease;
+    }
+
+    :global([data-theme="dark"]) .brand-image {
+        filter: invert(1);
     }
 
     .brand-title {

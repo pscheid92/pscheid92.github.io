@@ -7,29 +7,8 @@ import Layout from '../layouts/Layout.astro';
 <Layout
         title="About Patrick Scheid - Senior Software Engineer"
         description="Senior Software Engineer at DeepL with a background spanning data science, product management, and engineering leadership. Based in Munich."
+        pageClass="page-about"
 >
-    <style>
-        .about-header {
-            text-align: center;
-            margin: 2em 0;
-        }
-
-        .avatar {
-            width: 200px;
-            height: 200px;
-            border-radius: 50%;
-            margin: 0 auto 1em;
-            display: block;
-            box-shadow: var(--box-shadow);
-        }
-
-        .prose {
-            margin: auto;
-            padding: 1em;
-            color: rgb(var(--gray-dark));
-        }
-    </style>
-
     <article class="prose">
         <div class="about-header">
             <Image src={Avatar} alt="Patrick Scheid" class="avatar" width={200} height={200}/>
@@ -53,13 +32,44 @@ import Layout from '../layouts/Layout.astro';
         <p>
             My career spans multiple disciplines, and each role has shaped how I approach building products today:
         </p>
-        <ul>
-            <li><strong>Data Scientist</strong> — Extracting insights from complex data and building data-driven solutions.</li>
-            <li><strong>Software Engineer</strong> — Designing scalable cloud backends, microservices, and infrastructure with Kubernetes, PostgreSQL, and Go.</li>
-            <li><strong>Scrum Master</strong> — Facilitating team dynamics, iterative delivery, and continuous improvement.</li>
-            <li><strong>Product Owner</strong> — Shaping APIs into API-as-a-Product offerings, balancing user value with business impact.</li>
-            <li><strong>Senior Software Engineer</strong> — Combining all of these perspectives to ship impactful products at the intersection of AI and engineering.</li>
-        </ul>
+
+        <div class="timeline">
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <h3>Senior Software Engineer</h3>
+                    <p>Combining all perspectives to ship impactful products at the intersection of AI and engineering.</p>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <h3>Product Owner</h3>
+                    <p>Shaping APIs into API-as-a-Product offerings, balancing user value with business impact.</p>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <h3>Scrum Master</h3>
+                    <p>Facilitating team dynamics, iterative delivery, and continuous improvement.</p>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <h3>Software Engineer</h3>
+                    <p>Designing scalable cloud backends, microservices, and infrastructure with Kubernetes, PostgreSQL, and Go.</p>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <h3>Data Scientist</h3>
+                    <p>Extracting insights from complex data and building data-driven solutions.</p>
+                </div>
+            </div>
+        </div>
 
         <h2>How I Work</h2>
         <p>
@@ -76,3 +86,74 @@ import Layout from '../layouts/Layout.astro';
         </p>
     </article>
 </Layout>
+
+<style>
+    .about-header {
+        text-align: center;
+        margin: 2em 0;
+    }
+
+    .avatar {
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        margin: 0 auto 1em;
+        display: block;
+        box-shadow: var(--box-shadow);
+    }
+
+    .prose {
+        margin: auto;
+        padding: 1em;
+        color: var(--color-text);
+    }
+
+    .timeline {
+        position: relative;
+        padding-left: 2.5rem;
+        margin: 1.5em 0 2em;
+    }
+
+    .timeline::before {
+        content: '';
+        position: absolute;
+        left: 0.55rem;
+        top: 0.25rem;
+        bottom: 0.25rem;
+        width: 2px;
+        background: var(--color-border);
+    }
+
+    .timeline-item {
+        position: relative;
+        padding-bottom: 1.5em;
+    }
+
+    .timeline-item:last-child {
+        padding-bottom: 0;
+    }
+
+    .timeline-dot {
+        position: absolute;
+        left: -2.25rem;
+        top: 0.35rem;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: var(--color-accent);
+        box-shadow: 0 0 0 4px var(--color-bg);
+        transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .timeline-content h3 {
+        margin: 0 0 0.25em;
+        font-size: 1.1em;
+    }
+
+    .timeline-content p {
+        margin: 0;
+        color: var(--color-text-muted);
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
+</style>

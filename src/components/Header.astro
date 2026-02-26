@@ -3,13 +3,18 @@ import Socials from "./Socials.astro";
 import logo from "../assets/logo.png";
 import Brand from "./Brand.astro";
 import HeaderLinks from "./HeaderLinks.astro";
+import ThemeToggle from "./ThemeToggle.astro";
 ---
 
 <header>
     <div class="nav-content">
         <Brand title="Patrick Scheid" image={logo}/>
         <HeaderLinks/>
-        <Socials/>
+        <div class="nav-actions">
+            <Socials/>
+            <span class="nav-divider"></span>
+            <ThemeToggle/>
+        </div>
     </div>
 </header>
 
@@ -17,10 +22,11 @@ import HeaderLinks from "./HeaderLinks.astro";
     header {
         margin: 0;
         padding: 0 1em;
-        background: white;
-        box-shadow: 0 2px 8px rgba(var(--black), 5%);
+        background: var(--color-bg);
+        box-shadow: 0 2px 8px var(--color-shadow);
         display: flex;
         justify-content: center;
+        transition: background-color 0.3s ease, box-shadow 0.3s ease;
     }
 
     .nav-content {
@@ -31,7 +37,7 @@ import HeaderLinks from "./HeaderLinks.astro";
         align-items: center;
     }
 
-    .nav-content > :global(*) {
+    .nav-content > :global(:first-child) {
         flex: 1;
     }
 
@@ -41,6 +47,24 @@ import HeaderLinks from "./HeaderLinks.astro";
         align-items: center;
     }
 
+    .nav-actions {
+        flex: 1;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 0.75em;
+    }
+
+    .nav-actions > :global(.social-links) {
+        margin-top: 0;
+    }
+
+    .nav-divider {
+        width: 1px;
+        height: 1.5em;
+        background: var(--color-border);
+    }
+
     @media (min-width: 600px) {
         .nav-content {
             width: 90%;
@@ -48,7 +72,8 @@ import HeaderLinks from "./HeaderLinks.astro";
     }
 
     @media (max-width: 900px) {
-        .nav-content > :global(.social-links) {
+        .nav-actions > :global(.social-links),
+        .nav-divider {
             display: none;
         }
 

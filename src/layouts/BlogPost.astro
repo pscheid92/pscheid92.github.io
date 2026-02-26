@@ -9,7 +9,7 @@ type Props = CollectionEntry<'blog'>['data'];
 const {title, description, pubDate, updatedDate, heroImage} = Astro.props;
 ---
 
-<Layout title={title} description={description}>
+<Layout title={title} description={description} pageClass="page-blog-post">
     <article>
         <div class="hero-image">
             {heroImage &&
@@ -60,7 +60,7 @@ const {title, description, pubDate, updatedDate, heroImage} = Astro.props;
     .prose {
         margin: auto;
         padding: 1em;
-        color: rgb(var(--gray-dark));
+        color: var(--color-text);
     }
 
     .title {
@@ -76,7 +76,7 @@ const {title, description, pubDate, updatedDate, heroImage} = Astro.props;
 
     .date {
         margin-bottom: 0.5em;
-        color: rgb(var(--gray));
+        color: var(--color-text-muted);
     }
 
     .last-updated-on {
