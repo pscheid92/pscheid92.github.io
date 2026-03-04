@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 340" style="background:#0f1117;border-radius:12px" aria-label="Full HPA pipeline flow diagram">
+<text x="80" y="30" text-anchor="middle" fill="#71717a" font-size="10" font-family="monospace">Metric Value</text>
+<text x="80" y="44" text-anchor="middle" fill="#fafafa" font-size="12" font-weight="600" font-family="monospace">70</text>
+<line x1="80" y1="50" x2="80" y2="70" stroke="#52525b" stroke-width="1"/>
+<polygon points="76,67 80,75 84,67" fill="#52525b"/>
+<text x="80" y="190" text-anchor="middle" fill="#71717a" font-size="9" font-family="monospace">currentReplicas</text>
+<text x="80" y="204" text-anchor="middle" fill="#fafafa" font-size="11" font-weight="600" font-family="monospace">7</text>
+<line x1="80" y1="208" x2="80" y2="126" stroke="#52525b" stroke-width="1" stroke-dasharray="3 2"/>
+<polygon points="76,130 80,123 84,130" fill="#52525b"/>
+<rect x="30" y="80" width="100" height="42" rx="8" fill="#fbbf24" fill-opacity="0.1" stroke="#fbbf24" stroke-width="1.5"/>
+<text x="80" y="98" text-anchor="middle" fill="#fbbf24" font-size="10" font-weight="600" font-family="monospace">Formula</text>
+<text x="80" y="112" text-anchor="middle" fill="#fbbf24" font-size="9" opacity="0.7" font-family="monospace">ratio × curr</text>
+<line x1="135" y1="101" x2="205" y2="101" stroke="#52525b" stroke-width="1.5"/>
+<polygon points="202,97 210,101 202,105" fill="#52525b"/>
+<text x="170" y="93" text-anchor="middle" fill="#fafafa" font-size="11" font-weight="600" font-family="monospace">10</text>
+<rect x="215" y="80" width="120" height="42" rx="8" fill="#c084fc" fill-opacity="0.1" stroke="#c084fc" stroke-width="1.5"/>
+<text x="275" y="98" text-anchor="middle" fill="#c084fc" font-size="10" font-weight="600" font-family="monospace">Stabilization</text>
+<text x="275" y="112" text-anchor="middle" fill="#c084fc" font-size="9" opacity="0.7" font-family="monospace">window max</text>
+<line x1="340" y1="101" x2="405" y2="101" stroke="#52525b" stroke-width="1.5"/>
+<polygon points="402,97 410,101 402,105" fill="#52525b"/>
+<text x="372" y="93" text-anchor="middle" fill="#fafafa" font-size="11" font-weight="600" font-family="monospace">10</text>
+<rect x="415" y="80" width="120" height="42" rx="8" fill="#fb7185" fill-opacity="0.1" stroke="#fb7185" stroke-width="1.5"/>
+<text x="475" y="98" text-anchor="middle" fill="#fb7185" font-size="10" font-weight="600" font-family="monospace">Rate Limit</text>
+<text x="475" y="112" text-anchor="middle" fill="#fb7185" font-size="9" opacity="0.7" font-family="monospace">cap Δ/period</text>
+<line x1="540" y1="101" x2="605" y2="101" stroke="#52525b" stroke-width="1.5"/>
+<polygon points="602,97 610,101 602,105" fill="#52525b"/>
+<text x="572" y="93" text-anchor="middle" fill="#fafafa" font-size="11" font-weight="600" font-family="monospace">7</text>
+<text x="572" y="118" text-anchor="middle" fill="#71717a" font-size="8" font-family="monospace">budget used</text>
+<rect x="615" y="80" width="100" height="42" rx="8" fill="#34d399" fill-opacity="0.1" stroke="#34d399" stroke-width="1.5"/>
+<text x="665" y="98" text-anchor="middle" fill="#34d399" font-size="10" font-weight="600" font-family="monospace">Clamp</text>
+<text x="665" y="112" text-anchor="middle" fill="#34d399" font-size="9" opacity="0.7" font-family="monospace">[min, max]</text>
+<line x1="720" y1="101" x2="770" y2="101" stroke="#52525b" stroke-width="1.5"/>
+<polygon points="767,97 775,101 767,105" fill="#52525b"/>
+<rect x="775" y="86" width="22" height="30" rx="4" fill="#fafafa" fill-opacity="0.08" stroke="#fafafa" stroke-width="1"/>
+<text x="786" y="106" text-anchor="middle" fill="#fafafa" font-size="14" font-weight="700" font-family="monospace">7</text>
+<path d="M 786 120 L 786 230 Q 786 250 766 250 L 100 250 Q 80 250 80 230 L 80 212" fill="none" stroke="#52525b" stroke-width="1.5" stroke-dasharray="5 3"/>
+<polygon points="76,215 80,208 84,215" fill="#52525b"/>
+<text x="430" y="262" text-anchor="middle" fill="#71717a" font-size="10" font-family="monospace">becomes currentReplicas for next sync period</text>
+<path d="M 130 101 Q 145 60 170 55 L 218 55" fill="none" stroke="#c084fc" stroke-width="1" stroke-dasharray="3 2" opacity="0.5"/>
+<text x="200" y="48" text-anchor="middle" fill="#c084fc" font-size="8" opacity="0.6" font-family="monospace">stored in window</text>
+<rect x="40" y="280" width="720" height="48" rx="8" fill="#18181b" stroke="#27272a" stroke-width="1"/>
+<text x="55" y="298" fill="#71717a" font-size="10" font-weight="500" font-family="monospace">Traced example:</text>
+<text x="55" y="316" fill="#d4d4d8" font-size="10" font-family="monospace">7 pods, CPU=70 (target 50) → ceil(7×1.4)=10 → window max=10 → budget used, stay at 7 → 7 ∈ [1,10] → 7</text>
+</svg>
