@@ -3,6 +3,7 @@ title: "The Researcher, the Coach, and the Empath: A Manager's Guide to LLMs"
 description: "Most LLM benchmarks measure 'hard' tasks, but management work lives in the messy middle. Here's my heuristic for choosing between ChatGPT, Gemini, and Claude for different kinds of work."
 pubDate: 'Nov 11 2025'
 heroImage: '../../../../assets/2025/11/researcher-coach-empath-manager-guide-to-llms-hero.png'
+tags: ['AI', 'Management']
 ---
 As an engineering manager in AI, I constantly have to choose between LLMs. Benchmarks tell us which models excel at 'hard' tasks (the ones with right or wrong answers). However, management work resides in the messy middle: diagnosing team dynamics, delivering difficult feedback, and coaching through ambiguity. No benchmark measures that. So I built my own heuristic—one that helped me understand not just the models, but my own thinking patterns.
 

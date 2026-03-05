@@ -12,6 +12,7 @@
 
 html {
     scroll-behavior: smooth;
+    overflow-x: clip;
 }
 
 :root {
@@ -25,7 +26,7 @@ html {
     --color-text-muted: #607399;
     --color-text-heading: #0f1219;
     --color-border: #e5e9f0;
-    --color-code-bg: #e5e9f0;
+    --color-code-bg: #f0f2f6;
     --color-accent: #2337ff;
     --color-accent-dark: #000d8a;
     --color-shadow: rgba(96, 115, 159, 0.25);
@@ -81,7 +82,7 @@ body {
     color: var(--color-text);
     font-size: 18px;
     line-height: 1.7;
-    overflow-x: hidden;
+    overflow-x: clip;
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
@@ -157,11 +158,13 @@ button:focus-visible {
 
 .prose a {
     text-decoration: underline;
-    transition: color 0.2s ease, text-decoration-thickness 0.2s ease;
+    text-decoration-color: color-mix(in srgb, var(--color-accent) 40%, transparent);
+    text-underline-offset: 2px;
+    transition: color 0.2s ease, text-decoration-color 0.2s ease;
 }
 
 .prose a:hover {
-    text-decoration-thickness: 2px;
+    text-decoration-color: var(--color-accent);
 }
 
 p {
@@ -169,7 +172,24 @@ p {
 }
 
 .prose p {
-    margin-bottom: 2em;
+    margin-bottom: 1.5em;
+}
+
+/* Prose headings — spacing for article flow */
+.prose h2 {
+    margin-top: 2.5em;
+    margin-bottom: 0.75em;
+    padding-bottom: 0.3em;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.prose h3 {
+    margin-top: 2em;
+    margin-bottom: 0.5em;
+}
+
+.prose h4 {
+    margin-top: 1.5em;
 }
 
 textarea {
@@ -183,6 +203,30 @@ input {
 
 table {
     width: 100%;
+    border-collapse: collapse;
+    margin: 1.5em 0;
+    display: block;
+    overflow-x: auto;
+}
+
+table th,
+table td {
+    padding: 0.6em 1em;
+    border: 1px solid var(--color-border);
+    text-align: left;
+}
+
+table th {
+    background: var(--color-surface);
+    font-weight: 700;
+    font-size: 0.9em;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--color-text-muted);
+}
+
+table tr:nth-child(even) {
+    background: color-mix(in srgb, var(--color-surface) 50%, transparent);
 }
 
 img {
@@ -191,36 +235,72 @@ img {
     border-radius: 8px;
 }
 
+/* Inline code */
 code {
-    padding: 2px 5px;
+    padding: 0.15em 0.4em;
     background-color: var(--color-code-bg);
-    border-radius: 2px;
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 0.875em;
+    border-radius: 4px;
+    font-family: 'SFMono-Regular', 'Consolas', 'Liberation Mono', 'Menlo', monospace;
+    font-size: 0.85em;
+    word-break: break-word;
 }
 
+/* Code blocks */
 pre {
-    padding: 1.5em;
-    border-radius: 8px;
-    font-size: 0.875em;
+    padding: 1em 1.25em;
+    border-radius: 10px;
+    font-size: 0.85em;
     overflow-x: auto;
+    max-width: 100%;
+    margin: 1.5em 0;
+    border: 1px solid var(--color-border);
+    line-height: 1.45;
 }
 
 pre > code {
     all: unset;
-    font-family: 'Courier New', Courier, monospace;
+    display: block;
+    font-family: 'SFMono-Regular', 'Consolas', 'Liberation Mono', 'Menlo', monospace;
+    line-height: inherit;
 }
 
+/* Blockquotes */
 blockquote {
-    border-left: 4px solid var(--color-accent);
-    padding: 0 0 0 20px;
-    margin: 0;
-    font-size: 1.333em;
+    border-left: 3px solid var(--color-accent);
+    padding: 0.5em 0 0.5em 1.25em;
+    margin: 1.5em 0;
+    font-size: 1.05em;
+    font-style: italic;
+    color: var(--color-text-muted);
+    background: color-mix(in srgb, var(--color-surface) 50%, transparent);
+    border-radius: 0 6px 6px 0;
+}
+
+blockquote p:last-child {
+    margin-bottom: 0;
 }
 
 hr {
     border: none;
     border-top: 1px solid var(--color-border);
+    margin: 2.5em 0;
+}
+
+/* Lists in prose */
+.prose ul,
+.prose ol {
+    margin-bottom: 1.5em;
+    padding-left: 1.5em;
+}
+
+.prose li {
+    margin-bottom: 0.4em;
+}
+
+.prose li > ul,
+.prose li > ol {
+    margin-top: 0.4em;
+    margin-bottom: 0;
 }
 
 @media (max-width: 900px) {
@@ -243,7 +323,8 @@ hr {
 }
 
 .page-blog-post main {
-    border-top: 3px solid var(--color-accent);
+    max-width: 100%;
+    padding-top: 2em;
 }
 
 .sr-only {
@@ -254,12 +335,8 @@ hr {
     height: 1px;
     width: 1px;
     overflow: hidden;
-    /* IE6, IE7 - a 0 height clip, off to the bottom right of the visible 1px box */
     clip: rect(1px 1px 1px 1px);
-    /* maybe deprecated but we need to support legacy browsers */
     clip: rect(1px, 1px, 1px, 1px);
-    /* modern browsers, clip-path works inwards from each corner */
     clip-path: inset(50%);
-    /* added line to stop words getting smushed together (as they go onto separate lines and some screen readers do not understand line feeds as a space */
     white-space: nowrap;
 }

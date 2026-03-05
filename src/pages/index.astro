@@ -62,7 +62,7 @@ import Layout from '../layouts/Layout.astro';
 
     .hero-avatar {
         border-radius: 50%;
-        margin: 0 auto 0.75em;
+        margin: 0 auto 1.5em;
         display: block;
         box-shadow: var(--box-shadow);
     }
@@ -137,6 +137,11 @@ import Layout from '../layouts/Layout.astro';
     }
 
     @media (max-width: 720px) {
+        .hero-avatar {
+            width: 200px;
+            height: 200px;
+        }
+
         .highlight-card {
             flex: 0 1 calc(50% - 0.75rem);
         }

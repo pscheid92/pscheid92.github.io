@@ -5,17 +5,37 @@ const today = new Date();
 ---
 
 <footer>
-    &copy; {today.getFullYear()} Patrick Scheid. All rights reserved.
-    <Socials/>
+    <div class="footer-divider"></div>
+    <div class="footer-content">
+        <span class="footer-copy">&copy; {today.getFullYear()} Patrick Scheid</span>
+        <Socials/>
+    </div>
 </footer>
 
 <style>
     footer {
-        padding: 2em 1em;
-        background: linear-gradient(var(--gray-gradient)) no-repeat;
+        padding: 0 1em 2em;
         background-color: var(--color-bg);
         color: var(--color-text-muted);
         text-align: center;
         transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .footer-divider {
+        max-width: 60rem;
+        margin: 0 auto 2rem;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, var(--color-border), transparent);
+    }
+
+    .footer-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .footer-copy {
+        font-size: 0.85rem;
     }
 </style>

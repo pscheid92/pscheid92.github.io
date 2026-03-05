@@ -3,6 +3,7 @@ title: 'How Kubernetes HPA Decides Your Replica Count'
 description: 'A deep dive into the four-stage pipeline the Horizontal Pod Autoscaler runs every 15 seconds: formula, stabilization, rate limiting, and clamping.'
 pubDate: 'Mar 04 2026'
 heroImage: '../../../../assets/2026/03/how-hpa-decides-replica-count-hero.jpg'
+tags: ['Kubernetes', 'Infrastructure']
 ---
 
 The Horizontal Pod Autoscaler (HPA) automatically adjusts the number of pod replicas in a deployment based on observed metrics. Every **sync period** (default: 15 seconds), it runs a four-stage pipeline to decide whether to scale up, scale down, or do nothing.

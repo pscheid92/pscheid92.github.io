@@ -7,126 +7,346 @@ import Layout from '../../layouts/Layout.astro';
 const posts = (await getCollection('blog')).sort(
     (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
+
+const allTags = [...new Set(posts.flatMap((post) => post.data.tags))].sort();
+
+function estimateReadTime(body: string): number {
+    const words = body.trim().split(/\s+/).length;
+    return Math.max(1, Math.ceil(words / 230));
+}
 ---
 
 <Layout title="Blog - Patrick Scheid" description="Articles and insights on engineering management, software development, team leadership, and AI product development by Patrick Scheid." pageClass="page-blog">
-    <style>
-        ul {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 2rem;
-            list-style-type: none;
-            margin: 0;
-            padding: 0;
-        }
+    <section class="blog-header">
+        <h1>Writing</h1>
+        <p class="blog-subtitle">Thoughts on engineering, infrastructure, AI, and leadership.</p>
+        <div class="header-accent"></div>
+    </section>
 
-        ul li {
-            width: calc(50% - 1rem);
-        }
+    {allTags.length > 0 && (
+        <nav class="tag-filter" aria-label="Filter by tag">
+            <button class="tag-pill active" data-tag="all">All</button>
+            {allTags.map((tag) => (
+                <button class="tag-pill" data-tag={tag}>{tag}</button>
+            ))}
+        </nav>
+    )}
 
-        ul li * {
-            text-decoration: none;
-            transition: 0.2s ease;
-        }
-
-        ul li:first-child {
-            width: 100%;
-            margin-bottom: 1rem;
-            text-align: center;
-        }
-
-        ul li:first-child img {
-            width: 100%;
-        }
-
-        ul li:first-child .title {
-            font-size: 2.369rem;
-        }
-
-        ul li:first-child .description {
-            -webkit-line-clamp: 3;
-        }
-
-        ul li img {
-            margin-bottom: 0.5rem;
-            border-radius: 12px;
-        }
-
-        ul li a {
-            display: block;
-        }
-
-        .title {
-            margin: 0;
-            color: var(--color-text-heading);
-            line-height: 1;
-        }
-
-        .date {
-            margin: 0;
-            color: var(--color-text-muted);
-        }
-
-        .description {
-            margin: 0.5em 0 0;
-            color: var(--color-text-muted);
-            font-size: 0.95rem;
-            line-height: 1.5;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        ul li a:hover h4,
-        ul li a:hover .date {
-            color: var(--color-accent);
-        }
-
-        ul a:hover img {
-            box-shadow: var(--box-shadow);
-        }
-
-        @media (max-width: 720px) {
-            ul {
-                gap: 0.5em;
-            }
-
-            ul li {
-                width: 100%;
-                text-align: center;
-            }
-
-            ul li:first-child {
-                margin-bottom: 0;
-            }
-
-            ul li:first-child .title {
-                font-size: 1.563em;
-            }
-        }
-    </style>
-
-    <section>
-        <ul>
-            {
-                posts.map((post) => (
-                        <li>
-                            <a href={`/blog/${post.id}/`}>
-                                {post.data.heroImage && (
-                                        <Image width={720} height={360} src={post.data.heroImage} alt=""/>
+    <section class="posts-grid">
+        {posts.map((post, index) => {
+            const readTime = estimateReadTime(post.body || '');
+            const isFeatured = index === 0;
+            return (
+                <article class:list={['post-card', { featured: isFeatured }]} data-tags={post.data.tags.join(',')}>
+                    <a href={`/blog/${post.id}/`} class="post-link">
+                        {isFeatured && post.data.heroImage && (
+                            <div class="post-image">
+                                <Image
+                                    width={800}
+                                    height={400}
+                                    src={post.data.heroImage}
+                                    alt=""
+                                    loading="eager"
+                                />
+                            </div>
+                        )}
+                        <div class="post-content">
+                            <div class="post-meta">
+                                {post.data.tags.length > 0 && (
+                                    <span class="post-tags">
+                                        {post.data.tags.map((tag) => (
+                                            <span class="tag">{tag}</span>
+                                        ))}
+                                    </span>
                                 )}
-                                <h4 class="title">{post.data.title}</h4>
-                                <p class="date">
-                                    <FormattedDate date={post.data.pubDate}/>
-                                </p>
-                                {post.data.description && (
-                                    <p class="description">{post.data.description}</p>
-                                )}
-                            </a>
-                        </li>
-                ))
-            }
-        </ul>
+                                <span class="post-meta-separator">&middot;</span>
+                                <time class="post-date">
+                                    <FormattedDate date={post.data.pubDate} />
+                                </time>
+                                <span class="post-meta-separator">&middot;</span>
+                                <span class="post-read-time">{readTime} min read</span>
+                            </div>
+                            <h2 class="post-title">{post.data.title}</h2>
+                            {post.data.description && (
+                                <p class="post-description">{post.data.description}</p>
+                            )}
+                            <span class="read-more">Read article <span class="arrow">&rarr;</span></span>
+                        </div>
+                    </a>
+                </article>
+            );
+        })}
     </section>
 </Layout>
+
+<style>
+    /* Blog header */
+    .blog-header {
+        margin-bottom: 1.5rem;
+    }
+
+    .blog-header h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.25rem;
+        letter-spacing: -0.02em;
+    }
+
+    .blog-subtitle {
+        color: var(--color-text-muted);
+        font-size: 1.1rem;
+        margin: 0 0 1rem;
+        line-height: 1.5;
+    }
+
+    .header-accent {
+        width: 4rem;
+        height: 3px;
+        background: linear-gradient(90deg, var(--color-accent), color-mix(in srgb, var(--color-accent) 30%, transparent));
+        border-radius: 2px;
+    }
+
+    /* Tag filter */
+    .tag-filter {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 2.5rem;
+        padding-bottom: 2rem;
+        border-bottom: 1px solid var(--color-border);
+    }
+
+    .tag-pill {
+        background: var(--color-surface);
+        border: 1px solid var(--color-border);
+        color: var(--color-text-muted);
+        padding: 0.35em 0.9em;
+        border-radius: 999px;
+        font-size: 0.8rem;
+        font-family: inherit;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-weight: 500;
+    }
+
+    .tag-pill:hover {
+        border-color: var(--color-accent);
+        color: var(--color-accent);
+        background: color-mix(in srgb, var(--color-accent) 8%, var(--color-surface));
+    }
+
+    .tag-pill.active {
+        background: var(--color-accent);
+        border-color: var(--color-accent);
+        color: #fff;
+        box-shadow: 0 2px 8px color-mix(in srgb, var(--color-accent) 35%, transparent);
+    }
+
+    /* Posts grid */
+    .posts-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+    }
+
+    /* Post card */
+    .post-card {
+        opacity: 1;
+        transition: opacity 0.3s ease;
+    }
+
+    .post-card.hidden {
+        display: none;
+    }
+
+    .post-link {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 0;
+        text-decoration: none;
+        color: inherit;
+        padding: 1.75rem 0;
+        border-bottom: 1px solid var(--color-border);
+        transition: all 0.25s ease;
+    }
+
+    .post-card:first-child .post-link {
+        padding-top: 0;
+    }
+
+    .featured .post-link {
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        align-items: center;
+        padding: 2rem 0;
+    }
+
+    .post-link:hover {
+        color: inherit;
+        background: color-mix(in srgb, var(--color-accent) 4%, transparent);
+    }
+
+    .post-link:hover .post-title {
+        color: var(--color-accent);
+    }
+
+    .post-link:hover .read-more {
+        color: var(--color-accent);
+    }
+
+    .post-link:hover .read-more .arrow {
+        transform: translateX(4px);
+    }
+
+    .post-link:hover .post-image img {
+        transform: scale(1.03);
+    }
+
+    /* Post image — only rendered for featured */
+    .post-image {
+        overflow: hidden;
+        border-radius: 10px;
+        background: var(--color-surface);
+        aspect-ratio: 16 / 10;
+    }
+
+    .post-image img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+        border-radius: 0;
+    }
+
+    /* Post content */
+    .post-content {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    /* Post meta */
+    .post-meta {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+        font-size: 0.8rem;
+        color: var(--color-text-muted);
+    }
+
+    .post-meta-separator {
+        opacity: 0.4;
+    }
+
+    .post-tags {
+        display: flex;
+        gap: 0.35rem;
+    }
+
+    .tag {
+        font-weight: 600;
+        color: var(--color-accent);
+        text-transform: uppercase;
+        font-size: 0.7rem;
+        letter-spacing: 0.06em;
+    }
+
+    .post-date,
+    .post-read-time {
+        white-space: nowrap;
+    }
+
+    /* Post title */
+    .post-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        line-height: 1.3;
+        margin: 0;
+        color: var(--color-text-heading);
+        transition: color 0.2s ease;
+        letter-spacing: -0.01em;
+    }
+
+    .featured .post-title {
+        font-size: 1.65rem;
+    }
+
+    /* Post description */
+    .post-description {
+        color: var(--color-text-muted);
+        font-size: 0.925rem;
+        line-height: 1.6;
+        margin: 0;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .featured .post-description {
+        -webkit-line-clamp: 3;
+    }
+
+    /* Read more link */
+    .read-more {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--color-text-muted);
+        transition: color 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3em;
+        margin-top: 0.25rem;
+    }
+
+    .read-more .arrow {
+        display: inline-block;
+        transition: transform 0.25s ease;
+    }
+
+    /* Responsive */
+    @media (max-width: 720px) {
+        .blog-header h1 {
+            font-size: 2rem;
+        }
+
+        .featured .post-link {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        .featured .post-title {
+            font-size: 1.35rem;
+        }
+
+        .post-title {
+            font-size: 1.15rem;
+        }
+    }
+</style>
+
+<script>
+    const pills = document.querySelectorAll('.tag-pill');
+    const cards = document.querySelectorAll('.post-card');
+
+    pills.forEach((pill) => {
+        pill.addEventListener('click', () => {
+            const tag = pill.getAttribute('data-tag');
+
+            pills.forEach((p) => p.classList.remove('active'));
+            pill.classList.add('active');
+
+            cards.forEach((card) => {
+                const cardTags = card.getAttribute('data-tags') || '';
+                if (tag === 'all' || cardTags.split(',').includes(tag)) {
+                    card.classList.remove('hidden');
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+        });
+    });
+</script>
