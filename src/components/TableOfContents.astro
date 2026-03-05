@@ -1,0 +1,97 @@
+---
+interface Props {
+    headings: { depth: number; slug: string; text: string }[];
+}
+
+const { headings } = Astro.props;
+const filteredHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
+---
+
+{filteredHeadings.length > 0 && (
+    <nav class="toc" aria-label="Table of contents">
+        <div class="toc-header">
+            <span class="toc-label">On this page</span>
+        </div>
+        <ul class="toc-list">
+            {filteredHeadings.map((heading) => (
+                <li class:list={[`toc-depth-${heading.depth}`]}>
+                    <a href={`#${heading.slug}`}>{heading.text}</a>
+                </li>
+            ))}
+        </ul>
+    </nav>
+)}
+
+<style>
+    .toc {
+        font-size: 0.85rem;
+        line-height: 1.5;
+    }
+
+    .toc-header {
+        margin-bottom: 0.75rem;
+    }
+
+    .toc-label {
+        font-weight: 700;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--color-text-muted);
+    }
+
+    .toc-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        border-left: 2px solid var(--color-border);
+    }
+
+    .toc-list li {
+        margin: 0;
+    }
+
+    .toc-list a {
+        display: block;
+        padding: 0.3em 0 0.3em 1em;
+        color: var(--color-text-muted);
+        text-decoration: none;
+        border-left: 2px solid transparent;
+        margin-left: -2px;
+        transition: color 0.2s ease, border-color 0.2s ease;
+    }
+
+    .toc-list a:hover,
+    .toc-list a.active {
+        color: var(--color-accent);
+        border-left-color: var(--color-accent);
+    }
+
+    .toc-depth-3 a {
+        padding-left: 2em;
+        font-size: 0.8rem;
+    }
+</style>
+
+<script>
+    const tocLinks = document.querySelectorAll('.toc-list a');
+    const headings = Array.from(tocLinks).map((link) => {
+        const id = link.getAttribute('href')?.slice(1);
+        return id ? document.getElementById(id) : null;
+    }).filter(Boolean) as HTMLElement[];
+
+    function updateActiveLink() {
+        let current = 0;
+        for (let i = 0; i < headings.length; i++) {
+            if (headings[i].getBoundingClientRect().top <= 100) {
+                current = i;
+            }
+        }
+        tocLinks.forEach((link, i) => {
+            link.classList.toggle('active', i === current);
+        });
+    }
+
+    window.addEventListener('scroll', updateActiveLink, { passive: true });
+    updateActiveLink();
+</script>

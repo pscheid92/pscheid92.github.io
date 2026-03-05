@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 320" style="background:#0f1117;border-radius:12px" aria-label="Rate limiting staircase diagram">
+<line x1="80" y1="30" x2="80" y2="260" stroke="#3f3f46" stroke-width="1"/>
+<line x1="80" y1="260" x2="740" y2="260" stroke="#3f3f46" stroke-width="1"/>
+<text x="28" y="155" fill="#71717a" font-size="9" font-family="monospace" transform="rotate(-90 28 155)">replicas</text>
+<text x="410" y="288" text-anchor="middle" fill="#71717a" font-size="10" font-family="monospace">sync periods →</text>
+<text x="70" y="254" text-anchor="end" fill="#71717a" font-size="9" font-family="monospace">1</text>
+<text x="70" y="227" text-anchor="end" fill="#71717a" font-size="9" font-family="monospace">2</text>
+<text x="70" y="200" text-anchor="end" fill="#71717a" font-size="9" font-family="monospace">3</text>
+<text x="70" y="173" text-anchor="end" fill="#71717a" font-size="9" font-family="monospace">4</text>
+<text x="70" y="146" text-anchor="end" fill="#71717a" font-size="9" font-family="monospace">5</text>
+<text x="70" y="119" text-anchor="end" fill="#71717a" font-size="9" font-family="monospace">6</text>
+<text x="70" y="92" text-anchor="end" fill="#71717a" font-size="9" font-family="monospace">7</text>
+<text x="70" y="65" text-anchor="end" fill="#71717a" font-size="9" font-family="monospace">8</text>
+<text x="70" y="38" text-anchor="end" fill="#71717a" font-size="9" font-family="monospace">10</text>
+<line x1="80" y1="250" x2="740" y2="250" stroke="#27272a" stroke-width="0.5"/>
+<line x1="80" y1="223" x2="740" y2="223" stroke="#27272a" stroke-width="0.5"/>
+<line x1="80" y1="196" x2="740" y2="196" stroke="#27272a" stroke-width="0.5"/>
+<line x1="80" y1="169" x2="740" y2="169" stroke="#27272a" stroke-width="0.5"/>
+<line x1="80" y1="142" x2="740" y2="142" stroke="#27272a" stroke-width="0.5"/>
+<line x1="80" y1="115" x2="740" y2="115" stroke="#27272a" stroke-width="0.5"/>
+<line x1="80" y1="88" x2="740" y2="88" stroke="#27272a" stroke-width="0.5"/>
+<line x1="80" y1="35" x2="740" y2="35" stroke="#fb7185" stroke-width="1.5" stroke-dasharray="6 3"/>
+<text x="745" y="39" fill="#fb7185" font-size="10" font-weight="500" font-family="monospace">desired = 10</text>
+<line x1="80" y1="250" x2="190" y2="250" stroke="#fb7185" stroke-width="2.5"/>
+<line x1="190" y1="250" x2="190" y2="223" stroke="#fb7185" stroke-width="2.5"/>
+<line x1="190" y1="223" x2="300" y2="223" stroke="#fb7185" stroke-width="2.5"/>
+<text x="195" y="240" fill="#fb7185" font-size="9" font-weight="600" font-family="monospace">+1</text>
+<line x1="300" y1="223" x2="300" y2="196" stroke="#fb7185" stroke-width="2.5"/>
+<line x1="300" y1="196" x2="410" y2="196" stroke="#fb7185" stroke-width="2.5"/>
+<text x="305" y="213" fill="#fb7185" font-size="9" font-weight="600" font-family="monospace">+1</text>
+<line x1="410" y1="196" x2="410" y2="169" stroke="#fb7185" stroke-width="2.5"/>
+<line x1="410" y1="169" x2="520" y2="169" stroke="#fb7185" stroke-width="2.5"/>
+<text x="415" y="186" fill="#fb7185" font-size="9" font-weight="600" font-family="monospace">+1</text>
+<line x1="520" y1="169" x2="520" y2="142" stroke="#fb7185" stroke-width="2.5"/>
+<line x1="520" y1="142" x2="630" y2="142" stroke="#fb7185" stroke-width="2.5"/>
+<text x="525" y="159" fill="#fb7185" font-size="9" font-weight="600" font-family="monospace">+1</text>
+<line x1="630" y1="142" x2="630" y2="115" stroke="#fb7185" stroke-width="2.5"/>
+<line x1="630" y1="115" x2="740" y2="115" stroke="#fb7185" stroke-width="2.5"/>
+<text x="635" y="132" fill="#fb7185" font-size="9" font-weight="600" font-family="monospace">+1</text>
+<line x1="725" y1="115" x2="725" y2="35" stroke="#fb7185" stroke-width="1" stroke-dasharray="3 2"/>
+<polygon points="721,42 725,35 729,42" fill="#fb7185" opacity="0.7"/>
+<polygon points="721,108 725,115 729,108" fill="#fb7185" opacity="0.7"/>
+<text x="738" y="75" fill="#fb7185" font-size="10" font-weight="500" font-family="monospace">Δ4</text>
+<text x="738" y="87" fill="#71717a" font-size="8" font-family="monospace">remaining</text>
+<rect x="150" y="296" width="200" height="20" rx="4" fill="#fb7185" fill-opacity="0.08" stroke="#fb7185" stroke-width="0.5" opacity="0.6"/>
+<text x="250" y="310" text-anchor="middle" fill="#fb7185" font-size="9" opacity="0.8" font-family="monospace">policy: +1 pod / 60s</text>
+</svg>
