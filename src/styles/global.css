@@ -318,13 +318,18 @@ hr {
     max-width: 52rem;
 }
 
-.page-blog main {
+.page-blog main,
+.page-projects main {
     max-width: 60rem;
 }
 
 .page-blog-post main {
     max-width: 100%;
     padding-top: 2em;
+}
+
+.page-project main {
+    max-width: 52rem;
 }
 
 .sr-only {

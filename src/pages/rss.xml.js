@@ -2,7 +2,7 @@ import { getCollection } from 'astro:content';
 import rss from '@astrojs/rss';
 
 export async function GET(context) {
-	const posts = await getCollection('blog');
+	const posts = (await getCollection('blog')).filter((post) => import.meta.env.DEV || !post.data.draft);
 	return rss({
 		title: 'Patrick Scheid - Senior Software Engineer',
 		description: 'Senior Software Engineer at DeepL in Munich. Combining software engineering, data science, product management, and engineering leadership to build AI-powered products.',

@@ -4,6 +4,7 @@ description: 'A deep dive into the four-stage pipeline the Horizontal Pod Autosc
 pubDate: 'Mar 04 2026'
 heroImage: '../../../../assets/2026/03/how-hpa-decides-replica-count-hero.jpg'
 tags: ['Kubernetes', 'Infrastructure']
+draft: true
 ---
 
 The Horizontal Pod Autoscaler (HPA) automatically adjusts the number of pod replicas in a deployment based on observed metrics. Every **sync period** (default: 15 seconds), it runs a four-stage pipeline to decide whether to scale up, scale down, or do nothing.

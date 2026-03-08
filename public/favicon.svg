@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <style>
+    text {
+      font-family: 'Georgia', 'Times New Roman', serif;
+      font-size: 72px;
+      font-weight: bold;
+      fill: #0f1219;
+    }
+    @media (prefers-color-scheme: dark) {
+      text { fill: #e2e6ed; }
+    }
+  </style>
+  <text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle">PS</text>
+</svg>

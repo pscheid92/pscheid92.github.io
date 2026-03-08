@@ -15,7 +15,23 @@ const blog = defineCollection({
             updatedDate: z.coerce.date().optional(),
             heroImage: image().optional(),
             tags: z.array(z.string()).default([]),
+            draft: z.boolean().default(false),
         }),
 });
 
-export const collections = {blog};
+const projects = defineCollection({
+    loader: glob({base: './src/content/projects', pattern: '**/*.{md,mdx}'}),
+    schema: () =>
+        z.object({
+            title: z.string(),
+            description: z.string(),
+            language: z.string(),
+            secondaryLanguage: z.string().optional(),
+            github: z.string().url().optional(),
+            liveUrl: z.string().optional(),
+            kind: z.enum(['Live', 'CLI', 'Library', 'Infrastructure']),
+            topics: z.array(z.string()).default([]),
+        }),
+});
+
+export const collections = {blog, projects};
