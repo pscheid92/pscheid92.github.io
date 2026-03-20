@@ -3,7 +3,7 @@ title: ChatPulse
 description: "Real-time Twitch chat sentiment overlay for OBS. Track viewer mood as a live tug-of-war bar, powered by WebSocket streaming and real-time vote counting."
 language: Go
 github: https://github.com/pscheid92/chatpulse
-liveUrl: https://chatpulse.patrickscheid.de
+liveUrl: https://chatpulse.k.patrickscheid.de
 kind: Live
 topics: [twitch, vote-counting, websocket, obs, docker, redis]
 ---
