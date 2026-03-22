@@ -22,9 +22,9 @@ The entire encryption model rests on one value: a 32-byte random `shareSecret` t
 **Key derivation** uses a two-primitive approach, each chosen for what it's good at:
 
 - **HKDF-SHA512** handles key expansion. From the high-entropy `shareSecret`, it derives three independent values using distinct info strings as domain separators: an **encryption key** (32 bytes), a **public ID** (16 bytes, used to address the secret on the server), and a **retrieval token** (16 bytes, used to authenticate fetches).
-- **PBKDF2-SHA512** handles low-entropy input. When a password is set, PBKDF2 (210,000 iterations, per OWASP recommendation) stretches the password using the `shareSecret` as salt, producing key material that then feeds through the same HKDF pipeline. Without a password, the `shareSecret` already has full entropy, so only HKDF runs.
+- **scrypt** handles low-entropy input. When a password is set, scrypt (N=2¹⁴, r=8, p=1) stretches the password using the `shareSecret` as salt, producing key material that then feeds through the same HKDF pipeline. scrypt's memory-hard design makes GPU and ASIC attacks significantly more expensive than CPU-friendly KDFs. Without a password, the `shareSecret` already has full entropy, so only HKDF runs.
 
-**Encryption** uses **AES-256-GCM** — an authenticated encryption cipher. Every ciphertext includes an authentication tag, so if anyone tampers with the blob on the server, decryption fails rather than silently producing corrupted data. Each encryption operation uses a fresh random 12-byte nonce. Content and metadata are encrypted separately with their own nonces.
+**Encryption** uses **XChaCha20-Poly1305** — an authenticated encryption cipher with a 24-byte nonce. Compared to AES-GCM, the larger nonce space eliminates nonce-collision concerns entirely, even at scale. Every ciphertext includes a Poly1305 authentication tag, so if anyone tampers with the blob on the server, decryption fails rather than silently producing corrupted data. Content and metadata are encrypted separately with their own nonces, and each operation binds **authenticated additional data (AAD)** — the secret's public ID plus a purpose tag (`"meta"` or `"blob"`) — so ciphertexts cannot be swapped between secrets or across purposes.
 
 **Sharing** works through the URL fragment. The browser builds a link like `/s#<shareSecret>` — the `#` fragment is never sent to the server by browsers. This is the security boundary the whole model relies on. The recipient's browser extracts the `shareSecret` from the fragment, re-derives the same keys, fetches the encrypted blob using the public ID and retrieval token, and decrypts locally.
 
@@ -56,5 +56,5 @@ Secretli runs on a self-hosted [k3s cluster](/projects/k8s-cluster/) on Hetzner,
 ## Tech Stack
 
 - **Backend:** Go, Echo, PostgreSQL, S3-compatible storage (MinIO), Prometheus metrics
-- **Frontend:** React, TypeScript, Vite, Tailwind CSS, Web Crypto API
+- **Frontend:** React, TypeScript, Vite, Tailwind CSS, @noble/ciphers, @noble/hashes
 - **Infrastructure:** k3s, FluxCD, CloudNativePG, Envoy Gateway, cert-manager, Grafana Alloy
