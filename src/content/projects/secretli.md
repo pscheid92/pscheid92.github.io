@@ -41,7 +41,7 @@ The server only ever sees the public ID, retrieval token, and ciphertext. It can
 
 ## Architecture
 
-**Storage** is split by purpose: PostgreSQL holds metadata (public ID, retrieval token, encrypted metadata, expiration) while encrypted blobs go to S3-compatible storage (MinIO). This keeps the database lean and lets blob storage scale independently.
+**Storage** is split by purpose: PostgreSQL holds metadata (public ID, retrieval token, encrypted metadata, expiration) while encrypted blobs go to S3-compatible storage (SeaweedFS). This keeps the database lean and lets blob storage scale independently.
 
 **Cleanup** runs as a background worker on a one-minute interval. It selects expired and burned secrets using `FOR UPDATE SKIP LOCKED` to avoid contention, deletes the blob from S3 first, then removes the database row.
 
@@ -55,6 +55,6 @@ Secretli runs on a self-hosted [k3s cluster](/projects/k8s-cluster/) on Hetzner,
 
 ## Tech Stack
 
-- **Backend:** Go, Echo, PostgreSQL, S3-compatible storage (MinIO), Prometheus metrics
+- **Backend:** Go, Echo, PostgreSQL, S3-compatible storage (SeaweedFS), Prometheus metrics
 - **Frontend:** React, TypeScript, Vite, Tailwind CSS, @noble/ciphers, @noble/hashes
 - **Infrastructure:** k3s, FluxCD, CloudNativePG, Envoy Gateway, cert-manager, Grafana Alloy
