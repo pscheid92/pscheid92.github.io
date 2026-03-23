@@ -88,7 +88,7 @@ const {title, description, language, secondaryLanguage, github, liveUrl, kind, t
 <style>
     article {
         width: 100%;
-        max-width: 48rem;
+        max-width: 54rem;
         margin: 0 auto;
     }
 
@@ -263,6 +263,15 @@ const {title, description, language, secondaryLanguage, github, liveUrl, kind, t
 
     .back-link:hover {
         color: var(--color-accent);
+    }
+
+    /* Full-bleed code blocks: shrink-wrap to content, expand up to main's inner width */
+    @media (min-width: 720px) {
+        .prose :global(pre) {
+            width: fit-content;
+            min-width: 100%;
+            max-width: min(calc(80vw - 2rem), 62rem);
+        }
     }
 
     @media (max-width: 720px) {
