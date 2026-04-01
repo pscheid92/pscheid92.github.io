@@ -214,27 +214,6 @@ const {title, description, pubDate, updatedDate, heroImage, tags = [], headings 
         color: var(--color-accent);
     }
 
-    /* Full-bleed code blocks */
-
-    /* Single-column layout: shrink-wrap to content, expand up to main's inner width */
-    @media (min-width: 720px) and (max-width: 1100px) {
-        .prose :global(pre) {
-            width: fit-content;
-            min-width: 100%;
-            max-width: calc(80vw - 2rem);
-        }
-    }
-
-    /* Wide grid layout: extend left into the 1fr column, capped at 8rem */
-    @media (min-width: 1101px) {
-        .prose :global(pre) {
-            --bleed: min(8rem, calc((min(76rem, 80vw - 2rem) - 54rem) / 2));
-            margin-left: calc(-1 * var(--bleed));
-            width: calc(54rem + var(--bleed));
-            max-width: none;
-        }
-    }
-
     /* Responsive */
     @media (max-width: 1100px) {
         .article-body {

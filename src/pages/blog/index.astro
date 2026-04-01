@@ -37,7 +37,7 @@ function estimateReadTime(body: string): number {
             const readTime = estimateReadTime(post.body || '');
             const isFeatured = index === 0;
             return (
-                <article class:list={['post-card', { featured: isFeatured }]} data-tags={post.data.tags.join(',')}>
+                <article class:list={['post-card', { featured: isFeatured && post.data.heroImage }]} data-tags={post.data.tags.join(',')}>
                     <a href={`/blog/${post.id}/`} class="post-link">
                         {isFeatured && post.data.heroImage && (
                             <div class="post-image">
