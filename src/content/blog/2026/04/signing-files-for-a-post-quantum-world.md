@@ -1,47 +1,76 @@
 ---
 title: 'Signing Files for a Post-Quantum World'
 description: 'A look at the cryptographic design behind pqsign — a hybrid signature tool that pairs Ed25519 with ML-DSA-65 so your signatures survive both classical and quantum attackers.'
-pubDate: 'Apr 01 2026'
+pubDate: 'Apr 03 2026'
 tags: ['Cryptography', 'Rust', 'Security']
 heroImage: '../../../../assets/2026/04/signing-files-for-a-post-quantum-world-hero.png'
-draft: true
 ---
 
-Quantum computers don't break all of cryptography — just the parts we rely on most. RSA, ECDSA, Ed25519: all built on problems that a sufficiently powerful quantum machine solves in polynomial time via Shor's algorithm. Symmetric ciphers and hash functions survive with larger key sizes, but our digital signatures do not.
+# Signing Files for a Post-Quantum World
 
-NIST spent eight years running a competition to find replacements. In 2024 they finalized three standards, including **FIPS 204 (ML-DSA)** for digital signatures. The algorithms are ready — and the industry is moving: [Google is shipping hybrid ML-DSA signatures in Android 17](https://security.googleblog.com/2026/03/post-quantum-cryptography-in-android.html) across Verified Boot, Keystore, and app signing. The question is how to adopt them without betting everything on primitives that have existed for less than two years.
+## Post-Quantum Threats to Digital Signatures
 
-I built [pqsign](https://github.com/pscheid92/pqsign) to answer that question for file signing. This post walks through the cryptographic design: why hybrid signatures, how the nesting works, and what keeps the secret keys safe at rest.
+The good news is that quantum computers don’t break all cryptography. The bad news is that they break the parts we rely on most. All the famous asymmetric algorithms, like RSA, ECDSA, and Ed25519, depend on mathematical problems such as integer factorisation and discrete logarithm. These are all efficiently solved by a sufficiently powerful quantum computer via Shor’s algorithm. Symmetric cyphers and hash functions survive, as long as their key sizes are large enough, as Grover’s algorithm basically cuts the key size in half. For most people, this is a distant concern. But the “harvest now, decrypt later” threat is real. Adversaries just have to wait until the hardware catches up.
 
----
+Signal already updated its famous Double Ratchet algorithm to a quantum-resistant version in 2025. Google recently announced that it will ship hybrid quantum-resistant signatures in Android 17.
 
-## The Hybrid Bet
+The NIST (National Institute of Standards and Technology) anticipated this and spent eight years running public competitions to find replacement algorithms. In 2024, they finalised three post-quantum cryptography standards, and a fourth is on its way. Among them is FIPS 204 ML-DSA (formerly known as Dilithium), a digital signature algorithm based on modular lattice mathematics that resists classical and quantum-computer attacks.
 
-The safest migration strategy is to not migrate at all — at least not exclusively. A **hybrid signature** pairs a classical algorithm (Ed25519) with a post-quantum one (ML-DSA-65). Both must verify for a file to be accepted.
+With this in mind, I created pqsign to sign files in a post-quantum world.
 
-This gives you a simple security guarantee: **if either algorithm holds, the signature holds.** Ed25519 has decades of cryptanalysis behind it. ML-DSA-65 is built on the Module Learning With Errors problem, which has resisted attack since Regev introduced LWE in 2005. You'd need both to fall simultaneously to forge a pqsign signature.
+## Usage Overview
 
-### Why Ed25519?
+Before getting into the cryptography, here’s what pqsign actually looks like. Three commands cover the entire workflow.
 
-Ed25519 is the most widely deployed modern signature scheme. It's fast, has a small key/signature footprint (32-byte keys, 64-byte signatures), and has a clean, well-studied security proof. It's the obvious classical half.
+Generate a keypair:
 
-### Why ML-DSA-65?
+```
+~ ❯ pqsign generate
+Password:
+Confirm password:
+Generating key pair...
+Secret key: /Users/you/.pqsign/default.key
+Public key: /Users/you/.pqsign/default.key.pub
+Key ID:     D76D7D6E21F75E86
+```
 
-ML-DSA (formerly CRYSTALS-Dilithium) is the NIST primary standard for post-quantum signatures. Level 65 targets NIST Security Level 3 — roughly equivalent to AES-192.
+Sign a file:
 
-Why not Level 87 (the strongest)? Signatures grow from 3309 bytes to 4627 bytes — a 40% increase — for a security margin most threat models don't need. Level 3 already provides substantial resistance against both known classical and quantum attacks. For file signing, where signatures are stored alongside files rather than transmitted in tight protocol messages, 3309 bytes is comfortable.
+```
+~ ❯ pqsign sign somefile.txt
+Password:
+Signature:  somefile.txt.pqsig
+Secret key: /Users/you/.pqsign/default.key
+```
 
----
+Verify it:
 
-## The Signature Construction
+```
+~ ❯ pqsign verify somefile.txt
+Signature: OK
+Trusted comment: timestamp:1775165618 file:somefile.txt
+Public key: /Users/you/.pqsign/default.key.pub
+```
 
-![Nested signature construction](../../../../assets/2026/04/pqsign-signature-construction.svg)
+That’s it. Under the hood, pqsign generates a hybrid keypair that combines Ed25519 and ML-DSA-65, encrypts the secret key with your password, and produces nested signatures that bind the two algorithms together. The rest of this post explains what that means and why it matters.
 
-The naive approach to hybrid signatures is to sign the file independently with both algorithms and concatenate the results. This is fragile. An attacker who breaks one algorithm can replace that component while leaving the other intact. You'd still have "two valid signatures," but one of them is forged.
+## Hybrid Signature Design
 
-pqsign uses **nesting** instead. The ML-DSA-65 signature commits to the Ed25519 signature, creating an interdependency that prevents selective replacement.
+Since modular lattice-based post-quantum cryptography is not yet battle-tested, the safest way to adopt it is not to abandon classical cryptography yet. This mixed approach, usually called the hybrid approach, pairs a classical algorithm with a post-quantum one. The file is only accepted when both signatures verify. If either algorithm remains secure, the overall signature is secure.
 
-Here's the full construction:
+In pqsign, Ed25519 is the classic algorithm. It’s widely used, has been studied for decades, and is known for being fast and compact. Public keys are 32 bytes, and signatures are 64 bytes. Its security is well understood.
+
+The post-quantum signature algorithm we use is ML-DSA-65, which is based on the Module Learning with Errors (MLWE) problem, a mathematical method studied since 2005 and believed to resist classical and quantum threats. The “65” in its name refers to the parameter set targeting NIST Security Level 3, roughly equivalent to AES-192. There is a stronger option, ML-DSA-87 (targeting Security Level 5), but it bumps the already lengthy signatures from 3,309 bytes to 4,627 bytes. That's a 40% increase in signature size for a security margin beyond what most threat models require.
+
+## Nested Signature Construction
+
+We need both signatures to be inseparable. If one can be swapped out without invalidating the other, the hybrid guarantee falls apart. pqsign achieves this through nesting: the ML-DSA-65 signature covers both the file and the Ed25519 signature, creating an interdependency between the two layers.
+
+First, we create a file hash by using BLAKE2b-512, producing a fixed 64-byte digest regardless of file size. The file is streamed through BLAKE2b in chunks, so it never needs to be loaded into memory entirely. It’s also fast—about 106 ms for 100 MiB. The actual cryptographic signing after that takes under 0.5 ms. As for quantum-resistance of the hash, BLAKE2b-512 produces a 512-bit digest, which gives 256 bits of collision resistance classically. Grover’s algorithm halves that again to 128 bits in the quantum setting. Still firmly infeasible to brute-force.
+
+Then Ed25519 signs this hash along with a trusted comment, a small metadata field that records the timestamp, filename, and optionally a user-provided text. Finally, ML-DSA-65 signs the file hash and the Ed25519 signature together.
+
+![Diagram of the signature construction](../../../../assets/2026/04/signing-files-for-a-post-quantum-world-signature-construction.svg)
 
 ```
 1. file_hash   = BLAKE2b-512(file)
@@ -53,142 +82,52 @@ Here's the full construction:
    mldsa65_sig = ML-DSA-65.Sign(sk_ml, mldsa65_msg, ctx = "pqsign-mldsa65")
 ```
 
-The final signature file contains both `ed25519_sig` (64 bytes) and `mldsa65_sig` (3309 bytes), for a total of **3373 bytes**.
+Each algorithm uses its own signing domain to prevent cross-protocol attacks. Ed25519 prepends the literal string "pqsign-ed25519" to every message it signs. ML-DSA-65 uses the context string mechanism from FIPS 204, passing "pqsign-mldsa65". This means a signature created by pqsign can’t be reused in a different protocol that happens to use the same algorithms.
 
-### Why Nesting Works
+What happens if one of the algorithms breaks?
 
-![Independent vs nested signatures](../../../../assets/2026/04/pqsign-nesting-vs-independent.svg)
+**If Ed25519 breaks,** an attacker can forge a new ed25519_sig. But the ML-DSA-65 signature was computed over the original Ed25519 signature bytes. Without the ML-DSA-65 secret key, they can’t produce a matching outer signature. The forgery is caught.
 
-If an attacker breaks Ed25519 and forges a new `ed25519_sig`, they also need to update `mldsa65_sig` — because ML-DSA-65 signed the original Ed25519 signature bytes. Without the ML-DSA-65 secret key, they can't produce a matching outer signature.
+**If ML-DSA-65 breaks,** an attacker can forge a new mldsa65_sig. But the Ed25519 signature still binds the file hash and trusted comment to the Ed25519 key. The forged outer signature doesn’t help. It can’t change what the inner signature committed to.
 
-If an attacker breaks ML-DSA-65, they can forge `mldsa65_sig` — but the Ed25519 signature still binds the file hash and trusted comment to the Ed25519 key. The forged outer signature doesn't help them change what the inner signature committed to.
+Both layers have to fall for a forgery to succeed.
 
-Both layers have to fall for a forgery to succeed. Independent signatures can't make this guarantee.
+## Secret Key Protection at Rest
 
-### Domain Separation
+A signature scheme is only as strong as its secret key storage. If someone can steal the secret key off your disk, they can sign whatever they want. Thus, pqsign encrypts the secret key with a password-derived key. It uses Argon2id for key derivation from a user-provided password and XChaCha20-Poly1305 for authenticated encryption.
 
-Each algorithm signs within its own domain to prevent cross-protocol attacks:
+![Diagram of the secret key encryption](../../../../assets/2026/04/signing-files-for-a-post-quantum-world-secret-key-encryption.svg)
 
-- **Ed25519** prepends the literal string `"pqsign-ed25519"` to the message before signing. This ensures an Ed25519 signature produced for pqsign can't be replayed in a different protocol that also uses Ed25519.
-- **ML-DSA-65** uses the FIPS 204 context string mechanism with `"pqsign-mldsa65"`. This is a first-class feature of the standard — the context is mixed into the signing process, not just prepended.
+**Argon2id** won the Password Hashing Competition in 2015 and is standardised as RFC 9106. The “id” variant combines the side-channel resistance of Argon2i with the GPU resistance of Argon2d. pqsign uses 256 MiB of memory, 3 iterations, and 1 degree of parallelism.
 
-### File Prehashing: BLAKE2b-512
+A GPU can compute billions of SHA-256 hashes per second, but it can't run billions of 256 MiB allocations in parallel. An RTX 4090 with 24 GB of VRAM tops out at about 96 simultaneous Argon2id instances. That buys you time, but it doesn't fix weak passwords.
 
-Files are hashed before signing rather than fed directly to the signature algorithms. This serves two purposes:
+**XChaCha20-Poly1305** handles the actual encryption of the secret key. It's an authenticated cypher, meaning any tampering with the ciphertext or a wrong password is detected automatically. No separate integrity check is needed.
 
-1. **Streaming.** The file never needs to be loaded entirely into memory. BLAKE2b processes it in chunks, producing a fixed 64-byte digest regardless of file size.
-2. **Performance.** Hashing 100 MiB takes about 106 ms. The actual signing (Ed25519 + ML-DSA-65) takes under 0.5 ms. The hash dominates, and BLAKE2b is one of the fastest cryptographic hash functions in software — faster than SHA-512 on most platforms.
+Secret keys are zeroed in memory as soon as they go out of scope. This doesn't stop a determined attacker with direct memory access, but it shrinks the window during which secrets sit around in memory.
 
-What about quantum resistance of the hash? Grover's algorithm can search a hash space in O(2^(n/2)), reducing BLAKE2b-512's security from 256 bits to 128 bits in the quantum setting. That's still more than sufficient — brute-forcing 2^128 operations remains firmly infeasible.
+## Performance Characteristics
 
----
+Signing performance is dominated by Argon2id. It takes about 378 ms to derive the encryption key and decrypt the secret key from disk. For large files, BLAKE2b adds to that—roughly 106 ms for 100 MiB. The actual cryptographic signing, meaning Ed25519 and ML-DSA-65 together, takes under 0.5 ms. This is negligible in comparison.
 
-## Protecting Secret Keys at Rest
+Verification is a different story. It only needs the public key, so no password prompt, no Argon2id key derivation. This asymmetry is by design: you sign a file once, but potentially many people verify it. The expensive part happens once on the signer's side. The cheap part happens on every verifier's side.
 
-![Key encryption pipeline](../../../../assets/2026/04/pqsign-key-encryption.svg)
+## Deliberate Constraints
 
-A signature scheme is only as strong as its key management. pqsign encrypts secret keys with a password-derived key, using a two-layer construction: **Argon2id** for key derivation and **XChaCha20-Poly1305** for authenticated encryption.
+pqsign makes a few deliberate trade-offs worth explaining.
 
-### Argon2id: The Memory-Hard KDF
+**Fixed algorithms:**
+The algorithm pair is fixed: Ed25519 + ML-DSA-65. There is no negotiation, no configuration flag, no way to swap in a different algorithm at runtime. Algorithm negotiation is a well-known source of downgrade attacks. Every option you add is an option an attacker can exploit. If a different pair is needed in the future, it will be a new format version, not a runtime option.
 
-Argon2 won the Password Hashing Competition in 2015 and was standardized as RFC 9106. The `id` variant combines the side-channel resistance of Argon2i with the GPU resistance of Argon2d.
+**No streaming signatures:**
+The entire file must be hashed before signing begins. For most files, this is imperceptible. For multi-gigabyte files, you wait for the hash to complete. That's the trade-off for keeping the construction simple and memory usage constant.
 
-pqsign's parameters:
+## Conclusion
 
-| Parameter | Value |
-|-----------|-------|
-| Memory | 256 MiB |
-| Iterations | 3 |
-| Parallelism | 1 lane |
-| Salt | 16 bytes (random per key) |
-
-**Why 256 MiB?** Memory is the bottleneck. A GPU can compute billions of SHA-256 hashes per second, but it can't run billions of 256 MiB allocations in parallel. An RTX 4090 with 24 GB of VRAM can run about 96 Argon2id instances simultaneously — roughly the same throughput as 100 CPU cores. Memory-hardness turns a massively parallel device into a modestly parallel one.
-
-At these parameters, a single derivation takes about 378 ms on a modern CPU. That's roughly **2.6 attempts per second** per core. For context:
-
-| Password | Attempts | Time (1 core) |
-|----------|----------|---------------|
-| 4-digit PIN | 10,000 | 32 minutes |
-| 6-char lowercase | ~309 million | 3.8 years |
-| 8-char alphanumeric | ~218 trillion | 1.33 million years |
-| 4-word diceware | ~3.66 quadrillion | 22.3 million years |
-
-The lesson: Argon2id buys you time, but it doesn't fix weak passwords. Use a passphrase.
-
-### XChaCha20-Poly1305: The AEAD Cipher
-
-The derived 256-bit key encrypts the secret key material using XChaCha20-Poly1305, an authenticated encryption scheme. The `X` prefix means extended nonce — 24 bytes instead of the 12 bytes used by standard ChaCha20-Poly1305 or AES-GCM.
-
-Why does nonce size matter? With a 12-byte nonce and random generation, you hit a meaningful collision probability after about 2^32 encryptions under the same key. With 24 bytes, you'd need 2^48 — a non-issue for a key file that's encrypted once.
-
-The Poly1305 authenticator serves double duty: it detects both tampering (someone modifying the ciphertext) and wrong passwords (decryption with the wrong key produces garbage that fails authentication). There's no need for a separate integrity check.
-
-### What Gets Encrypted
-
-The encrypted payload contains:
+Post-quantum cryptography is not a problem for the future. The standards are finalised, the industry is already migrating, and the window to start is open. Hybrid signatures let you adopt new primitives without abandoning those that have proven themselves over decades. If either algorithm holds, you're safe.
 
 ```
- 32 bytes: Ed25519 secret key
-2544 bytes: ML-DSA-65 secret key
-   8 bytes: Key ID (for cross-referencing with public key)
-─────────
-2584 bytes total
+cargo install pqsign
 ```
 
-The salt and nonce are stored in the file header in plaintext — they don't need to be secret, only unique.
-
-### Memory Hygiene
-
-Secret keys implement `ZeroizeOnDrop`. When a `SecretKey` value goes out of scope, its memory is overwritten with zeros before being freed. The same applies to passwords (`Zeroizing<String>`) and any intermediate buffers holding decrypted material (`Zeroizing<Vec<u8>>`). This doesn't protect against a determined attacker with memory access, but it minimizes the window where secrets are resident.
-
----
-
-## The File Format
-
-All pqsign files — public keys, secret keys, and signatures — share a 14-byte binary header:
-
-```
-Offset  Size  Field
-0       4     Magic bytes: "PQSN"
-4       1     Format version (currently 1)
-5       1     File type (0x01 = public, 0x02 = secret, 0x03 = signature)
-6       8     Key ID
-```
-
-The **Key ID** is 8 random bytes generated alongside the keypair. It ties public keys, secret keys, and signatures together so you can detect mismatches before attempting cryptographic operations.
-
-Public keys are the only text-based format — base64-encoded with a `pqsign:v1:` prefix, producing a single line suitable for pasting into a config file or chat message. Secret keys and signatures are binary.
-
-Signatures include a **trusted comment** (up to 1024 bytes) that records the timestamp, filename, and an optional user-provided message. The trusted comment is covered by the Ed25519 signature — modifying it invalidates the signature.
-
----
-
-## Performance in Practice
-
-The performance profile has a clear shape: Argon2id dominates signing, and BLAKE2b dominates large-file hashing. The actual cryptographic signing and verification is negligible.
-
-| Operation | Empty file | 100 MiB file |
-|-----------|-----------|-------------|
-| Generate (with encryption) | ~379 ms | — |
-| Sign (with key decryption) | ~380 ms | ~486 ms |
-| Verify | < 1 ms | ~106 ms |
-
-Verification is fast because it only needs the public key — no password, no Argon2id. This matters for the common case: you sign once, but many people verify.
-
----
-
-## Trade-Offs and Limitations
-
-pqsign makes deliberate trade-offs worth acknowledging:
-
-- **No algorithm agility.** The algorithm pair is fixed at Ed25519 + ML-DSA-65. This is intentional — algorithm negotiation is a source of downgrade attacks. If a stronger pair is needed in the future, it would be a new format version.
-- **No streaming signatures.** The file must be fully hashed before signing. For most files this is fine; for multi-gigabyte files, you'll wait for the hash.
-- **BLAKE2b is not a post-quantum hash** in the strictest sense. But with 256 bits of post-quantum security (after Grover), it doesn't need to be.
-
----
-
-## Wrapping Up
-
-Post-quantum cryptography isn't a future problem — NIST finalized the standards, and the migration window is now. Hybrid signatures let you adopt the new primitives without abandoning the ones that have proven themselves over decades.
-
-If you want to try it: `cargo install pqsign`, generate a keypair, sign a file. The [source](https://github.com/pscheid92/pqsign) and [cryptography docs](https://github.com/pscheid92/pqsign/tree/main/docs) have the full details.
+The [source code](https://github.com/pscheid92/pqsign) and [cryptography documentation](https://github.com/pscheid92/pqsign/tree/main/docs) have the full details.
