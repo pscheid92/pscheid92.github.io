@@ -1,0 +1,320 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout
+    title="Severance Calculator - Patrick Scheid"
+    description="Calculate a severance package from factor, tenure, and gross monthly salary."
+    pageClass="page-severance"
+>
+    <section class="calculator-shell" aria-labelledby="calculator-title">
+        <div class="calculator-header">
+            <p class="eyebrow">Calculator</p>
+            <h1 id="calculator-title">Severance Package</h1>
+            <p class="formula">factor × tenure × gross monthly salary</p>
+        </div>
+
+        <form class="calculator-form" id="severance-form">
+            <div class="field-grid">
+                <label class="field" for="gross-salary">
+                    <span>Gross monthly salary</span>
+                    <input id="gross-salary" name="grossSalary" type="number" inputmode="decimal" min="0" step="100" value="5000"/>
+                </label>
+
+                <label class="field" for="factor">
+                    <span>Factor</span>
+                    <input id="factor" name="factor" type="number" inputmode="decimal" min="0" step="0.05" value="0.75"/>
+                </label>
+
+                <label class="field" for="start-date">
+                    <span>Start date</span>
+                    <input id="start-date" name="startDate" type="date" value="2024-01-01"/>
+                </label>
+
+                <label class="field" for="end-date">
+                    <span>End date</span>
+                    <input id="end-date" name="endDate" type="date" value="2026-03-26"/>
+                </label>
+            </div>
+        </form>
+
+        <div class="result-grid" aria-live="polite">
+            <div class="result-card">
+                <span class="result-label">Tenure</span>
+                <strong id="tenure-output">-</strong>
+                <span class="result-note" id="tenure-note">Enter a start date</span>
+            </div>
+
+            <div class="result-card">
+                <span class="result-label">Severance package</span>
+                <strong id="severance-output">-</strong>
+                <span class="result-note" id="severance-note">factor × tenure × salary</span>
+            </div>
+
+            <div class="result-card featured">
+                <span class="result-label">Early Sign Off</span>
+                <strong id="early-signoff-output">-</strong>
+                <span class="result-note">severance package + one gross monthly salary</span>
+                <span class="secondary-result">
+                    <span>Effective factor</span>
+                    <strong id="effective-factor-output">-</strong>
+                </span>
+            </div>
+        </div>
+
+        <p class="error-message" id="calculator-error" role="alert"></p>
+    </section>
+</Layout>
+
+<script>
+    const form = document.querySelector('#severance-form');
+    const salaryInput = document.querySelector('#gross-salary');
+    const factorInput = document.querySelector('#factor');
+    const startDateInput = document.querySelector('#start-date');
+    const endDateInput = document.querySelector('#end-date');
+    const tenureOutput = document.querySelector('#tenure-output');
+    const tenureNote = document.querySelector('#tenure-note');
+    const severanceOutput = document.querySelector('#severance-output');
+    const severanceNote = document.querySelector('#severance-note');
+    const earlySignoffOutput = document.querySelector('#early-signoff-output');
+    const effectiveFactorOutput = document.querySelector('#effective-factor-output');
+    const errorOutput = document.querySelector('#calculator-error');
+
+    const currencyFormatter = new Intl.NumberFormat('de-DE', {
+        style: 'currency',
+        currency: 'EUR',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    });
+
+    const decimalFormatter = new Intl.NumberFormat('de-DE', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    });
+
+    function parseDate(value) {
+        if (!value) {
+            return null;
+        }
+
+        const [year, month, day] = value.split('-').map(Number);
+        return new Date(Date.UTC(year, month - 1, day));
+    }
+
+    function calculateTenureYears(startDate, endDate) {
+        const millisecondsPerDay = 24 * 60 * 60 * 1000;
+        const days = (endDate.getTime() - startDate.getTime()) / millisecondsPerDay;
+        return days / 365.2425;
+    }
+
+    function parsePositiveNumber(value) {
+        const number = Number(value || 0);
+        return Number.isFinite(number) && number > 0 ? number : 0;
+    }
+
+    function setOutput(element, value) {
+        if (element) {
+            element.textContent = value;
+        }
+    }
+
+    function updateCalculator() {
+        const salary = parsePositiveNumber(salaryInput?.value);
+        const factor = parsePositiveNumber(factorInput?.value);
+        const startDate = parseDate(startDateInput?.value);
+        const endDate = parseDate(endDateInput?.value);
+
+        setOutput(errorOutput, '');
+
+        if (!startDate || !endDate) {
+            setOutput(tenureOutput, '-');
+            setOutput(tenureNote, 'Enter a start date');
+            setOutput(severanceOutput, '-');
+            setOutput(earlySignoffOutput, '-');
+            setOutput(effectiveFactorOutput, '-');
+            setOutput(severanceNote, 'factor × tenure × salary');
+            return;
+        }
+
+        if (endDate < startDate) {
+            setOutput(errorOutput, 'End date must be after start date.');
+            setOutput(tenureOutput, '-');
+            setOutput(tenureNote, 'Date range is invalid');
+            setOutput(severanceOutput, '-');
+            setOutput(earlySignoffOutput, '-');
+            setOutput(effectiveFactorOutput, '-');
+            return;
+        }
+
+        const tenureYears = calculateTenureYears(startDate, endDate);
+        const severance = factor * tenureYears * salary;
+        const earlySignoff = severance + salary;
+        const effectiveFactor = tenureYears > 0 ? factor + (1 / tenureYears) : null;
+
+        setOutput(tenureOutput, `${decimalFormatter.format(tenureYears)} years`);
+        setOutput(tenureNote, `${decimalFormatter.format(tenureYears * 12)} months`);
+        setOutput(severanceOutput, currencyFormatter.format(severance));
+        setOutput(earlySignoffOutput, currencyFormatter.format(earlySignoff));
+        setOutput(effectiveFactorOutput, effectiveFactor === null ? '-' : decimalFormatter.format(effectiveFactor));
+        setOutput(severanceNote, `${decimalFormatter.format(factor)} × ${decimalFormatter.format(tenureYears)} × ${currencyFormatter.format(salary)}`);
+    }
+
+    form?.addEventListener('input', updateCalculator);
+    form?.addEventListener('submit', (event) => event.preventDefault());
+    updateCalculator();
+</script>
+
+<style>
+    .calculator-shell {
+        display: grid;
+        gap: 1.75rem;
+        max-width: 48rem;
+        margin: 0 auto;
+    }
+
+    .calculator-header {
+        padding-top: 1rem;
+    }
+
+    .eyebrow {
+        margin: 0 0 0.35rem;
+        color: var(--color-accent);
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+    }
+
+    .calculator-header h1 {
+        margin-bottom: 0.4rem;
+    }
+
+    .formula {
+        margin: 0;
+        color: var(--color-text-muted);
+        font-size: 1.1rem;
+    }
+
+    .calculator-form {
+        background: var(--color-surface);
+        border: 1px solid var(--color-border);
+        border-radius: 8px;
+        padding: 1.25rem;
+    }
+
+    .field-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1rem;
+    }
+
+    .field {
+        display: grid;
+        gap: 0.4rem;
+        color: var(--color-text-heading);
+        font-weight: 600;
+    }
+
+    .field input {
+        width: 100%;
+        min-height: 2.75rem;
+        border: 1px solid var(--color-border);
+        border-radius: 6px;
+        padding: 0.6rem 0.7rem;
+        background: var(--color-bg);
+        color: var(--color-text);
+        font: 400 1rem/1.2 "Atkinson", sans-serif;
+        line-height: 1.2;
+    }
+
+    .field input:focus {
+        border-color: var(--color-accent);
+        outline: none;
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 18%, transparent);
+    }
+
+    .result-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 1rem;
+    }
+
+    .result-card {
+        display: grid;
+        align-content: start;
+        gap: 0.35rem;
+        min-height: 8.25rem;
+        border: 1px solid var(--color-border);
+        border-radius: 8px;
+        padding: 1rem;
+        background: var(--color-bg);
+        box-shadow: 0 2px 8px color-mix(in srgb, var(--color-shadow) 35%, transparent);
+    }
+
+    .result-card.featured {
+        border-color: color-mix(in srgb, var(--color-accent) 35%, var(--color-border));
+        background: color-mix(in srgb, var(--color-accent) 7%, var(--color-bg));
+    }
+
+    .result-label {
+        color: var(--color-text-muted);
+        font-size: 0.86rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+
+    .result-card strong {
+        color: var(--color-text-heading);
+        font-size: clamp(1.45rem, 1.2rem + 1vw, 2rem);
+        line-height: 1.15;
+        overflow-wrap: anywhere;
+    }
+
+    .result-note {
+        color: var(--color-text-muted);
+        font-size: 0.9rem;
+        line-height: 1.35;
+    }
+
+    .secondary-result {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 0.75rem;
+        margin-top: 0.4rem;
+        padding-top: 0.75rem;
+        border-top: 1px solid color-mix(in srgb, var(--color-accent) 25%, var(--color-border));
+        color: var(--color-text-muted);
+        font-size: 0.9rem;
+        font-weight: 400;
+    }
+
+    .secondary-result strong {
+        font-size: 1.15rem;
+        font-weight: 600;
+        line-height: 1;
+    }
+
+    .error-message {
+        min-height: 1.5rem;
+        margin: 0;
+        color: #b42318;
+        font-weight: 600;
+    }
+
+    [data-theme="dark"] .error-message {
+        color: #ff9b8f;
+    }
+
+    @media (max-width: 760px) {
+        .field-grid,
+        .result-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .result-card {
+            min-height: 7rem;
+        }
+    }
+</style>
