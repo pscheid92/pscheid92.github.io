@@ -1,0 +1,379 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout
+    title="BMI Calculator - Patrick Scheid"
+    description="Calculate your Body Mass Index with the standard formula and the Oxford (Trefethen) BMI."
+    pageClass="page-bmi"
+>
+    <section class="calculator-shell" aria-labelledby="calculator-title">
+        <div class="calculator-header">
+            <p class="eyebrow">Calculator</p>
+            <h1 id="calculator-title">Body Mass Index</h1>
+            <p class="formula">Standard &amp; Oxford (Trefethen) BMI</p>
+        </div>
+
+        <form class="calculator-form" id="bmi-form">
+            <div class="field-grid">
+                <label class="field" for="weight">
+                    <span>Weight</span>
+                    <span class="input-wrap" data-unit="kg">
+                        <input id="weight" name="weight" type="number" inputmode="decimal" min="0" step="0.5" value="75"/>
+                    </span>
+                </label>
+
+                <label class="field" for="height">
+                    <span>Height</span>
+                    <span class="input-wrap" data-unit="cm">
+                        <input id="height" name="height" type="number" inputmode="decimal" min="0" step="1" value="180"/>
+                    </span>
+                </label>
+            </div>
+        </form>
+
+        <div class="result-grid" aria-live="polite">
+            <div class="result-card" data-category="">
+                <span class="result-label">Standard BMI</span>
+                <strong id="standard-output">-</strong>
+                <span class="category-badge" id="standard-category">Enter your details</span>
+                <span class="result-note">weight ÷ height²</span>
+            </div>
+
+            <div class="result-card featured" data-category="">
+                <span class="result-label">Oxford BMI</span>
+                <strong id="oxford-output">-</strong>
+                <span class="category-badge" id="oxford-category">Enter your details</span>
+                <span class="result-note">1.3 × weight ÷ height<sup>2.5</sup></span>
+            </div>
+        </div>
+
+        <p class="error-message" id="calculator-error" role="alert"></p>
+
+        <div class="prose explainer">
+            <h2>How they differ</h2>
+            <p>
+                The <strong>standard BMI</strong> divides your weight by the square of your height. It dates
+                back to the 1830s and quietly assumes people scale in two dimensions — so it tends to flag tall
+                people as heavier and short people as lighter than they really are.
+            </p>
+            <p>
+                The <strong>Oxford BMI</strong> (the &ldquo;new BMI&rdquo;, proposed in 2013 by Lloyd N.
+                Trefethen, Professor of Numerical Analysis at the University of Oxford) raises height to the
+                power of 2.5 and rescales by 1.3, giving a fairer figure across the height range while keeping
+                the familiar category boundaries.
+            </p>
+            <p class="categories-line">
+                Categories (both formulas): under 18.5 underweight · 18.5–25 normal · 25–30 overweight ·
+                30 and above obese.
+            </p>
+        </div>
+    </section>
+</Layout>
+
+<script>
+    const form = document.querySelector('#bmi-form');
+    const weightInput = document.querySelector('#weight');
+    const heightInput = document.querySelector('#height');
+    const standardOutput = document.querySelector('#standard-output');
+    const oxfordOutput = document.querySelector('#oxford-output');
+    const standardCategory = document.querySelector('#standard-category');
+    const oxfordCategory = document.querySelector('#oxford-category');
+    const standardCard = standardOutput?.closest('.result-card');
+    const oxfordCard = oxfordOutput?.closest('.result-card');
+    const errorOutput = document.querySelector('#calculator-error');
+
+    const bmiFormatter = new Intl.NumberFormat('en-GB', {
+        minimumFractionDigits: 1,
+        maximumFractionDigits: 1,
+    });
+
+    function parsePositiveNumber(value) {
+        const number = Number(value || 0);
+        return Number.isFinite(number) && number > 0 ? number : 0;
+    }
+
+    function classifyBmi(bmi) {
+        if (bmi < 18.5) {
+            return {key: 'underweight', label: 'Underweight'};
+        }
+        if (bmi < 25) {
+            return {key: 'normal', label: 'Normal weight'};
+        }
+        if (bmi < 30) {
+            return {key: 'overweight', label: 'Overweight'};
+        }
+        return {key: 'obese', label: 'Obese'};
+    }
+
+    function setOutput(element, value) {
+        if (element) {
+            element.textContent = value;
+        }
+    }
+
+    function applyResult(card, valueEl, categoryEl, bmi) {
+        if (bmi === null) {
+            setOutput(valueEl, '-');
+            setOutput(categoryEl, 'Enter your details');
+            card?.setAttribute('data-category', '');
+            return;
+        }
+
+        const category = classifyBmi(bmi);
+        setOutput(valueEl, `${bmiFormatter.format(bmi)}`);
+        setOutput(categoryEl, category.label);
+        card?.setAttribute('data-category', category.key);
+    }
+
+    function updateCalculator() {
+        const weight = parsePositiveNumber(weightInput?.value);
+        const heightCm = parsePositiveNumber(heightInput?.value);
+
+        setOutput(errorOutput, '');
+
+        if (weight === 0 || heightCm === 0) {
+            applyResult(standardCard, standardOutput, standardCategory, null);
+            applyResult(oxfordCard, oxfordOutput, oxfordCategory, null);
+            return;
+        }
+
+        const heightM = heightCm / 100;
+        const standardBmi = weight / (heightM ** 2);
+        const oxfordBmi = 1.3 * weight / (heightM ** 2.5);
+
+        applyResult(standardCard, standardOutput, standardCategory, standardBmi);
+        applyResult(oxfordCard, oxfordOutput, oxfordCategory, oxfordBmi);
+    }
+
+    form?.addEventListener('input', updateCalculator);
+    form?.addEventListener('submit', (event) => event.preventDefault());
+    updateCalculator();
+</script>
+
+<style>
+    :global(body.page-bmi main) {
+        width: 100%;
+        max-width: 48rem;
+    }
+
+    .calculator-shell {
+        display: grid;
+        gap: 1.75rem;
+        max-width: 48rem;
+        margin: 0 auto;
+    }
+
+    .calculator-header {
+        padding-top: 1rem;
+    }
+
+    .eyebrow {
+        margin: 0 0 0.35rem;
+        color: var(--color-accent);
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+    }
+
+    .calculator-header h1 {
+        margin-bottom: 0.4rem;
+    }
+
+    .formula {
+        margin: 0;
+        color: var(--color-text-muted);
+        font-size: 1.1rem;
+    }
+
+    .calculator-form {
+        background: var(--color-surface);
+        border: 1px solid var(--color-border);
+        border-radius: 8px;
+        padding: 1.25rem;
+    }
+
+    .field-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1rem;
+    }
+
+    .field {
+        display: grid;
+        gap: 0.4rem;
+        color: var(--color-text-heading);
+        font-weight: 600;
+    }
+
+    .input-wrap {
+        position: relative;
+        display: block;
+    }
+
+    .input-wrap::after {
+        content: attr(data-unit);
+        position: absolute;
+        top: 50%;
+        right: 0.85rem;
+        transform: translateY(-50%);
+        color: var(--color-text-muted);
+        font-size: 0.95rem;
+        font-weight: 600;
+        pointer-events: none;
+    }
+
+    .field input {
+        width: 100%;
+        min-height: 2.75rem;
+        border: 1px solid var(--color-border);
+        border-radius: 6px;
+        padding: 0.6rem 2.75rem 0.6rem 0.7rem;
+        background: var(--color-bg);
+        color: var(--color-text);
+        font: 400 1rem/1.2 "Atkinson", sans-serif;
+        line-height: 1.2;
+    }
+
+    .field input:focus {
+        border-color: var(--color-accent);
+        outline: none;
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 18%, transparent);
+    }
+
+    .result-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1rem;
+    }
+
+    .result-card {
+        display: grid;
+        align-content: start;
+        gap: 0.5rem;
+        min-height: 9rem;
+        border: 1px solid var(--color-border);
+        border-radius: 8px;
+        padding: 1.1rem;
+        background: var(--color-bg);
+        box-shadow: 0 2px 8px color-mix(in srgb, var(--color-shadow) 35%, transparent);
+    }
+
+    .result-card.featured {
+        border-color: color-mix(in srgb, var(--color-accent) 35%, var(--color-border));
+        background: color-mix(in srgb, var(--color-accent) 7%, var(--color-bg));
+    }
+
+    .result-label {
+        color: var(--color-text-muted);
+        font-size: 0.86rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+
+    .result-card strong {
+        color: var(--color-text-heading);
+        font-size: clamp(1.9rem, 1.5rem + 1.6vw, 2.6rem);
+        line-height: 1.1;
+        overflow-wrap: anywhere;
+    }
+
+    .category-badge {
+        justify-self: start;
+        border-radius: 999px;
+        padding: 0.18rem 0.7rem;
+        font-size: 0.82rem;
+        font-weight: 700;
+        line-height: 1.4;
+        background: var(--color-surface);
+        color: var(--color-text-muted);
+        border: 1px solid var(--color-border);
+    }
+
+    .result-card[data-category="underweight"] .category-badge {
+        background: color-mix(in srgb, #2f80ed 16%, var(--color-bg));
+        color: #1c5fc0;
+        border-color: color-mix(in srgb, #2f80ed 35%, transparent);
+    }
+
+    .result-card[data-category="normal"] .category-badge {
+        background: color-mix(in srgb, #27ae60 16%, var(--color-bg));
+        color: #1c8049;
+        border-color: color-mix(in srgb, #27ae60 35%, transparent);
+    }
+
+    .result-card[data-category="overweight"] .category-badge {
+        background: color-mix(in srgb, #e2a400 18%, var(--color-bg));
+        color: #9a6f00;
+        border-color: color-mix(in srgb, #e2a400 38%, transparent);
+    }
+
+    .result-card[data-category="obese"] .category-badge {
+        background: color-mix(in srgb, #eb5757 16%, var(--color-bg));
+        color: #c0392b;
+        border-color: color-mix(in srgb, #eb5757 35%, transparent);
+    }
+
+    [data-theme="dark"] .result-card[data-category="underweight"] .category-badge {
+        color: #8ab6ff;
+    }
+
+    [data-theme="dark"] .result-card[data-category="normal"] .category-badge {
+        color: #7fe0a5;
+    }
+
+    [data-theme="dark"] .result-card[data-category="overweight"] .category-badge {
+        color: #f3cd6b;
+    }
+
+    [data-theme="dark"] .result-card[data-category="obese"] .category-badge {
+        color: #ff9b8f;
+    }
+
+    .result-note {
+        color: var(--color-text-muted);
+        font-size: 0.9rem;
+        line-height: 1.35;
+    }
+
+    .error-message {
+        min-height: 1.5rem;
+        margin: 0;
+        color: #b42318;
+        font-weight: 600;
+    }
+
+    [data-theme="dark"] .error-message {
+        color: #ff9b8f;
+    }
+
+    .explainer {
+        border-top: 1px solid var(--color-border);
+        padding-top: 1.5rem;
+        font-size: 0.98rem;
+    }
+
+    .explainer h2 {
+        font-size: 1.3rem;
+        margin-bottom: 0.6rem;
+    }
+
+    .explainer p {
+        margin-bottom: 1rem;
+        color: var(--color-text);
+    }
+
+    .categories-line {
+        color: var(--color-text-muted) !important;
+        font-size: 0.92rem;
+    }
+
+    @media (max-width: 620px) {
+        .field-grid,
+        .result-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
