@@ -43,7 +43,7 @@ import Layout from '../layouts/Layout.astro';
 
         <p class="note">
             Call 112 (Europe) or 911 (US) first. Push at least 5&nbsp;cm deep in the centre of the
-            chest and don't stop. Not a substitute for CPR training.
+            chest and don't stop. Works offline once loaded. Not a substitute for CPR training.
         </p>
     </section>
 </Layout>
@@ -185,9 +185,14 @@ import Layout from '../layouts/Layout.astro';
             audioContext = new (window.AudioContext || window.webkitAudioContext)();
         }
         try {
-            await audioContext.resume();
+            // resume() can hang if the browser withholds audio permission —
+            // never let that block the UI; audio joins once it settles.
+            await Promise.race([
+                audioContext.resume(),
+                new Promise((resolve) => setTimeout(resolve, 1000)),
+            ]);
         } catch {
-            // keep going — the visual pulse still works without audio
+            // keep going — the metronome UI still works without audio
         }
         masterGain = audioContext.createGain();
         masterGain.connect(audioContext.destination);
@@ -263,6 +268,15 @@ import Layout from '../layouts/Layout.astro';
             setOutput(totalOutput, String(totalBeats));
         }
     });
+
+    // Cache the page for offline use — dev builds skip this so Vite modules stay fresh.
+    if (import.meta.env.PROD && 'serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/cpr-sw.js', {scope: '/cpr'}).catch(() => {});
+            // ask the browser not to evict the offline cache under storage pressure
+            navigator.storage?.persist?.().catch(() => {});
+        });
+    }
 </script>
 
 <style>
