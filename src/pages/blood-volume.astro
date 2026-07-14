@@ -1,0 +1,969 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout
+    title="Blood Volume Calculator - Patrick Scheid"
+    description="Estimate total blood volume with the Nadler, Lemmens and Gilcher formulas side by side, plus the ATLS haemorrhagic shock classes."
+    pageClass="page-blood-volume"
+>
+    <section class="calculator-shell" aria-labelledby="calculator-title">
+        <div class="calculator-header">
+            <p class="eyebrow">Calculator</p>
+            <h1 id="calculator-title">Blood Volume</h1>
+            <p class="formula">Nadler, Lemmens &amp; Gilcher — shown side by side</p>
+        </div>
+
+        <form class="calculator-form" id="bv-form">
+            <div class="mode-switch" role="radiogroup" aria-label="Patient group">
+                <label class="mode-option">
+                    <input type="radio" name="mode" value="adult" checked/>
+                    <span>Adult</span>
+                </label>
+                <label class="mode-option">
+                    <input type="radio" name="mode" value="child"/>
+                    <span>Child</span>
+                </label>
+            </div>
+
+            <div class="field-grid" id="adult-fields">
+                <label class="field" for="sex">
+                    <span>Sex</span>
+                    <span class="select-wrap">
+                        <select id="sex" name="sex">
+                            <option value="male" selected>Male</option>
+                            <option value="female">Female</option>
+                        </select>
+                    </span>
+                </label>
+
+                <label class="field" for="build">
+                    <span>Build <em>(Gilcher only)</em></span>
+                    <span class="select-wrap">
+                        <select id="build" name="build">
+                            <option value="muscular">Muscular</option>
+                            <option value="normal" selected>Normal</option>
+                            <option value="thin">Thin</option>
+                            <option value="obese">Obese</option>
+                        </select>
+                    </span>
+                </label>
+
+                <label class="field" for="height">
+                    <span>Height</span>
+                    <span class="input-wrap" data-unit="cm">
+                        <input id="height" name="height" type="number" inputmode="decimal" min="0" step="1" value="180"/>
+                    </span>
+                </label>
+
+                <label class="field" for="weight">
+                    <span>Weight</span>
+                    <span class="input-wrap" data-unit="kg">
+                        <input id="weight" name="weight" type="number" inputmode="decimal" min="0" step="0.5" value="75"/>
+                    </span>
+                </label>
+            </div>
+
+            <div class="field-grid" id="child-fields" hidden>
+                <label class="field" for="age-group">
+                    <span>Age group</span>
+                    <span class="select-wrap">
+                        <select id="age-group" name="age-group">
+                            <option value="premature">Premature neonate</option>
+                            <option value="newborn">Term newborn</option>
+                            <option value="infant" selected>Infant (1–12 months)</option>
+                            <option value="child">Child (1–12 years)</option>
+                            <option value="adolescent">Adolescent (13–17 years)</option>
+                        </select>
+                    </span>
+                </label>
+
+                <label class="field" for="child-weight">
+                    <span>Weight</span>
+                    <span class="input-wrap" data-unit="kg">
+                        <input id="child-weight" name="child-weight" type="number" inputmode="decimal" min="0" step="0.1" value="8"/>
+                    </span>
+                </label>
+            </div>
+        </form>
+
+        <div id="adult-results" aria-live="polite">
+            <div class="result-grid">
+                <div class="result-card" id="card-nadler">
+                    <span class="result-label">Nadler</span>
+                    <strong id="nadler-output">-</strong>
+                    <span class="ml-output" id="nadler-ml"></span>
+                    <span class="validity-badge" id="nadler-badge"></span>
+                    <span class="result-note">height³ &amp; weight, sex-specific</span>
+                    <span class="atls-flag" data-flag="nadler" hidden>↓ Most cautious — used below</span>
+                </div>
+
+                <div class="result-card" id="card-lemmens">
+                    <span class="result-label">Lemmens</span>
+                    <strong id="lemmens-output">-</strong>
+                    <span class="ml-output" id="lemmens-ml"></span>
+                    <span class="validity-badge" id="lemmens-badge"></span>
+                    <span class="result-note">70 × weight ÷ √(BMI ÷ 22)</span>
+                    <span class="atls-flag" data-flag="lemmens" hidden>↓ Most cautious — used below</span>
+                </div>
+
+                <div class="result-card" id="card-gilcher">
+                    <span class="result-label">Gilcher</span>
+                    <strong id="gilcher-output">-</strong>
+                    <span class="ml-output" id="gilcher-ml"></span>
+                    <span class="validity-badge" id="gilcher-badge"></span>
+                    <span class="result-note" id="gilcher-note">mL/kg by build</span>
+                    <span class="build-hint" id="gilcher-hint" hidden></span>
+                    <span class="atls-flag" data-flag="gilcher" hidden>↓ Most cautious — used below</span>
+                </div>
+            </div>
+
+            <p class="spread-line" id="spread-line"></p>
+        </div>
+
+        <div id="child-results" aria-live="polite" hidden>
+            <div class="result-grid single">
+                <div class="result-card featured">
+                    <span class="result-label" id="child-label">Weight-based estimate</span>
+                    <strong id="child-output">-</strong>
+                    <span class="ml-output" id="child-ml"></span>
+                    <span class="validity-badge neutral" id="child-badge"></span>
+                    <span class="result-note">
+                        Ranges, because sources disagree on paediatric mL/kg. Nadler and Lemmens are adult-only.
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <p class="error-message" id="calculator-error" role="alert"></p>
+
+        <section class="atls" id="atls-section" aria-labelledby="atls-title">
+            <h2 id="atls-title">ATLS haemorrhagic shock classes</h2>
+
+            <div class="atls-bar" role="img" aria-labelledby="atls-title" id="atls-bar">
+                <div class="atls-segment" data-class="i"></div>
+                <div class="atls-segment" data-class="ii"></div>
+                <div class="atls-segment" data-class="iii"></div>
+                <div class="atls-segment" data-class="iv"></div>
+            </div>
+            <div class="atls-scale" aria-hidden="true">
+                <span>0%</span><span>15%</span><span>30%</span><span>40%</span><span>50%+</span>
+            </div>
+
+            <div class="atls-legend">
+                <div class="atls-item" data-class="i">
+                    <span class="atls-name">Class I</span>
+                    <span class="atls-pct">&lt; 15% loss</span>
+                    <strong class="atls-volume" id="atls-i">-</strong>
+                    <span class="atls-signs">Compensated; vitals near normal.</span>
+                </div>
+                <div class="atls-item" data-class="ii">
+                    <span class="atls-name">Class II</span>
+                    <span class="atls-pct">15–30% loss</span>
+                    <strong class="atls-volume" id="atls-ii">-</strong>
+                    <span class="atls-signs">Tachycardia, narrowed pulse pressure.</span>
+                </div>
+                <div class="atls-item" data-class="iii">
+                    <span class="atls-name">Class III</span>
+                    <span class="atls-pct">31–40% loss</span>
+                    <strong class="atls-volume" id="atls-iii">-</strong>
+                    <span class="atls-signs">Blood pressure falling, urine output down.</span>
+                </div>
+                <div class="atls-item" data-class="iv">
+                    <span class="atls-name">Class IV</span>
+                    <span class="atls-pct">&gt; 40% loss</span>
+                    <strong class="atls-volume" id="atls-iv">-</strong>
+                    <span class="atls-signs">Marked hypotension; life-threatening.</span>
+                </div>
+            </div>
+
+            <p class="atls-caption" id="atls-caption"></p>
+            <p class="atls-caption" id="atls-child-note" hidden>
+                Defined for adults — children compensate longer, then decompensate abruptly.
+            </p>
+
+            <p class="atls-caveat">
+                <strong>Weakly validated:</strong> in the German trauma registry, fewer than 1 in 10 patients
+                could be classified at all. A teaching frame, not a lookup table.
+            </p>
+        </section>
+
+        <p class="disclaimer">
+            <strong>Not a medical device.</strong> Population estimates — not for clinical decisions.
+        </p>
+    </section>
+</Layout>
+
+<script>
+    const form = document.querySelector('#bv-form');
+    const errorOutput = document.querySelector('#calculator-error');
+
+    const adultFields = document.querySelector('#adult-fields');
+    const childFields = document.querySelector('#child-fields');
+    const adultResults = document.querySelector('#adult-results');
+    const childResults = document.querySelector('#child-results');
+
+    const sexInput = document.querySelector('#sex');
+    const buildInput = document.querySelector('#build');
+    const heightInput = document.querySelector('#height');
+    const weightInput = document.querySelector('#weight');
+    const ageGroupInput = document.querySelector('#age-group');
+    const childWeightInput = document.querySelector('#child-weight');
+
+    const atlsSection = document.querySelector('#atls-section');
+    const atlsBar = document.querySelector('#atls-bar');
+    const atlsLegend = document.querySelector('.atls-legend');
+    const atlsScale = document.querySelector('.atls-scale');
+    const atlsCaption = document.querySelector('#atls-caption');
+    const atlsChildNote = document.querySelector('#atls-child-note');
+
+    const litres = new Intl.NumberFormat('en-GB', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    });
+    const millilitres = new Intl.NumberFormat('en-GB', {maximumFractionDigits: 0});
+    const bmiFormatter = new Intl.NumberFormat('en-GB', {
+        minimumFractionDigits: 1,
+        maximumFractionDigits: 1,
+    });
+
+    // Gilcher's rule of fives, mL/kg. Axis is body build, not BMI — there is no "overweight" rung.
+    const GILCHER = {
+        male: {muscular: 75, normal: 70, thin: 65, obese: 60},
+        female: {muscular: 70, normal: 65, thin: 60, obese: 55},
+    };
+
+    // Published paediatric mL/kg values differ between sources, so each group carries a range.
+    const PAEDIATRIC = {
+        premature: {label: 'Premature neonate', low: 89, high: 105},
+        newborn: {label: 'Term newborn', low: 82, high: 86},
+        infant: {label: 'Infant (1–12 months)', low: 75, high: 80},
+        child: {label: 'Child (1–12 years)', low: 70, high: 75},
+        adolescent: {label: 'Adolescent (13–17 years)', low: 65, high: 70},
+    };
+
+    function parsePositiveNumber(value) {
+        const number = Number(value || 0);
+        return Number.isFinite(number) && number > 0 ? number : 0;
+    }
+
+    function nadlerMl(sex, heightM, weightKg) {
+        const litresValue = sex === 'female'
+            ? 0.3561 * heightM ** 3 + 0.03308 * weightKg + 0.1833
+            : 0.3669 * heightM ** 3 + 0.03219 * weightKg + 0.6041;
+        return litresValue * 1000;
+    }
+
+    function lemmensMl(bmi, weightKg) {
+        return (70 * weightKg) / Math.sqrt(bmi / 22);
+    }
+
+    function gilcherMl(sex, build, weightKg) {
+        return GILCHER[sex][build] * weightKg;
+    }
+
+    function setText(element, value) {
+        if (element) {
+            element.textContent = value;
+        }
+    }
+
+    function setBadge(element, text, tone) {
+        if (!element) return;
+        element.textContent = text;
+        element.className = text ? `validity-badge ${tone}` : 'validity-badge';
+    }
+
+    function renderEstimate(valueEl, mlEl, ml) {
+        if (ml === null) {
+            setText(valueEl, '-');
+            setText(mlEl, '');
+            return;
+        }
+        setText(valueEl, `${litres.format(ml / 1000)} L`);
+        setText(mlEl, `${millilitres.format(ml)} mL`);
+    }
+
+    function clearAdult() {
+        renderEstimate(document.querySelector('#nadler-output'), document.querySelector('#nadler-ml'), null);
+        renderEstimate(document.querySelector('#lemmens-output'), document.querySelector('#lemmens-ml'), null);
+        renderEstimate(document.querySelector('#gilcher-output'), document.querySelector('#gilcher-ml'), null);
+        setBadge(document.querySelector('#nadler-badge'), '', '');
+        setBadge(document.querySelector('#lemmens-badge'), '', '');
+        setBadge(document.querySelector('#gilcher-badge'), '', '');
+        setText(document.querySelector('#spread-line'), '');
+        markAtlsReference(null);
+        clearAtls();
+    }
+
+    function clearAtls() {
+        ['i', 'ii', 'iii', 'iv'].forEach((key) => setText(document.querySelector(`#atls-${key}`), '-'));
+        setText(atlsCaption, 'Enter your details to see the thresholds.');
+    }
+
+    /*
+     * The reference volume is the LOWEST of the three estimates, not the median.
+     * Every threshold here is a percentage of total blood volume, so overestimating
+     * the volume raises the thresholds and makes a given loss look milder than it
+     * really is — under-triage, the dangerous direction. Underestimating errs toward
+     * escalating sooner. The two failure modes are not symmetric, so this does not
+     * take the "best guess".
+     */
+    function renderAtls(reference, highest) {
+        const referenceMl = reference.ml;
+        const c15 = referenceMl * 0.15;
+        const c30 = referenceMl * 0.30;
+        const c40 = referenceMl * 0.40;
+
+        setText(document.querySelector('#atls-i'), `up to ${millilitres.format(c15)} mL`);
+        setText(document.querySelector('#atls-ii'), `${millilitres.format(c15)} – ${millilitres.format(c30)} mL`);
+        setText(document.querySelector('#atls-iii'), `${millilitres.format(c30)} – ${millilitres.format(c40)} mL`);
+        setText(document.querySelector('#atls-iv'), `over ${millilitres.format(c40)} mL`);
+
+        const shift = (highest.ml - referenceMl) * 0.30;
+        setText(
+            atlsCaption,
+            `Based on ${reference.name} (${litres.format(referenceMl / 1000)} L), the lowest of the three — `
+            + `overestimating volume would understate severity. `
+            + `${highest.name} would shift these by +${millilitres.format(shift)} mL.`,
+        );
+    }
+
+    function markAtlsReference(key) {
+        document.querySelectorAll('.atls-flag').forEach((flag) => {
+            flag.hidden = flag.dataset.flag !== key;
+        });
+        ['nadler', 'lemmens', 'gilcher'].forEach((name) => {
+            document.querySelector(`#card-${name}`)
+                ?.toggleAttribute('data-atls-reference', name === key);
+        });
+    }
+
+    function updateAdult() {
+        const sex = sexInput?.value === 'female' ? 'female' : 'male';
+        const build = buildInput?.value ?? 'normal';
+        const heightCm = parsePositiveNumber(heightInput?.value);
+        const weightKg = parsePositiveNumber(weightInput?.value);
+
+        if (heightCm === 0 || weightKg === 0) {
+            clearAdult();
+            return;
+        }
+
+        const heightM = heightCm / 100;
+        const bmi = weightKg / heightM ** 2;
+
+        const nadler = nadlerMl(sex, heightM, weightKg);
+        const lemmens = lemmensMl(bmi, weightKg);
+        const gilcher = gilcherMl(sex, build, weightKg);
+
+        renderEstimate(document.querySelector('#nadler-output'), document.querySelector('#nadler-ml'), nadler);
+        renderEstimate(document.querySelector('#lemmens-output'), document.querySelector('#lemmens-ml'), lemmens);
+        renderEstimate(document.querySelector('#gilcher-output'), document.querySelector('#gilcher-ml'), gilcher);
+
+        setBadge(
+            document.querySelector('#nadler-badge'),
+            bmi >= 30 ? 'Drifts high at BMI ≥ 30' : 'Sex-specific · uses height',
+            bmi >= 30 ? 'warn' : 'neutral',
+        );
+        setBadge(
+            document.querySelector('#lemmens-badge'),
+            bmi >= 40 ? 'Overshoots at BMI ≥ 40' : `Sex-neutral · BMI ${bmiFormatter.format(bmi)}`,
+            bmi >= 40 ? 'warn' : 'neutral',
+        );
+        setBadge(
+            document.querySelector('#gilcher-badge'),
+            `${GILCHER[sex][build]} mL/kg`,
+            'neutral',
+        );
+        setText(
+            document.querySelector('#gilcher-note'),
+            `${build} build, ${sex} — ${GILCHER[sex][build]} mL/kg × weight`,
+        );
+
+        // Build is a judgement call, not a BMI bucket — but leaving it on "normal" for someone
+        // who is plainly obese inflates Gilcher and makes the spread below look like formula
+        // disagreement when it is really a mis-set input. Nudge, don't override.
+        const hint = document.querySelector('#gilcher-hint');
+        let hintText = '';
+        if (bmi >= 30 && build !== 'obese') {
+            hintText = `BMI ${bmiFormatter.format(bmi)} — try the obese rung (${GILCHER[sex].obese} mL/kg).`;
+        } else if (bmi < 18.5 && build !== 'thin') {
+            hintText = `BMI ${bmiFormatter.format(bmi)} — try the thin rung (${GILCHER[sex].thin} mL/kg).`;
+        }
+        setText(hint, hintText);
+        hint.hidden = hintText === '';
+
+        const estimates = [
+            {key: 'nadler', name: 'Nadler', ml: nadler},
+            {key: 'lemmens', name: 'Lemmens', ml: lemmens},
+            {key: 'gilcher', name: 'Gilcher', ml: gilcher},
+        ].sort((a, b) => a.ml - b.ml);
+        const lowest = estimates[0];
+        const highest = estimates[2];
+        const spread = highest.ml - lowest.ml;
+
+        // Whichever estimate the ATLS bands rest on is called out on its own card. The marker
+        // says "most cautious", never "most accurate" — the page deliberately does not rank them.
+        markAtlsReference(lowest.key);
+
+        setText(
+            document.querySelector('#spread-line'),
+            `${litres.format(lowest.ml / 1000)} – ${litres.format(highest.ml / 1000)} L across the three formulas `
+            + `— a ${millilitres.format(spread)} mL spread for the same person.`,
+        );
+
+        renderAtls(lowest, highest);
+    }
+
+    function updateChild() {
+        const group = PAEDIATRIC[ageGroupInput?.value] ?? PAEDIATRIC.infant;
+        const weightKg = parsePositiveNumber(childWeightInput?.value);
+
+        const outputEl = document.querySelector('#child-output');
+        const mlEl = document.querySelector('#child-ml');
+
+        setText(document.querySelector('#child-label'), group.label);
+        setBadge(document.querySelector('#child-badge'), `${group.low}–${group.high} mL/kg`, 'neutral');
+
+        if (weightKg === 0) {
+            setText(outputEl, '-');
+            setText(mlEl, '');
+            return;
+        }
+
+        const low = group.low * weightKg;
+        const high = group.high * weightKg;
+
+        // Paediatric volumes are small enough that mL is the readable unit, so it leads here.
+        setText(outputEl, `${millilitres.format(low)} – ${millilitres.format(high)} mL`);
+        setText(mlEl, `${litres.format(low / 1000)} – ${litres.format(high / 1000)} L`);
+    }
+
+    function currentMode() {
+        const checked = form?.querySelector('input[name="mode"]:checked');
+        return checked?.value === 'child' ? 'child' : 'adult';
+    }
+
+    function updateCalculator() {
+        const mode = currentMode();
+        const isChild = mode === 'child';
+
+        setText(errorOutput, '');
+
+        adultFields.hidden = isChild;
+        childFields.hidden = !isChild;
+        adultResults.hidden = isChild;
+        childResults.hidden = !isChild;
+
+        // The adult ATLS bands do not transfer to children, so hide them rather than mislead.
+        atlsBar.hidden = isChild;
+        atlsLegend.hidden = isChild;
+        atlsScale.hidden = isChild;
+        atlsCaption.hidden = isChild;
+        atlsChildNote.hidden = !isChild;
+
+        if (isChild) {
+            updateChild();
+        } else {
+            updateAdult();
+        }
+    }
+
+    form?.addEventListener('input', updateCalculator);
+    form?.addEventListener('change', updateCalculator);
+    form?.addEventListener('submit', (event) => event.preventDefault());
+    updateCalculator();
+</script>
+
+<style>
+    :global(body.page-blood-volume main) {
+        width: 100%;
+        max-width: 54rem;
+    }
+
+    .calculator-shell {
+        display: grid;
+        gap: 1.75rem;
+        max-width: 54rem;
+        margin: 0 auto;
+    }
+
+    [hidden] {
+        display: none !important;
+    }
+
+    .calculator-header {
+        padding-top: 1rem;
+    }
+
+    .eyebrow {
+        margin: 0 0 0.35rem;
+        color: var(--color-accent);
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+    }
+
+    .calculator-header h1 {
+        margin-bottom: 0.4rem;
+    }
+
+    .formula {
+        margin: 0;
+        color: var(--color-text-muted);
+        font-size: 1.1rem;
+    }
+
+    .calculator-form {
+        display: grid;
+        gap: 1.25rem;
+        background: var(--color-surface);
+        border: 1px solid var(--color-border);
+        border-radius: 8px;
+        padding: 1.25rem;
+    }
+
+    .mode-switch {
+        display: inline-flex;
+        gap: 0.25rem;
+        justify-self: start;
+        padding: 0.25rem;
+        border: 1px solid var(--color-border);
+        border-radius: 999px;
+        background: var(--color-bg);
+    }
+
+    .mode-option input {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .mode-option span {
+        display: block;
+        border-radius: 999px;
+        padding: 0.4rem 1.15rem;
+        color: var(--color-text-muted);
+        font-size: 0.92rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.15s ease, color 0.15s ease;
+    }
+
+    .mode-option input:checked + span {
+        background: var(--color-accent);
+        color: #fff;
+    }
+
+    .mode-option input:focus-visible + span {
+        outline: 2px solid var(--color-accent);
+        outline-offset: 2px;
+    }
+
+    .field-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1rem;
+    }
+
+    .field {
+        display: grid;
+        gap: 0.4rem;
+        color: var(--color-text-heading);
+        font-weight: 600;
+    }
+
+    .field em {
+        color: var(--color-text-muted);
+        font-weight: 400;
+        font-style: normal;
+        font-size: 0.85rem;
+    }
+
+    .input-wrap,
+    .select-wrap {
+        position: relative;
+        display: block;
+    }
+
+    .input-wrap::after {
+        content: attr(data-unit);
+        position: absolute;
+        top: 50%;
+        right: 0.85rem;
+        transform: translateY(-50%);
+        color: var(--color-text-muted);
+        font-size: 0.95rem;
+        font-weight: 600;
+        pointer-events: none;
+    }
+
+    .field input,
+    .field select {
+        width: 100%;
+        min-height: 2.75rem;
+        border: 1px solid var(--color-border);
+        border-radius: 6px;
+        padding: 0.6rem 2.75rem 0.6rem 0.7rem;
+        background: var(--color-bg);
+        color: var(--color-text);
+        font: 400 1rem/1.2 "Atkinson", sans-serif;
+        line-height: 1.2;
+    }
+
+    .field select {
+        appearance: none;
+        cursor: pointer;
+    }
+
+    .select-wrap::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        right: 1rem;
+        width: 0.5rem;
+        height: 0.5rem;
+        border-right: 2px solid var(--color-text-muted);
+        border-bottom: 2px solid var(--color-text-muted);
+        transform: translateY(-70%) rotate(45deg);
+        pointer-events: none;
+    }
+
+    .field input:focus,
+    .field select:focus {
+        border-color: var(--color-accent);
+        outline: none;
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 18%, transparent);
+    }
+
+    .result-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 1rem;
+    }
+
+    .result-grid.single {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .result-card {
+        display: grid;
+        align-content: start;
+        gap: 0.45rem;
+        border: 1px solid var(--color-border);
+        border-radius: 8px;
+        padding: 1.1rem;
+        background: var(--color-bg);
+        box-shadow: 0 2px 8px color-mix(in srgb, var(--color-shadow) 35%, transparent);
+    }
+
+    .result-card.featured {
+        border-color: color-mix(in srgb, var(--color-accent) 35%, var(--color-border));
+        background: color-mix(in srgb, var(--color-accent) 7%, var(--color-bg));
+    }
+
+    /* The card the ATLS bands are built from. Marks "most cautious", not "most accurate". */
+    .result-card[data-atls-reference] {
+        border-color: color-mix(in srgb, var(--color-accent) 45%, var(--color-border));
+        box-shadow:
+            0 2px 8px color-mix(in srgb, var(--color-shadow) 35%, transparent),
+            inset 0 0 0 1px color-mix(in srgb, var(--color-accent) 22%, transparent);
+    }
+
+    .atls-flag {
+        margin-top: 0.15rem;
+        color: var(--color-accent);
+        font-size: 0.8rem;
+        font-weight: 700;
+        line-height: 1.35;
+    }
+
+    .result-label {
+        color: var(--color-text-muted);
+        font-size: 0.86rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+
+    .result-card strong {
+        color: var(--color-text-heading);
+        font-size: clamp(1.5rem, 1.1rem + 1.4vw, 2rem);
+        line-height: 1.1;
+        overflow-wrap: anywhere;
+    }
+
+    .ml-output {
+        color: var(--color-text-muted);
+        font-size: 0.95rem;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .validity-badge {
+        justify-self: start;
+        border-radius: 999px;
+        padding: 0.18rem 0.7rem;
+        font-size: 0.78rem;
+        font-weight: 700;
+        line-height: 1.4;
+    }
+
+    .validity-badge.neutral {
+        background: var(--color-surface);
+        color: var(--color-text-muted);
+        border: 1px solid var(--color-border);
+    }
+
+    .validity-badge.warn {
+        background: color-mix(in srgb, #e2a400 18%, var(--color-bg));
+        color: #9a6f00;
+        border: 1px solid color-mix(in srgb, #e2a400 38%, transparent);
+    }
+
+    [data-theme="dark"] .validity-badge.warn {
+        color: #f3cd6b;
+    }
+
+    .result-note {
+        color: var(--color-text-muted);
+        font-size: 0.88rem;
+        line-height: 1.4;
+    }
+
+    .build-hint {
+        border-left: 2px solid color-mix(in srgb, #e2a400 60%, transparent);
+        padding-left: 0.55rem;
+        color: #9a6f00;
+        font-size: 0.83rem;
+        font-weight: 600;
+        line-height: 1.4;
+    }
+
+    [data-theme="dark"] .build-hint {
+        color: #f3cd6b;
+    }
+
+    .spread-line {
+        margin: 1rem 0 0;
+        color: var(--color-text);
+        font-size: 0.98rem;
+        font-weight: 600;
+        text-align: center;
+    }
+
+    .error-message {
+        min-height: 1.5rem;
+        margin: 0;
+        color: #b42318;
+        font-weight: 600;
+    }
+
+    [data-theme="dark"] .error-message {
+        color: #ff9b8f;
+    }
+
+    /* --- ATLS --- */
+
+    .atls {
+        border-top: 1px solid var(--color-border);
+        padding-top: 1.5rem;
+    }
+
+    .atls h2 {
+        font-size: 1.3rem;
+        margin-bottom: 1rem;
+    }
+
+    /*
+     * Severity is a status scale, so it wears the reserved status tokens
+     * (good / warning / serious / critical) rather than an ad-hoc green→red ramp.
+     * Validated on both surfaces: worst adjacent CVD ΔE is 16.4 (deuteranopia),
+     * clear of the ≥12 target. The previous amber/orange pair differed in
+     * lightness by 0.002, which is why classes II and III collapsed into one band.
+     * Warning and serious sit below 3:1 on white by design — the always-visible
+     * class labels below the bar carry the identity, never the colour alone.
+     */
+    .atls-bar {
+        display: flex;
+        gap: 2px;
+        height: 1.4rem;
+    }
+
+    /* Bar spans 0–50% blood loss: 15 / 15 / 10 / 10 percentage points.
+       The 2px surface gap does the separating — no strokes around the fills. */
+    .atls-segment {
+        border-radius: 3px;
+    }
+
+    .atls-segment[data-class="i"] {
+        flex: 30;
+        background: #0ca30c;
+    }
+
+    .atls-segment[data-class="ii"] {
+        flex: 30;
+        background: #fab219;
+    }
+
+    .atls-segment[data-class="iii"] {
+        flex: 20;
+        background: #ec835a;
+    }
+
+    .atls-segment[data-class="iv"] {
+        flex: 20;
+        background: #d03b3b;
+    }
+
+    /* Ticks are pinned to the segment boundaries (30/60/80% of the bar), not spaced evenly. */
+    .atls-scale {
+        position: relative;
+        height: 1.1rem;
+        margin-top: 0.35rem;
+        color: var(--color-text-muted);
+        font-size: 0.8rem;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .atls-scale span {
+        position: absolute;
+        top: 0;
+        transform: translateX(-50%);
+    }
+
+    .atls-scale span:nth-child(1) {
+        left: 0;
+        transform: none;
+    }
+
+    .atls-scale span:nth-child(2) {
+        left: 30%;
+    }
+
+    .atls-scale span:nth-child(3) {
+        left: 60%;
+    }
+
+    .atls-scale span:nth-child(4) {
+        left: 80%;
+    }
+
+    .atls-scale span:nth-child(5) {
+        left: 100%;
+        transform: translateX(-100%);
+    }
+
+    .atls-legend {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 1rem;
+        margin-top: 1.25rem;
+    }
+
+    .atls-item {
+        display: grid;
+        align-content: start;
+        gap: 0.3rem;
+        border-top: 4px solid var(--color-border);
+        border-radius: 2px 2px 0 0;
+        padding-top: 0.6rem;
+    }
+
+    .atls-item[data-class="i"] {
+        border-top-color: #0ca30c;
+    }
+
+    .atls-item[data-class="ii"] {
+        border-top-color: #fab219;
+    }
+
+    .atls-item[data-class="iii"] {
+        border-top-color: #ec835a;
+    }
+
+    .atls-item[data-class="iv"] {
+        border-top-color: #d03b3b;
+    }
+
+    .atls-name {
+        color: var(--color-text-heading);
+        font-size: 0.86rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+
+    .atls-pct {
+        color: var(--color-text-muted);
+        font-size: 0.85rem;
+    }
+
+    .atls-volume {
+        color: var(--color-text-heading);
+        font-size: 1rem;
+        font-variant-numeric: tabular-nums;
+        overflow-wrap: anywhere;
+    }
+
+    .atls-signs {
+        color: var(--color-text-muted);
+        font-size: 0.85rem;
+        line-height: 1.4;
+    }
+
+    .atls-caption {
+        margin: 1.25rem 0 0;
+        color: var(--color-text-muted);
+        font-size: 0.88rem;
+        line-height: 1.5;
+    }
+
+    .atls-caveat {
+        margin: 1rem 0 0;
+        border-left: 3px solid color-mix(in srgb, #fab219 65%, transparent);
+        border-radius: 0 6px 6px 0;
+        padding: 0.75rem 1rem;
+        background: color-mix(in srgb, #fab219 8%, var(--color-bg));
+        color: var(--color-text-muted);
+        font-size: 0.88rem;
+        line-height: 1.5;
+    }
+
+    .atls-caveat strong {
+        color: var(--color-text-heading);
+    }
+
+    .disclaimer {
+        margin: 0;
+        border-top: 1px solid var(--color-border);
+        padding-top: 1.25rem;
+        color: var(--color-text-muted);
+        font-size: 0.88rem;
+    }
+
+    .disclaimer strong {
+        color: var(--color-text-heading);
+    }
+
+    @media (max-width: 760px) {
+        .result-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .atls-legend {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 620px) {
+        .field-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .atls-legend {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
