@@ -1,0 +1,170 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const pages = [
+    {
+        href: '/cpr/',
+        title: 'CPR Metronome',
+        tag: 'Emergency tool',
+        description: 'Beeps at 110 per minute — the chest compression rate. One tap to start, works offline.',
+    },
+    {
+        href: '/cpr-trainer/',
+        title: 'CPR Rhythm Trainer',
+        tag: 'Training tool',
+        description: 'Practice the compression rhythm: tap at 110 per minute, count to 30, take the 2-minute test.',
+    },
+    {
+        href: '/bmi/',
+        title: 'BMI Calculator',
+        tag: 'Calculator',
+        description: 'Standard and Oxford (Trefethen) Body Mass Index, side by side.',
+    },
+    {
+        href: '/blood-volume/',
+        title: 'Blood Volume',
+        tag: 'Calculator',
+        description: 'Nadler, Lemmens and Gilcher estimates, plus the ATLS haemorrhagic shock classes.',
+    },
+    {
+        href: '/severance/',
+        title: 'Severance Package',
+        tag: 'Calculator',
+        description: 'Factor × tenure × gross monthly salary.',
+    },
+    {
+        href: '/sunwalk/',
+        title: 'Sun Walk',
+        tag: 'App',
+        description: 'Sunrise, sunset, golden hour and twilight phases through the day.',
+    },
+];
+---
+
+<Layout
+    title="Pages - Patrick Scheid"
+    description="A directory of the small tools and pages on this site that aren't linked from the navigation."
+    pageClass="page-pages"
+>
+    <section class="pages-shell" aria-labelledby="pages-title">
+        <div class="page-header">
+            <p class="eyebrow">Directory</p>
+            <h1 id="pages-title">Pages</h1>
+            <p class="tagline">Small tools that live off the beaten path — none of these appear in the menu.</p>
+        </div>
+
+        <ul class="page-list">
+            {pages.map((page) => (
+                <li>
+                    <a class="page-card" href={page.href}>
+                        <div class="page-card-text">
+                            <span class="page-card-title">{page.title}</span>
+                            <span class="page-card-description">{page.description}</span>
+                        </div>
+                        <span class="page-card-tag">{page.tag}</span>
+                    </a>
+                </li>
+            ))}
+        </ul>
+    </section>
+</Layout>
+
+<style>
+    .pages-shell {
+        max-width: 42rem;
+        margin: 0 auto;
+    }
+
+    .page-header {
+        padding-top: 1rem;
+        text-align: center;
+    }
+
+    .eyebrow {
+        margin: 0 0 0.35rem;
+        color: var(--color-accent);
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+    }
+
+    .page-header h1 {
+        margin-bottom: 0.4rem;
+    }
+
+    .tagline {
+        margin: 0;
+        color: var(--color-text-muted);
+        font-size: 1.1rem;
+    }
+
+    .page-list {
+        list-style: none;
+        margin: 2rem 0 0;
+        padding: 0;
+        display: grid;
+        gap: 0.8rem;
+    }
+
+    .page-card {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        border: 1px solid var(--color-border);
+        border-radius: 10px;
+        background: var(--color-surface);
+        padding: 1rem 1.25rem;
+        color: inherit;
+        transition: border-color 0.2s ease, transform 0.15s ease;
+    }
+
+    .page-card:hover {
+        border-color: var(--color-accent);
+        color: inherit;
+        transform: translateY(-1px);
+    }
+
+    .page-card-text {
+        display: grid;
+        gap: 0.15rem;
+    }
+
+    .page-card-title {
+        font-weight: 700;
+        color: var(--color-text-heading);
+        font-size: 1.05rem;
+    }
+
+    .page-card:hover .page-card-title {
+        color: var(--color-accent);
+    }
+
+    .page-card-description {
+        color: var(--color-text-muted);
+        font-size: 0.9rem;
+        line-height: 1.5;
+    }
+
+    .page-card-tag {
+        flex-shrink: 0;
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        color: var(--color-text-muted);
+        border: 1px solid var(--color-border);
+        border-radius: 999px;
+        padding: 0.25rem 0.7rem;
+        background: var(--color-bg);
+    }
+
+    @media (max-width: 480px) {
+        .page-card {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.6rem;
+        }
+    }
+</style>
