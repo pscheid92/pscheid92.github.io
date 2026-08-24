@@ -1,0 +1,1139 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout
+    title="CPR Rhythm Trainer (110 BPM) - Patrick Scheid"
+    description="Practice the CPR compression rhythm: tap along at 110 beats per minute, count to 30, and test how well you hold the tempo for a full two-minute cycle."
+    pageClass="page-cpr-trainer"
+>
+    <section class="trainer-shell" aria-labelledby="trainer-title">
+        <div class="page-header">
+            <p class="eyebrow">Training tool</p>
+            <h1 id="trainer-title">CPR Rhythm Trainer</h1>
+            <p class="tagline">Tap the pad, count to 30, learn to hold 110 per minute.</p>
+        </div>
+
+        <nav class="modes" aria-label="Training mode">
+            <button class="mode active" type="button" data-mode="free">Free practice</button>
+            <button class="mode" type="button" data-mode="twomin">2-min test</button>
+        </nav>
+
+        <div class="readout idle" id="readout">
+            <span id="bpm">—</span>
+            <span class="unit">/min</span>
+            <span id="delta"></span>
+        </div>
+        <div id="state">Tap to start</div>
+        <div id="timer" hidden>2:00 left</div>
+
+        <div class="gauge" aria-hidden="true">
+            <div class="track">
+                <div class="zone"></div>
+                <div class="tick-target"></div>
+                <div id="needle"></div>
+            </div>
+            <div class="scale"><span>70</span><span>100</span><span>110</span><span>120</span><span>150</span></div>
+        </div>
+
+        <button id="pad" type="button" aria-label="Tap pad — tap in rhythm">
+            <span id="count">—</span>
+            <span id="cycle">tap to start</span>
+        </button>
+        <p class="hint" id="hint"></p>
+
+        <div class="controls">
+            <button id="primary" type="button">Start metronome</button>
+            <button id="breath" type="button" aria-pressed="false">30:2 breaths: off</button>
+            <button id="reset" type="button">Reset</button>
+        </div>
+
+        <div id="report" hidden>
+            <div class="r-label">2-minute test</div>
+            <div id="verdict"></div>
+            <div class="rcells" id="rcells"></div>
+            <div id="chartwrap">
+                <div class="c-label">Tempo over 2 minutes</div>
+                <svg id="chart" viewBox="0 0 520 170" role="img" aria-label="Line chart of tapping tempo over the two-minute test"></svg>
+                <div class="tip" id="tip"></div>
+            </div>
+        </div>
+
+        <div class="stats" id="stats">
+            <div class="stat"><div class="v" id="zonepct">—</div><div class="l">In zone</div></div>
+            <div class="stat"><div class="v" id="avg">—</div><div class="l">Average</div></div>
+            <div class="stat"><div class="v" id="jit">—</div><div class="l">Steadiness</div></div>
+            <div class="stat"><div class="v" id="taps">0</div><div class="l">Taps</div></div>
+        </div>
+
+        <p class="note">
+            Guideline for adult chest compressions: <strong>100–120 per minute</strong>, 5–6&nbsp;cm deep, full
+            recoil, cycles of 30 compressions to 2 breaths, switch rescuers every 2 minutes. Lost the beat? Think of
+            “Another One Bites the Dust” (~110) or “Stayin’ Alive” (~104). In a real emergency, open the
+            <a href="/cpr/">CPR metronome</a> — it keeps the beat so you don't have to. Not a substitute for CPR training.
+        </p>
+    </section>
+</Layout>
+
+<script>
+    const TARGET = 110, ZLO = 100, ZHI = 120;
+    const GAP = 2500;             // ms of silence that ends/segments a run
+    const WIN = 8;                // intervals used for the live reading
+    const GMIN = 70, GMAX = 150;  // gauge range
+    const BREATH_MS = 5000;       // 2 rescue breaths
+    const TEST_MS = 120000;       // 2-minute test
+
+    const $ = (id) => document.getElementById(id);
+    const bpmEl = $('bpm'), deltaEl = $('delta'), stateEl = $('state'), readout = $('readout'), timerEl = $('timer');
+    const needle = $('needle'), pad = $('pad'), countEl = $('count'), cycleEl = $('cycle'), hintEl = $('hint');
+    const zoneEl = $('zonepct'), avgEl = $('avg'), jitEl = $('jit'), tapsEl = $('taps'), statsEl = $('stats');
+    const primaryBtn = $('primary'), breathBtn = $('breath'), resetBtn = $('reset');
+    const report = $('report'), verdictEl = $('verdict'), rcells = $('rcells');
+    const chart = $('chart'), tip = $('tip');
+    const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const colors = {slow: 'var(--slow)', zone: 'var(--good)', fast: 'var(--fast)', none: 'var(--color-text-muted)'};
+    const stateFor = (bpm) => (bpm < ZLO ? 'slow' : bpm <= ZHI ? 'zone' : 'fast');
+    const avg = (a) => a.reduce((x, y) => x + y, 0) / a.length;
+    const fmtT = (ms) => {
+        const s = Math.round(ms / 1000);
+        return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+    };
+    const signed = (n) => (n >= 0 ? '+' : '−') + Math.abs(Math.round(n));
+
+    /* ================= state ================= */
+    let mode = 'free';      // free | twomin
+    let phase = 'idle';     // free: idle|run|breath — twomin: idle|armed|run|breath|report
+    let breathOn = false;
+
+    let times = [];             // tap timestamps of the current run
+    let segBreak = new Set();   // indices i where interval (i-1 → i) is invalid (pause/gap)
+    let pendingBreak = false;   // next tap opens a new segment
+    let totalTaps = 0;
+
+    let idleTimer = 0, breathTimer = 0, ticker = 0;
+    let tStart = 0;
+
+    function validIntervals() {
+        const out = [];
+        for (let i = 1; i < times.length; i++) {
+            if (!segBreak.has(i)) out.push(times[i] - times[i - 1]);
+        }
+        return out;
+    }
+
+    /* ================= audio ================= */
+    let ac = null, master = null, metroOn = false, nextBeat = 0, schedTimer = 0;
+
+    function ensureAudio() {
+        ac = ac || new (window.AudioContext || window.webkitAudioContext)();
+        if (!master) {
+            master = ac.createGain();
+            master.connect(ac.destination);
+        }
+        master.gain.cancelScheduledValues(0);
+        master.gain.setValueAtTime(1, ac.currentTime);
+        ac.resume();
+    }
+    function silence() {
+        if (!ac) return;
+        master.gain.cancelScheduledValues(0);
+        master.gain.setValueAtTime(0, ac.currentTime);
+    }
+    function tone(t, f, dur, vol) {
+        const o = ac.createOscillator(), g = ac.createGain();
+        o.type = 'square';
+        o.frequency.value = f;
+        g.gain.setValueAtTime(vol, t);
+        g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+        o.connect(g).connect(master);
+        o.start(t);
+        o.stop(t + dur + 0.01);
+    }
+    function click(t) {
+        tone(t, 1000, 0.05, 0.35);
+        if (!reducedMotion && !document.hidden) {
+            setTimeout(() => {
+                pad.classList.add('beat');
+                setTimeout(() => pad.classList.remove('beat'), 110);
+            }, Math.max(0, (t - ac.currentTime) * 1000));
+        }
+    }
+    function cueTone() {
+        if (ac) tone(ac.currentTime, 660, 0.09, 0.25);
+    }
+    function endTone() {
+        if (ac) {
+            tone(ac.currentTime, 880, 0.09, 0.3);
+            tone(ac.currentTime + 0.18, 880, 0.09, 0.3);
+        }
+    }
+
+    function schedule() {
+        // hidden tabs clamp timers to 1s, so schedule further ahead there
+        const ahead = document.hidden ? 1.3 : 0.15;
+        while (nextBeat < ac.currentTime + ahead) {
+            click(nextBeat);
+            nextBeat += 60 / TARGET;
+        }
+    }
+    function startMetro() {
+        ensureAudio();
+        nextBeat = ac.currentTime + 0.1;
+        schedTimer = window.setInterval(schedule, 25);
+        metroOn = true;
+        primaryBtn.textContent = 'Stop metronome';
+        primaryBtn.classList.add('on');
+    }
+    function stopMetro() {
+        clearInterval(schedTimer);
+        metroOn = false;
+        silence(); // also kills already-scheduled clicks
+        primaryBtn.textContent = 'Start metronome';
+        primaryBtn.classList.remove('on');
+    }
+
+    /* ================= shared UI ================= */
+    function press() {
+        pad.classList.add('down');
+        setTimeout(() => pad.classList.remove('down'), 90);
+    }
+    function stateSet(txt, st) {
+        stateEl.textContent = txt;
+        stateEl.style.color = colors[st] || colors.none;
+    }
+    function setNeedle(bpm) {
+        if (bpm == null) {
+            needle.style.opacity = 0;
+            return;
+        }
+        const pos = Math.min(1, Math.max(0, (bpm - GMIN) / (GMAX - GMIN)));
+        needle.style.left = pos * 100 + '%';
+        needle.style.background = colors[stateFor(bpm)];
+        needle.style.opacity = 1;
+    }
+    function setBpm(bpm) {
+        if (bpm == null) {
+            bpmEl.textContent = '—';
+            bpmEl.style.color = '';
+            deltaEl.textContent = '';
+            return;
+        }
+        bpmEl.textContent = Math.round(bpm);
+        bpmEl.style.color = colors[stateFor(bpm)];
+        deltaEl.textContent = signed(bpm - TARGET);
+    }
+    function clearTimers() {
+        clearTimeout(idleTimer);
+        clearInterval(breathTimer);
+        clearInterval(ticker);
+        timerEl.hidden = true;
+    }
+    function resetRun() {
+        times = [];
+        segBreak.clear();
+        pendingBreak = false;
+        setBpm(null);
+        setNeedle(null);
+        countEl.textContent = '—';
+        cycleEl.textContent = 'tap to start';
+        zoneEl.textContent = '—';
+        avgEl.textContent = '—';
+        jitEl.textContent = '—';
+        tapsEl.textContent = totalTaps;
+        readout.classList.add('idle');
+    }
+    function hideReport() {
+        report.hidden = true;
+        statsEl.classList.remove('gone');
+    }
+    function showReport(verdict, cells) {
+        verdictEl.textContent = verdict;
+        rcells.innerHTML = cells
+            .map((c) => '<div class="rcell"><div class="v">' + c.v + '</div><div class="l">' + c.l + '</div></div>')
+            .join('');
+        report.hidden = false;
+        statsEl.classList.add('gone');
+    }
+    function renderLive() {
+        readout.classList.remove('idle');
+        const n = times.length;
+        countEl.textContent = ((n - 1) % 30) + 1;
+        cycleEl.textContent = 'of 30 · cycle ' + (Math.floor((n - 1) / 30) + 1);
+        tapsEl.textContent = totalTaps;
+        const ivs = validIntervals();
+        if (!ivs.length) {
+            setBpm(null);
+            stateSet('Keep tapping', 'none');
+            return;
+        }
+        const bpm = 60000 / avg(ivs.slice(-WIN));
+        const st = stateFor(bpm);
+        setBpm(bpm);
+        setNeedle(bpm);
+        stateSet(st === 'slow' ? 'Too slow' : st === 'zone' ? 'In the zone' : 'Too fast', st);
+        avgEl.textContent = Math.round(60000 / avg(ivs));
+        zoneEl.textContent = zonePct(ivs) + '%';
+        if (ivs.length >= 3) {
+            const m = avg(ivs);
+            const sd = Math.sqrt(avg(ivs.map((v) => (v - m) * (v - m))));
+            jitEl.textContent = '±' + Math.round(sd) + ' ms';
+        } else jitEl.textContent = '—';
+    }
+    function zonePct(ivs) {
+        if (!ivs.length) return 0;
+        return Math.round(
+            (100 * ivs.filter((v) => {
+                const b = 60000 / v;
+                return b >= ZLO && b <= ZHI;
+            }).length) / ivs.length,
+        );
+    }
+
+    /* ================= breath pause (free + 2-min) ================= */
+    function startBreath() {
+        const back = phase;
+        phase = 'breath';
+        clearTimeout(idleTimer);
+        stateSet('2 rescue breaths', 'none');
+        cycleEl.textContent = 'rescue breaths';
+        const end = performance.now() + BREATH_MS;
+        countEl.textContent = Math.ceil(BREATH_MS / 1000);
+        breathTimer = window.setInterval(() => {
+            const r = end - performance.now();
+            if (r <= 0) {
+                clearInterval(breathTimer);
+                cueTone();
+                phase = back;
+                pendingBreak = true;
+                countEl.textContent = '—';
+                cycleEl.textContent = 'resume — tap!';
+                stateSet('Resume compressions', 'fast');
+                if (mode === 'free') armIdle();
+            } else countEl.textContent = Math.ceil(r / 1000);
+        }, 100);
+    }
+
+    /* ================= free practice ================= */
+    function armIdle() {
+        clearTimeout(idleTimer);
+        idleTimer = window.setTimeout(() => {
+            readout.classList.add('idle');
+            bpmEl.style.color = ''; // inline state color would override the idle dimming
+            stateSet('Paused — tap to restart', 'none');
+            setNeedle(null);
+        }, GAP);
+    }
+    function freeTap(t) {
+        if (phase === 'breath') return;
+        phase = 'run';
+        if (times.length) {
+            const gap = t - times[times.length - 1];
+            if (pendingBreak) {
+                pendingBreak = false;
+                if (gap > BREATH_MS + GAP) {
+                    times = [];
+                    segBreak.clear();
+                } else segBreak.add(times.length);
+            } else if (gap > GAP) {
+                times = [];
+                segBreak.clear();
+            }
+        }
+        times.push(t);
+        totalTaps++;
+        press();
+        renderLive();
+        armIdle();
+        if (breathOn && times.length % 30 === 0) startBreath();
+    }
+
+    /* ================= 2-minute test ================= */
+    function armTwoMin() {
+        ensureAudio();
+        clearTimers();
+        resetRun();
+        hideReport();
+        totalTaps = 0;
+        tapsEl.textContent = '0';
+        phase = 'armed';
+        primaryBtn.textContent = 'Cancel test';
+        stateSet('Tap to start the clock', 'none');
+        timerEl.hidden = false;
+        timerEl.textContent = '2:00 left';
+    }
+    function cancelTwoMin(msg) {
+        clearTimers();
+        phase = 'idle';
+        primaryBtn.textContent = 'Start 2-minute test';
+        resetRun();
+        stateSet(msg || 'Test cancelled', 'none');
+    }
+    function twoTap(t) {
+        if (phase === 'armed') {
+            tStart = t;
+            phase = 'run';
+            ticker = window.setInterval(() => {
+                const el = performance.now() - tStart;
+                timerEl.textContent = fmtT(Math.max(0, TEST_MS - el)) + ' left';
+                if (el >= TEST_MS) endTwoMin();
+            }, 200);
+        } else if (phase === 'breath') {
+            return;
+        } else if (phase !== 'run') return;
+        if (times.length) {
+            const gap = t - times[times.length - 1];
+            if (pendingBreak) {
+                segBreak.add(times.length);
+                pendingBreak = false;
+            } else if (gap > GAP) segBreak.add(times.length);
+        }
+        times.push(t);
+        totalTaps++;
+        press();
+        renderLive();
+        if (breathOn && times.length % 30 === 0 && performance.now() - tStart < TEST_MS) startBreath();
+    }
+    function endTwoMin() {
+        clearTimers();
+        endTone();
+        phase = 'report';
+        primaryBtn.textContent = 'Start 2-minute test';
+        stateSet('Time — switch rescuers', 'none');
+        const ivs = validIntervals();
+        const overall = ivs.length ? 60000 / avg(ivs) : 0;
+        setBpm(ivs.length ? overall : null);
+        setNeedle(ivs.length ? overall : null);
+        // first vs last 30 s
+        const early = [], late = [];
+        for (let i = 1; i < times.length; i++) {
+            if (segBreak.has(i)) continue;
+            const iv = times[i] - times[i - 1], el = times[i] - tStart;
+            if (el <= 30000) early.push(iv);
+            if (el >= TEST_MS - 30000) late.push(iv);
+        }
+        const f = early.length ? Math.round(60000 / avg(early)) : null;
+        const l = late.length ? Math.round(60000 / avg(late)) : null;
+        const handsOn = Math.min(100, Math.round((100 * ivs.filter((v) => v <= 1500).reduce((a, b) => a + b, 0)) / TEST_MS));
+        let verdict;
+        if (f == null || l == null) {
+            verdict = 'Not enough tapping to compare start and finish — try to keep going the full two minutes.';
+        } else {
+            verdict = 'First 30 s: ' + f + '/min → last 30 s: ' + l + '/min.';
+            if (l - f <= -6) verdict += ' You sag as you tire — that’s the classic fatigue curve, train through it.';
+            else if (f > TARGET + 8) verdict += ' You start hot — ease into the tempo instead.';
+            else if (Math.abs(l - f) <= 5) verdict += ' Held steady the whole way.';
+        }
+        showReport(verdict, [
+            {v: zonePct(ivs) + '%', l: 'In zone'},
+            {v: ivs.length ? Math.round(overall) : '—', l: 'Average'},
+            {v: (f ?? '—') + ' → ' + (l ?? '—'), l: 'First→Last 30 s'},
+            {v: handsOn + '%', l: 'Hands-on'},
+        ]);
+        buildCurve();
+    }
+
+    /* ================= tempo curve (SVG) ================= */
+    const CW = 520, CH = 170, CL = 36, CR = 10, CT = 14, CB = 26;
+    const cx = (s) => CL + ((CW - CL - CR) * Math.min(120, Math.max(0, s))) / 120;
+    const cy = (b) => {
+        const c = Math.min(140, Math.max(80, b));
+        return CT + ((CH - CT - CB) * (140 - c)) / 60;
+    };
+    let curvePts = [];
+    function buildCurve() {
+        // smoothed bpm point at each tap (3-interval window, reset at segment breaks)
+        curvePts = [];
+        const segs = [];
+        let seg = [], recent = [];
+        for (let i = 1; i < times.length; i++) {
+            if (segBreak.has(i)) {
+                if (seg.length > 1) segs.push(seg);
+                seg = [];
+                recent = [];
+            }
+            recent.push(times[i] - times[i - 1]);
+            if (recent.length > 3) recent.shift();
+            if (recent.length >= 2) {
+                const p = {t: (times[i] - tStart) / 1000, bpm: 60000 / avg(recent)};
+                seg.push(p);
+                curvePts.push(p);
+            }
+        }
+        if (seg.length > 1) segs.push(seg);
+        const lines = segs
+            .map((s) => '<polyline class="tt-line" points="' +
+                s.map((p) => cx(p.t).toFixed(1) + ',' + cy(p.bpm).toFixed(1)).join(' ') + '"/>')
+            .join('');
+        chart.innerHTML =
+            '<rect class="tt-band" x="' + CL + '" y="' + cy(120) + '" width="' + (CW - CL - CR) + '" height="' + (cy(100) - cy(120)) + '"/>' +
+            '<line class="tt-dash" x1="' + CL + '" x2="' + (CW - CR) + '" y1="' + cy(110) + '" y2="' + cy(110) + '" stroke-dasharray="4 4"/>' +
+            '<text class="tt-zlabel" x="' + (CW - CR - 4) + '" y="' + (cy(120) + 11) + '" text-anchor="end">zone 100–120</text>' +
+            [80, 110, 140].map((b) => '<text class="tt-tick" x="' + (CL - 6) + '" y="' + (cy(b) + 3) + '" text-anchor="end">' + b + '</text>').join('') +
+            [[0, '0:00'], [60, '1:00'], [120, '2:00']].map(([s, lab]) => '<text class="tt-tick" x="' + cx(s) + '" y="' + (CH - 8) + '" text-anchor="middle">' + lab + '</text>').join('') +
+            lines +
+            '<circle class="tt-mark" id="mark" r="4" visibility="hidden"/>';
+    }
+    chart.addEventListener('pointermove', (e) => {
+        if (!curvePts.length) return;
+        const r = chart.getBoundingClientRect();
+        const sec = ((((e.clientX - r.left) / r.width) * CW - CL) / (CW - CL - CR)) * 120;
+        let best = curvePts[0];
+        for (const p of curvePts) {
+            if (Math.abs(p.t - sec) < Math.abs(best.t - sec)) best = p;
+        }
+        const px = cx(best.t), py = cy(best.bpm);
+        const mark = chart.querySelector('#mark');
+        mark.setAttribute('cx', px);
+        mark.setAttribute('cy', py);
+        mark.setAttribute('visibility', 'visible');
+        tip.style.display = 'block';
+        tip.style.left = (px / CW) * r.width + 'px';
+        tip.style.top = (py / CH) * r.height + 'px';
+        tip.textContent = fmtT(best.t * 1000) + ' · ' + Math.round(best.bpm) + '/min';
+    });
+    chart.addEventListener('pointerleave', () => {
+        tip.style.display = 'none';
+        const mark = chart.querySelector('#mark');
+        if (mark) mark.setAttribute('visibility', 'hidden');
+    });
+
+    /* ================= mode switching & controls ================= */
+    const HINTS = {
+        free: 'Click the pad, tap your trackpad, or press <kbd>space</kbd>. Count out loud to 30.',
+        twomin: 'Two minutes, the real switch-rescuer interval. Count out loud in 30s and don’t stop.',
+    };
+    function setMode(m) {
+        if (metroOn) stopMetro();
+        clearTimers();
+        silence();
+        mode = m;
+        phase = 'idle';
+        totalTaps = 0;
+        resetRun();
+        hideReport();
+        document.querySelectorAll('.modes .mode').forEach((b) => b.classList.toggle('active', b.dataset.mode === m));
+        hintEl.innerHTML = HINTS[m];
+        resetBtn.disabled = m !== 'free'; // keep it in place — hiding it would shift the row
+        primaryBtn.classList.remove('on');
+        primaryBtn.textContent = m === 'free' ? 'Start metronome' : 'Start 2-minute test';
+        stateSet(m === 'free' ? 'Tap to start' : 'Press start when ready', 'none');
+    }
+    document.querySelectorAll('.modes .mode').forEach((b) => {
+        b.addEventListener('click', () => setMode(b.dataset.mode));
+    });
+
+    primaryBtn.addEventListener('click', () => {
+        if (mode === 'free') {
+            metroOn ? stopMetro() : startMetro();
+        } else {
+            phase === 'idle' || phase === 'report' ? armTwoMin() : cancelTwoMin();
+        }
+    });
+    breathBtn.addEventListener('click', () => {
+        ensureAudio(); // user gesture — unlocks the resume cue tone
+        breathOn = !breathOn;
+        breathBtn.textContent = '30:2 breaths: ' + (breathOn ? 'on' : 'off');
+        breathBtn.classList.toggle('on', breathOn);
+        breathBtn.setAttribute('aria-pressed', String(breathOn));
+    });
+    resetBtn.addEventListener('click', () => {
+        clearTimers();
+        phase = 'idle';
+        totalTaps = 0;
+        resetRun();
+        stateSet('Tap to start', 'none');
+    });
+    // a mouse click leaves buttons focused, which would steal the next spacebar tap
+    document.querySelectorAll('.controls button, .modes .mode').forEach((b) => {
+        b.addEventListener('pointerup', () => b.blur());
+    });
+
+    /* ================= input ================= */
+    function tap(t) {
+        if (mode === 'twomin') twoTap(t);
+        else freeTap(t);
+    }
+    pad.addEventListener('pointerdown', (e) => {
+        e.preventDefault();
+        tap(performance.now());
+    });
+    addEventListener('keydown', (e) => {
+        if (e.code !== 'Space' && e.code !== 'Enter') return;
+        const el = e.target instanceof Element ? e.target.closest('button, a, input, textarea, select') : null;
+        if (el && el !== pad) return; // let links and controls work
+        if (e.repeat) return;
+        e.preventDefault();
+        tap(performance.now());
+    });
+
+    setMode('free');
+
+    if (import.meta.env.DEV) {
+        // debug hook for driving the page in tests
+        window.__cpr = {
+            state: () => ({mode, phase, taps: times.length}),
+            forceEnd() {
+                if (mode === 'twomin' && (phase === 'run' || phase === 'breath')) tStart = performance.now() - TEST_MS;
+            },
+        };
+    }
+</script>
+
+<style>
+    :global(body.page-cpr-trainer main) {
+        width: 100%;
+        max-width: 64rem;
+    }
+
+    .trainer-shell {
+        --pulse: #d6203f;
+        --slow: #2b6cb0;
+        --good: #1e8e54;
+        --fast: #cf5a10;
+        --mono: 'SFMono-Regular', 'Consolas', 'Liberation Mono', 'Menlo', monospace;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-areas:
+            'head    head'
+            'modes   modes'
+            'readout pad'
+            'state   pad'
+            'timer   pad'
+            'gauge   pad'
+            'aux     hint'
+            'aux     controls'
+            'note    note';
+        align-content: start;
+        justify-items: center;
+        column-gap: 2rem;
+        max-width: 60rem;
+        margin: 0 auto;
+    }
+
+    :global([data-theme='dark']) .trainer-shell {
+        --pulse: #e8334f;
+        --slow: #63a4ff;
+        --good: #3ddc97;
+        --fast: #ff9a4d;
+    }
+
+    @media (max-width: 860px) {
+        .trainer-shell {
+            grid-template-columns: 1fr;
+            grid-template-areas:
+                'head' 'modes' 'readout' 'state' 'timer'
+                'gauge' 'pad' 'hint' 'controls' 'aux' 'note';
+        }
+    }
+
+    /* ---- header ---- */
+    .page-header {
+        grid-area: head;
+        padding-top: 1rem;
+        text-align: center;
+    }
+
+    .eyebrow {
+        margin: 0 0 0.35rem;
+        color: var(--pulse);
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+    }
+
+    .page-header h1 {
+        margin-bottom: 0.4rem;
+    }
+
+    .tagline {
+        margin: 0;
+        color: var(--color-text-muted);
+        font-size: 1.1rem;
+    }
+
+    /* ---- mode tabs ---- */
+    .modes {
+        grid-area: modes;
+        width: 100%;
+        max-width: 32rem;
+        display: flex;
+        border: 1px solid var(--color-border);
+        border-radius: 9px;
+        overflow: hidden;
+        margin-top: 1.4rem;
+    }
+
+    .modes .mode {
+        flex: 1;
+        background: none;
+        border: none;
+        color: var(--color-text-muted);
+        font: 600 0.9rem/1.3 'Atkinson', sans-serif;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        padding: 0.55rem 0.25rem;
+        cursor: pointer;
+    }
+
+    .modes .mode + .mode {
+        border-left: 1px solid var(--color-border);
+    }
+
+    .modes .mode.active {
+        background: var(--color-surface);
+        color: var(--color-text-heading);
+        box-shadow: inset 0 -3px 0 var(--pulse);
+    }
+
+    /* ---- readout ---- */
+    .readout {
+        grid-area: readout;
+        margin-top: 1.4rem;
+        display: flex;
+        align-items: baseline;
+        gap: 0.8rem;
+        line-height: 1;
+    }
+
+    #bpm {
+        font-family: var(--mono);
+        font-weight: 600;
+        font-size: clamp(3.4rem, 11vh, 6rem);
+        font-variant-numeric: tabular-nums;
+        letter-spacing: -0.03em;
+        color: var(--color-text-heading);
+        transition: color 0.15s;
+        /* fixed box so "—" vs "110" doesn't shift the row */
+        width: 3ch;
+        text-align: center;
+    }
+
+    .unit {
+        font-size: 1rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: var(--color-text-muted);
+    }
+
+    #delta {
+        font-family: var(--mono);
+        font-size: 1.1rem;
+        color: var(--color-text-muted);
+        min-width: 3.5ch;
+    }
+
+    #state {
+        grid-area: state;
+        width: 100%;
+        margin-top: 0.3rem;
+        font-weight: 700;
+        font-size: 1.15rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--color-text-muted);
+        text-align: center;
+        transition: color 0.15s;
+    }
+
+    #timer {
+        grid-area: timer;
+        font-family: var(--mono);
+        font-size: 0.95rem;
+        color: var(--color-text-muted);
+        margin-top: 0.2rem;
+        min-height: 1.5em;
+    }
+
+    /* keep the timer row's space reserved so the gauge never jumps */
+    #timer[hidden] {
+        display: block !important;
+        visibility: hidden;
+    }
+
+    .idle #bpm,
+    .idle #delta {
+        color: var(--color-text-muted);
+    }
+
+    /* ---- gauge ---- */
+    .gauge {
+        grid-area: gauge;
+        width: 100%;
+        max-width: 32rem;
+        margin-top: 1.2rem;
+    }
+
+    .track {
+        position: relative;
+        height: 14px;
+        background: var(--color-surface);
+        border: 1px solid var(--color-border);
+        border-radius: 7px;
+    }
+
+    .zone {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 37.5%; /* 100 on a 70–150 scale */
+        width: 25%; /* 100–120 */
+        background: color-mix(in srgb, var(--good) 22%, transparent);
+        border-left: 1px solid var(--good);
+        border-right: 1px solid var(--good);
+    }
+
+    .tick-target {
+        position: absolute;
+        top: -4px;
+        bottom: -4px;
+        left: 50%; /* 110 */
+        width: 2px;
+        background: var(--color-text-heading);
+        opacity: 0.9;
+    }
+
+    #needle {
+        position: absolute;
+        top: -7px;
+        width: 4px;
+        height: 28px;
+        margin-left: -2px;
+        border-radius: 2px;
+        background: var(--color-text-muted);
+        left: 0;
+        opacity: 0;
+        transition: left 0.12s linear, background 0.15s, opacity 0.3s;
+    }
+
+    .scale {
+        display: flex;
+        justify-content: space-between;
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        color: var(--color-text-muted);
+        margin-top: 0.35rem;
+    }
+
+    .scale span:nth-child(3) {
+        color: var(--color-text-heading);
+    }
+
+    /* ---- pad ---- */
+    #pad {
+        grid-area: pad;
+        align-self: center;
+        margin: 1rem 0;
+        width: min(32vh, 58vw, 16rem);
+        aspect-ratio: 1;
+        border-radius: 50%;
+        border: 3px solid var(--color-border);
+        background: radial-gradient(circle at 50% 38%, var(--color-bg), var(--color-surface) 75%);
+        color: var(--color-text-heading);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.1rem;
+        cursor: pointer;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+        user-select: none;
+        transition: transform 0.06s ease-out, border-color 0.15s, box-shadow 0.06s;
+        box-shadow: var(--box-shadow), inset 0 -6px 14px var(--color-shadow);
+    }
+
+    #pad.down {
+        transform: scale(0.955);
+        box-shadow: 0 2px 6px var(--color-shadow), inset 0 6px 18px var(--color-shadow);
+    }
+
+    #pad.beat {
+        border-color: var(--pulse);
+    }
+
+    #count {
+        font-weight: 700;
+        font-size: min(8vh, 3.4rem);
+        line-height: 1;
+        font-variant-numeric: tabular-nums;
+    }
+
+    #cycle {
+        font-weight: 600;
+        font-size: 0.8rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--color-text-muted);
+    }
+
+    .hint {
+        grid-area: hint;
+        align-self: start;
+        max-width: 18rem;
+        margin: 0.9rem 0 0;
+        font-size: 0.85rem;
+        line-height: 1.5;
+        min-height: 4.5em; /* three lines — mode switches must not reflow the controls below */
+        color: var(--color-text-muted);
+        text-align: center;
+    }
+
+    .hint :global(kbd) {
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        border: 1px solid var(--color-border);
+        border-radius: 4px;
+        padding: 1px 6px;
+    }
+
+    /* ---- controls ---- */
+    .controls {
+        grid-area: controls;
+        align-self: start;
+        margin-top: 0.8rem;
+        display: flex;
+        gap: 0.6rem;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .controls button {
+        font: 600 0.85rem/1.3 'Atkinson', sans-serif;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--color-text-heading);
+        background: var(--color-surface);
+        border: 1px solid var(--color-border);
+        border-radius: 8px;
+        padding: 0.55rem 1rem;
+        cursor: pointer;
+    }
+
+    /* fixed widths so label swaps don't re-center the row */
+    #primary {
+        min-width: 13rem;
+    }
+
+    #breath {
+        min-width: 10.5rem;
+    }
+
+    .controls button:hover:not(:disabled) {
+        border-color: var(--color-text-muted);
+    }
+
+    .controls button:disabled {
+        opacity: 0.45;
+        cursor: default;
+    }
+
+    .controls button.on {
+        border-color: var(--pulse);
+        color: var(--pulse);
+    }
+
+    /* ---- report ---- */
+    #report {
+        grid-area: aux;
+        width: 100%;
+        max-width: 32rem;
+        margin-top: 1.1rem;
+        background: var(--color-surface);
+        border: 1px solid var(--color-border);
+        border-radius: 10px;
+        padding: 1rem;
+    }
+
+    .r-label {
+        font-weight: 700;
+        font-size: 0.8rem;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--pulse);
+        margin-bottom: 0.35rem;
+    }
+
+    #verdict {
+        font-size: 0.92rem;
+        line-height: 1.5;
+    }
+
+    .rcells {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.5rem;
+        margin-top: 0.75rem;
+        text-align: center;
+    }
+
+    :global(.page-cpr-trainer .rcell .v) {
+        font-family: 'SFMono-Regular', 'Consolas', 'Liberation Mono', 'Menlo', monospace;
+        font-size: 1rem;
+        font-variant-numeric: tabular-nums;
+        color: var(--color-text-heading);
+    }
+
+    :global(.page-cpr-trainer .rcell .l) {
+        font-size: 0.68rem;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--color-text-muted);
+        margin-top: 0.1rem;
+    }
+
+    #chartwrap {
+        margin-top: 0.85rem;
+        position: relative;
+    }
+
+    .c-label {
+        font-weight: 600;
+        font-size: 0.75rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--color-text-muted);
+        margin-bottom: 0.25rem;
+    }
+
+    #chart {
+        width: 100%;
+        height: auto;
+        display: block;
+    }
+
+    :global(.page-cpr-trainer .tt-band) {
+        fill: color-mix(in srgb, var(--good) 15%, transparent);
+    }
+
+    :global(.page-cpr-trainer .tt-dash) {
+        stroke: var(--color-text-muted);
+        stroke-width: 1;
+        opacity: 0.7;
+    }
+
+    :global(.page-cpr-trainer .tt-zlabel) {
+        fill: var(--good);
+        font-family: 'SFMono-Regular', 'Consolas', 'Liberation Mono', 'Menlo', monospace;
+        font-size: 9px;
+        stroke: var(--color-surface);
+        stroke-width: 3px;
+        paint-order: stroke;
+    }
+
+    :global(.page-cpr-trainer .tt-tick) {
+        fill: var(--color-text-muted);
+        font-family: 'SFMono-Regular', 'Consolas', 'Liberation Mono', 'Menlo', monospace;
+        font-size: 10px;
+    }
+
+    :global(.page-cpr-trainer .tt-line) {
+        fill: none;
+        stroke: var(--color-text-heading);
+        stroke-width: 2;
+        stroke-linejoin: round;
+        stroke-linecap: round;
+    }
+
+    :global(.page-cpr-trainer .tt-mark) {
+        fill: var(--pulse);
+        stroke: var(--color-surface);
+        stroke-width: 2;
+    }
+
+    .tip {
+        position: absolute;
+        pointer-events: none;
+        background: var(--color-bg);
+        border: 1px solid var(--color-border);
+        border-radius: 6px;
+        padding: 3px 8px;
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        display: none;
+        white-space: nowrap;
+        transform: translate(-50%, -130%);
+    }
+
+    /* ---- live stats ---- */
+    .stats {
+        grid-area: aux;
+        margin-top: 1.1rem;
+        width: 100%;
+        max-width: 32rem;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        border-top: 1px solid var(--color-border);
+        padding-top: 0.7rem;
+    }
+
+    .stats.gone,
+    [hidden] {
+        display: none !important;
+    }
+
+    .stat {
+        text-align: center;
+    }
+
+    .stat .v {
+        font-family: var(--mono);
+        font-size: 1.1rem;
+        font-variant-numeric: tabular-nums;
+        color: var(--color-text-heading);
+    }
+
+    .stat .l {
+        font-size: 0.72rem;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--color-text-muted);
+        margin-top: 0.1rem;
+    }
+
+    /* ---- note ---- */
+    .note {
+        grid-area: note;
+        margin: 2rem auto 0;
+        max-width: 34rem;
+        border-top: 1px solid var(--color-border);
+        padding-top: 1.25rem;
+        color: var(--color-text-muted);
+        font-size: 0.92rem;
+        line-height: 1.6;
+        text-align: center;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        #pad,
+        #needle,
+        #bpm,
+        #state {
+            transition: none;
+        }
+
+        #pad.down {
+            transform: none;
+        }
+    }
+
+    @media (max-width: 480px) {
+        #bpm {
+            font-size: 3.2rem;
+        }
+
+        #state {
+            font-size: 0.95rem;
+        }
+
+        .rcells,
+        .stats {
+            grid-template-columns: 1fr 1fr;
+            row-gap: 0.7rem;
+        }
+    }
+</style>
