@@ -250,7 +250,7 @@ import Layout from '../layouts/Layout.astro';
     function showReport(verdict, cells) {
         verdictEl.textContent = verdict;
         rcells.innerHTML = cells
-            .map((c) => '<div class="rcell"><div class="v">' + c.v + '</div><div class="l">' + c.l + '</div></div>')
+            .map((c) => '<div class="rcell"><div class="v' + (c.good ? ' good' : '') + '">' + c.v + '</div><div class="l">' + c.l + '</div></div>')
             .join('');
         report.hidden = false;
         statsEl.classList.add('gone');
@@ -424,11 +424,13 @@ import Layout from '../layouts/Layout.astro';
             else if (f > TARGET + 8) verdict += ' You start hot — ease into the tempo instead.';
             else if (Math.abs(l - f) <= 5) verdict += ' Held steady the whole way.';
         }
+        // with 30:2 breaths the pauses cap hands-on time near 75%, so "good" depends on the mode
+        const hoTarget = breathOn ? 70 : 90;
         showReport(verdict, [
             {v: zonePct(ivs) + '%', l: 'In zone'},
             {v: ivs.length ? Math.round(overall) : '—', l: 'Average'},
             {v: (f ?? '—') + ' → ' + (l ?? '—'), l: 'First→Last 30 s'},
-            {v: handsOn + '%', l: 'Hands-on'},
+            {v: handsOn + '%', l: 'Hands-on · ' + hoTarget + '+ good', good: handsOn >= hoTarget},
         ]);
         buildCurve();
     }
@@ -451,10 +453,13 @@ import Layout from '../layouts/Layout.astro';
                 if (seg.length > 1) segs.push(seg);
                 seg = [];
                 recent = [];
+                continue; // the pause-spanning interval must never enter the window
             }
             recent.push(times[i] - times[i - 1]);
             if (recent.length > 3) recent.shift();
-            if (recent.length >= 2) {
+            // wait for a full window — a lone slow restart interval would
+            // otherwise spike the first point of every segment
+            if (recent.length >= 3) {
                 const p = {t: (times[i] - tStart) / 1000, bpm: 60000 / avg(recent)};
                 seg.push(p);
                 curvePts.push(p);
@@ -974,6 +979,10 @@ import Layout from '../layouts/Layout.astro';
         font-size: 1rem;
         font-variant-numeric: tabular-nums;
         color: var(--color-text-heading);
+    }
+
+    :global(.page-cpr-trainer .rcell .v.good) {
+        color: var(--good);
     }
 
     :global(.page-cpr-trainer .rcell .l) {
