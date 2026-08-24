@@ -47,7 +47,13 @@ self.addEventListener('fetch', (event) => {
     }
 
     // The page itself: network-first so updates arrive, cache when offline.
+    // Scope is a prefix match, so siblings like /cpr-trainer also land here —
+    // only the metronome page itself may be cached under the /cpr/ key.
     if (request.mode === 'navigate') {
+        const path = new URL(request.url).pathname;
+        if (path !== '/cpr' && path !== '/cpr/') {
+            return;
+        }
         event.respondWith(
             (async () => {
                 try {
