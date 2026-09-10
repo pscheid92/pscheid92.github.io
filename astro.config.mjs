@@ -9,4 +9,8 @@ import icon from 'astro-icon';
 export default defineConfig({
     site: 'https://patrickscheid.de',
     integrations: [mdx(), sitemap(), icon()],
+    redirects: {
+        // the former CPR metronome page was folded into the trainer
+        '/cpr': '/cpr-trainer',
+    },
 });

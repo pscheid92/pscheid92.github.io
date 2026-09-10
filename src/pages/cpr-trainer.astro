@@ -4,18 +4,19 @@ import Layout from '../layouts/Layout.astro';
 
 <Layout
     title="CPR Rhythm Trainer (110 BPM) - Patrick Scheid"
-    description="Practice the CPR compression rhythm: tap along at 110 beats per minute, count to 30, and test how well you hold the tempo for a full two-minute cycle."
+    description="Learn the CPR chest compression rhythm: listen to a 110 beats per minute metronome, tap along, count to 30, and test how well you hold the tempo over a full two-minute cycle. A practice and education tool, not for use during a real resuscitation."
     pageClass="page-cpr-trainer"
 >
     <section class="trainer-shell" aria-labelledby="trainer-title">
         <div class="page-header">
             <p class="eyebrow">Training tool</p>
             <h1 id="trainer-title">CPR Rhythm Trainer</h1>
-            <p class="tagline">Tap the pad, count to 30, learn to hold 110 per minute.</p>
+            <p class="tagline">Hear the beat, tap the pad, learn to hold 110 per minute.</p>
         </div>
 
         <nav class="modes" aria-label="Training mode">
-            <button class="mode active" type="button" data-mode="free">Free practice</button>
+            <button class="mode active" type="button" data-mode="listen">Listen</button>
+            <button class="mode" type="button" data-mode="free">Free practice</button>
             <button class="mode" type="button" data-mode="twomin">2-min test</button>
         </nav>
 
@@ -67,10 +68,13 @@ import Layout from '../layouts/Layout.astro';
         </div>
 
         <p class="note">
-            Guideline for adult chest compressions: <strong>100–120 per minute</strong>, 5–6&nbsp;cm deep, full
-            recoil, cycles of 30 compressions to 2 breaths, switch rescuers every 2 minutes. Lost the beat? Think of
-            “Another One Bites the Dust” (~110) or “Stayin’ Alive” (~104). In a real emergency, open the
-            <a href="/cpr/">CPR metronome</a> — it keeps the beat so you don't have to. Not a substitute for CPR training.
+            What the guidelines teach for adult chest compressions: <strong>100–120 per minute</strong>, 5–6&nbsp;cm
+            deep, full recoil, cycles of 30 compressions to 2 breaths, switch rescuers every 2 minutes. Lost the beat?
+            Think of “Another One Bites the Dust” (~110) or “Stayin’ Alive” (~104).
+        </p>
+        <p class="note disclaimer">
+            This page is for practice and education only. It is not a medical device, not a substitute for a
+            certified CPR course, and not intended for use during a real resuscitation.
         </p>
     </section>
 </Layout>
@@ -102,8 +106,9 @@ import Layout from '../layouts/Layout.astro';
     const signed = (n) => (n >= 0 ? '+' : '−') + Math.abs(Math.round(n));
 
     /* ================= state ================= */
-    let mode = 'free';      // free | twomin
-    let phase = 'idle';     // free: idle|run|breath — twomin: idle|armed|run|breath|report
+    const shell = document.querySelector('.trainer-shell');
+    let mode = 'listen';    // listen | free | twomin
+    let phase = 'idle';     // listen/free: idle|run|breath — twomin: idle|armed|run|breath|report
     let breathOn = false;
 
     let times = [];             // tap timestamps of the current run
@@ -124,6 +129,8 @@ import Layout from '../layouts/Layout.astro';
 
     /* ================= audio ================= */
     let ac = null, master = null, metroOn = false, nextBeat = 0, schedTimer = 0;
+    const PERIOD = 60 / TARGET;
+    let lsSegStart = 0, lsSegBeats = 0, lsBeatsBefore = 0, lsStartedAt = 0; // listen mode
 
     function ensureAudio() {
         ac = ac || new (window.AudioContext || window.webkitAudioContext)();
@@ -173,8 +180,11 @@ import Layout from '../layouts/Layout.astro';
         // hidden tabs clamp timers to 1s, so schedule further ahead there
         const ahead = document.hidden ? 1.3 : 0.15;
         while (nextBeat < ac.currentTime + ahead) {
+            // listen mode with breaths: stop queueing at the end of a 30-beat cycle
+            if (mode === 'listen' && breathOn && lsSegBeats > 0 && (lsBeatsBefore + lsSegBeats) % 30 === 0) break;
             click(nextBeat);
-            nextBeat += 60 / TARGET;
+            nextBeat += PERIOD;
+            lsSegBeats++;
         }
     }
     function startMetro() {
@@ -182,6 +192,7 @@ import Layout from '../layouts/Layout.astro';
         nextBeat = ac.currentTime + 0.1;
         schedTimer = window.setInterval(schedule, 25);
         metroOn = true;
+        keepAwake(true);
         primaryBtn.textContent = 'Stop metronome';
         primaryBtn.classList.add('on');
     }
@@ -189,9 +200,33 @@ import Layout from '../layouts/Layout.astro';
         clearInterval(schedTimer);
         metroOn = false;
         silence(); // also kills already-scheduled clicks
+        keepAwake(false);
         primaryBtn.textContent = 'Start metronome';
         primaryBtn.classList.remove('on');
     }
+
+    /* ================= screen wake lock ================= */
+    let wakeLock = null, wakePending = false;
+    async function keepAwake(on) {
+        if (!('wakeLock' in navigator)) return;
+        try {
+            if (on && !wakeLock && !wakePending) {
+                wakePending = true;
+                wakeLock = await navigator.wakeLock.request('screen');
+                wakeLock.addEventListener('release', () => (wakeLock = null));
+            } else if (!on && wakeLock) {
+                await wakeLock.release();
+            }
+        } catch {
+            // denied or unsupported — the page works without it
+        } finally {
+            wakePending = false;
+        }
+    }
+    document.addEventListener('visibilitychange', () => {
+        // the browser drops the lock when the tab is hidden; take it again on return
+        if (!document.hidden && (metroOn || phase === 'run' || phase === 'breath')) keepAwake(true);
+    });
 
     /* ================= shared UI ================= */
     function press() {
@@ -290,8 +325,8 @@ import Layout from '../layouts/Layout.astro';
         );
     }
 
-    /* ================= breath pause (free + 2-min) ================= */
-    function startBreath() {
+    /* ================= breath pause (all modes) ================= */
+    function startBreath(onEnd) {
         const back = phase;
         phase = 'breath';
         clearTimeout(idleTimer);
@@ -301,17 +336,85 @@ import Layout from '../layouts/Layout.astro';
         countEl.textContent = Math.ceil(BREATH_MS / 1000);
         breathTimer = window.setInterval(() => {
             const r = end - performance.now();
-            if (r <= 0) {
-                clearInterval(breathTimer);
-                cueTone();
-                phase = back;
-                pendingBreak = true;
-                countEl.textContent = '—';
-                cycleEl.textContent = 'resume — tap!';
-                stateSet('Resume compressions', 'fast');
-                if (mode === 'free') armIdle();
-            } else countEl.textContent = Math.ceil(r / 1000);
+            if (r > 0) {
+                countEl.textContent = Math.ceil(r / 1000);
+                return;
+            }
+            clearInterval(breathTimer);
+            cueTone();
+            phase = back;
+            if (onEnd) {
+                onEnd();
+                return;
+            }
+            pendingBreak = true;
+            countEl.textContent = '—';
+            cycleEl.textContent = 'resume — tap!';
+            stateSet('Resume compressions', 'fast');
+            if (mode === 'free') armIdle();
         }, 100);
+    }
+
+    /* ================= listen & follow ================= */
+    function listenReadout(active) {
+        bpmEl.textContent = TARGET;
+        bpmEl.style.color = active ? colors.zone : '';
+        deltaEl.textContent = '';
+        setNeedle(active ? TARGET : null);
+        readout.classList.toggle('idle', !active);
+    }
+    function listenSegment() {
+        ensureAudio();
+        lsSegStart = nextBeat = ac.currentTime + 0.1;
+        lsSegBeats = 0;
+        schedTimer = window.setInterval(schedule, 25);
+        clearInterval(ticker);
+        ticker = window.setInterval(listenRender, 50);
+        metroOn = true;
+    }
+    function listenRender() {
+        timerEl.textContent = fmtT(performance.now() - lsStartedAt) + ' elapsed';
+        if (phase !== 'run') return; // the breath countdown owns the pad meanwhile
+        // derived from the audio clock, so a throttled background tab can't drift the count
+        const played = Math.min(lsSegBeats, Math.floor((ac.currentTime - lsSegStart) / PERIOD) + 1);
+        if (played < 1) return;
+        const n = lsBeatsBefore + played;
+        countEl.textContent = ((n - 1) % 30) + 1;
+        cycleEl.textContent = 'of 30 · cycle ' + (Math.floor((n - 1) / 30) + 1);
+        if (breathOn && n % 30 === 0) {
+            clearInterval(schedTimer);
+            lsBeatsBefore = n;
+            startBreath(listenResume);
+        }
+    }
+    function listenStart() {
+        clearTimers();
+        lsBeatsBefore = 0;
+        lsStartedAt = performance.now();
+        phase = 'run';
+        listenReadout(true);
+        timerEl.hidden = false;
+        timerEl.textContent = '0:00 elapsed';
+        stateSet('Listen and follow', 'zone');
+        primaryBtn.textContent = 'Stop metronome';
+        primaryBtn.classList.add('on');
+        keepAwake(true);
+        listenSegment();
+    }
+    function listenResume() {
+        phase = 'run';
+        countEl.textContent = '—';
+        cycleEl.textContent = 'of 30 · cycle ' + (lsBeatsBefore / 30 + 1);
+        stateSet('Listen and follow', 'zone');
+        listenSegment();
+    }
+    function listenStop() {
+        stopMetro();
+        clearTimers();
+        timerEl.hidden = false; // keep the elapsed time readable after stopping
+        phase = 'idle';
+        listenReadout(false);
+        stateSet('Stopped — tap to restart', 'none');
     }
 
     /* ================= free practice ================= */
@@ -364,6 +467,7 @@ import Layout from '../layouts/Layout.astro';
     }
     function cancelTwoMin(msg) {
         clearTimers();
+        keepAwake(false);
         phase = 'idle';
         primaryBtn.textContent = 'Start 2-minute test';
         resetRun();
@@ -373,6 +477,7 @@ import Layout from '../layouts/Layout.astro';
         if (phase === 'armed') {
             tStart = t;
             phase = 'run';
+            keepAwake(true);
             ticker = window.setInterval(() => {
                 const el = performance.now() - tStart;
                 timerEl.textContent = fmtT(Math.max(0, TEST_MS - el)) + ' left';
@@ -396,6 +501,7 @@ import Layout from '../layouts/Layout.astro';
     }
     function endTwoMin() {
         clearTimers();
+        keepAwake(false);
         endTone();
         phase = 'report';
         primaryBtn.textContent = 'Start 2-minute test';
@@ -505,6 +611,7 @@ import Layout from '../layouts/Layout.astro';
 
     /* ================= mode switching & controls ================= */
     const HINTS = {
+        listen: 'Hear the tempo before you tap it. Count out loud with the beat, one to thirty, then start over.',
         free: 'Click the pad, tap your trackpad, or press <kbd>space</kbd>. Count out loud to 30.',
         twomin: 'Two minutes, the real switch-rescuer interval. Count out loud in 30s and don’t stop.',
     };
@@ -512,24 +619,30 @@ import Layout from '../layouts/Layout.astro';
         if (metroOn) stopMetro();
         clearTimers();
         silence();
+        keepAwake(false);
         mode = m;
+        shell.dataset.mode = m;
         phase = 'idle';
         totalTaps = 0;
         resetRun();
         hideReport();
+        statsEl.classList.toggle('gone', m === 'listen'); // nothing to measure while only listening
         document.querySelectorAll('.modes .mode').forEach((b) => b.classList.toggle('active', b.dataset.mode === m));
         hintEl.innerHTML = HINTS[m];
-        resetBtn.disabled = m !== 'free'; // keep it in place — hiding it would shift the row
+        resetBtn.disabled = m === 'twomin'; // keep it in place — hiding it would shift the row
         primaryBtn.classList.remove('on');
-        primaryBtn.textContent = m === 'free' ? 'Start metronome' : 'Start 2-minute test';
-        stateSet(m === 'free' ? 'Tap to start' : 'Press start when ready', 'none');
+        primaryBtn.textContent = m === 'twomin' ? 'Start 2-minute test' : 'Start metronome';
+        if (m === 'listen') listenReadout(false);
+        stateSet(m === 'twomin' ? 'Press start when ready' : 'Tap to start', 'none');
     }
     document.querySelectorAll('.modes .mode').forEach((b) => {
         b.addEventListener('click', () => setMode(b.dataset.mode));
     });
 
     primaryBtn.addEventListener('click', () => {
-        if (mode === 'free') {
+        if (mode === 'listen') {
+            metroOn ? listenStop() : listenStart();
+        } else if (mode === 'free') {
             metroOn ? stopMetro() : startMetro();
         } else {
             phase === 'idle' || phase === 'report' ? armTwoMin() : cancelTwoMin();
@@ -543,6 +656,10 @@ import Layout from '../layouts/Layout.astro';
         breathBtn.setAttribute('aria-pressed', String(breathOn));
     });
     resetBtn.addEventListener('click', () => {
+        if (mode === 'listen') {
+            setMode('listen'); // stops the beat and clears the counters
+            return;
+        }
         clearTimers();
         phase = 'idle';
         totalTaps = 0;
@@ -556,7 +673,10 @@ import Layout from '../layouts/Layout.astro';
 
     /* ================= input ================= */
     function tap(t) {
-        if (mode === 'twomin') twoTap(t);
+        if (mode === 'listen') {
+            press();
+            metroOn ? listenStop() : listenStart();
+        } else if (mode === 'twomin') twoTap(t);
         else freeTap(t);
     }
     pad.addEventListener('pointerdown', (e) => {
@@ -572,7 +692,7 @@ import Layout from '../layouts/Layout.astro';
         tap(performance.now());
     });
 
-    setMode('free');
+    setMode('listen');
 
     if (import.meta.env.DEV) {
         // debug hook for driving the page in tests
@@ -608,7 +728,8 @@ import Layout from '../layouts/Layout.astro';
             'gauge   pad'
             'aux     hint'
             'aux     controls'
-            'note    note';
+            'note    note'
+            'disclaimer disclaimer';
         align-content: start;
         justify-items: center;
         column-gap: 2rem;
@@ -628,7 +749,7 @@ import Layout from '../layouts/Layout.astro';
             grid-template-columns: 1fr;
             grid-template-areas:
                 'head' 'modes' 'readout' 'state' 'timer'
-                'gauge' 'pad' 'hint' 'controls' 'aux' 'note';
+                'gauge' 'pad' 'hint' 'controls' 'aux' 'note' 'disclaimer';
         }
     }
 
@@ -857,6 +978,11 @@ import Layout from '../layouts/Layout.astro';
 
     #pad.beat {
         border-color: var(--pulse);
+    }
+
+    /* listen mode: the pad itself pulses with every beat */
+    .trainer-shell[data-mode='listen'] #pad.beat {
+        transform: scale(1.04);
     }
 
     #count {
@@ -1115,6 +1241,14 @@ import Layout from '../layouts/Layout.astro';
         font-size: 0.92rem;
         line-height: 1.6;
         text-align: center;
+    }
+
+    .note.disclaimer {
+        grid-area: disclaimer;
+        margin-top: 0.9rem;
+        border-top: none;
+        padding-top: 0;
+        font-size: 0.85rem;
     }
 
     @media (prefers-reduced-motion: reduce) {
