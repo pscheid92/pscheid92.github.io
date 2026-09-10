@@ -1,0 +1,913 @@
+{
+  "title": "Handbüchlein der stoischen Moral (Encheiridion)",
+  "author": "Epiktet (zusammengestellt von Arrian)",
+  "translator": "Carl Conz",
+  "translation_year": 1864,
+  "license": "gemeinfrei",
+  "source": "http://www.zeno.org/Philosophie/M/Epiktet/Handb%C3%BCchlein+der+stoischen+Moral",
+  "notes": "Orthographie der Vorlage von 1864 beibehalten. Kapitelzählung 1–53 entspricht der Standardzählung; die Unterabschnitte (sections) und deren Überschriften stammen vom Übersetzer. In Kapitel 53 ist der Einleitungssatz section 0, die vier Zitate sind sections 1–4. Seitenzahlen der Vorlage entfernt.",
+  "chapters": [
+    {
+      "number": 1,
+      "roman": "I",
+      "sections": [
+        {
+          "number": 1,
+          "heading": "Unser Eigenthum.",
+          "text": "Einige Dinge sind in unserer Gewalt, andere nicht. In unserer Gewalt sind: Meinung, Trieb, Begierde, Widerwille: kurz: Alles, was unser eigenes Werk ist. – Nicht in unserer Gewalt sind: Leib, Vermögen, Ansehen, Aemter, kurz: Alles, was nicht unser eigenes Werk ist."
+        },
+        {
+          "number": 2,
+          "heading": "Vorzüge des Eigenthums.",
+          "text": "Und die Dinge, welche in unserer Gewalt stehen, sind von Natur frei; sie können nicht verhindert, noch in Fesseln geschlagen werden. Die Dinge aber, welche nicht in unserer Gewalt stehen, sind schwach, und völlig abhängig; sie können verhindert und entfremdet werden."
+        },
+        {
+          "number": 3,
+          "heading": "Verwirrung aus Verwechslung.",
+          "text": "Wofern du nun Dinge, die von Natur völlig abhängig sind, für frei, und Fremdes für Eigenthum ansiehst, so vergiß nicht, daß du auf Hindernisse stoßen, in Trauer und Unruhe gerathen, und Götter und Menschen anklagen wirst. Wenn du aber nur, was wirklich dein ist, als dein Eigenthum betrachtest, das Fremde aber so, wie es ist, als Fremdes, so wird dir niemand je Zwang anthun, niemand wird dich hindern; du wirst keinen schelten, keinen anklagen, wirst nichts thun wider Willen, niemand wird dich kränken, du wirst keinen Feind haben, kurz: du wirst keinerlei Schaden leiden."
+        },
+        {
+          "number": 4,
+          "heading": "Keine Halbheit!",
+          "text": "Wenn du nun so Großes begehrst, so bedenke, daß du nicht mit halbem Eifer darnach greifen, sondern einiges völlig verleugnen, anderes für jetzt aufschieben mußt. Wofern du aber sowohl jenes begehrst, als auch herrschen und reich sein willst, so wirst du vielleicht nicht einmal dieses letztere erlangen, gerade weil du zugleich nach dem ersteren strebst. Gänzlich verfehlen aber wirst du dasjenige, woraus allein Freiheit und Glückseligkeit entspringt."
+        },
+        {
+          "number": 5,
+          "heading": "Aeußere Dinge – was gehen sie dich an?",
+          "text": "Bestrebe dich, jeder unangenehmen Vorstellung sofort zu begegnen mit den Worten: du bist nur eine Vorstellung, und durchaus nicht das, als was du erscheinst. Alsdann untersuche dieselbe, und prüfe sie nach den Regeln, welche du hast, und zwar zuerst und allermeist nach der, ob es etwas betrifft, was in unserer Gewalt ist, oder etwas, das nicht in unserer Gewalt ist; und wenn es etwas betrifft, das nicht in unserer Gewalt ist, so sprich nur jedesmal sogleich: Geht mich nichts an!"
+        }
+      ],
+      "commentary": "Dieses Kapitel ist das ganze Handbüchlein im Kleinen. Epiktet teilt alles, womit wir es zu tun haben, in zwei Klassen: das, was „in unserer Gewalt“ steht (griechisch eph' hēmin), und das, was nicht in unserer Gewalt steht. Auf unserer Seite der Linie liegen die vier inneren Tätigkeiten, die Conz mit Meinung, Trieb, Begierde und Widerwille übersetzt: unsere Urteile über die Dinge, unsere Handlungsimpulse, das, was wir haben wollen, und das, was wir vermeiden wollen. Alles andere, der Körper, das Vermögen, das Ansehen, die Ämter, liegt jenseits der Linie. Es kann uns genommen, verhindert, beschädigt werden, und zwar von außen, ohne dass wir dem etwas entgegensetzen könnten.\n\nDas Unglück entsteht nach Epiktet nicht aus den Dingen, sondern aus der Verwechslung der beiden Klassen: wenn man Geliehenes für Eigentum hält und dann klagt, sobald es zurückgefordert wird. Wer diese Verwechslung vermeidet, so das große Versprechen des dritten Abschnitts, hat keinen Feind mehr und leidet keinen Schaden. Der vierte Abschnitt warnt, dass sich dieses Ziel nicht nebenbei erreichen lässt, neben dem Streben nach Macht und Reichtum. Wer beides will, verfehlt vermutlich beides.\n\nDer fünfte Abschnitt liefert die praktische Übung, auf die alles hinausläuft. Jede beunruhigende Vorstellung soll man sofort anhalten („du bist nur eine Vorstellung“), prüfen, auf welcher Seite der Linie sie liegt, und wenn sie außerhalb liegt, mit dem Satz „Geht mich nichts an!“ abtun. Jedes spätere Kapitel ist eine Anwendung dieses einen Tests."
+    },
+    {
+      "number": 2,
+      "roman": "II",
+      "sections": [
+        {
+          "number": 1,
+          "heading": "Du hast dein Glück in der Hand.",
+          "text": "Bedenke, daß die Begierde verheißt, wir werden erlangen, was wir begehren; der Widerwille aber verheißt, es werde uns nicht widerfahren, was er zu meiden sucht. Wer nun nicht erlangt, was er begehrt, ist unglücklich, und wem widerfährt, was er gerne vermeiden möchte, ist es doppelt. Wenn du aber bloß dasjenige zu meiden suchst, was der Natur der Dinge, die in deiner Gewalt sind, zuwider ist, so wird nichts von dem widerfahren, was du meiden willst. Willst du aber Krankheit meiden, oder Armuth, oder Tod, so wirst du unglücklich sein."
+        },
+        {
+          "number": 2,
+          "heading": "Das Sicherste für den Anfang.",
+          "text": "Hinweg also mit deinem Widerwillen von allem dem, was nicht in unsrer Gewalt ist, und trage ihn über auf das, was der Natur der Dinge, die in unsrer Gewalt sind, zuwider ist. Die Begierde aber entferne vorerst ganz. Denn wenn du etwas von dem begehrst, was nicht in unserer Gewalt ist, so mußt du nothwendiger Weise unglücklich sein. Von den Dingen aber, die in unserer Gewalt sind, und welche zu begehren rühmlich wäre, ist dir noch gar nichts bekannt. Nur Trieb und Abneigung laß walten; aber sachte, mit Auswahl und mit Zurückhaltung."
+        }
+      ],
+      "commentary": "Begierde und Widerwille sind zwei Versprechen. Die Begierde verspricht, dass wir bekommen, was wir wollen; der Widerwille verspricht, dass uns erspart bleibt, was wir fürchten. Beide Versprechen werden gebrochen, sobald sie auf Dinge gerichtet sind, die nicht in unserer Gewalt stehen. Wer Krankheit, Armut oder den Tod vermeiden will, wird irgendwann scheitern, und zwar mit Sicherheit, denn keines dieser Dinge lässt sich dauerhaft abwenden. Epiktet nennt den, dem widerfährt, was er fürchtet, „doppelt“ unglücklich: einmal wegen der Sache, einmal wegen des gebrochenen Versprechens.\n\nDie Lösung ist nicht, weniger zu fühlen, sondern den Widerwillen umzulenken: weg von Krankheit und Armut, hin auf das einzige, was wirklich ein Übel ist, nämlich den falschen Gebrauch der eigenen Urteilskraft. Das ist der einzige Gegenstand, bei dem das Versprechen des Widerwillens gehalten werden kann, weil es ganz bei uns liegt, ob wir ihm nachgeben.\n\nDer zweite Abschnitt ist ausdrücklich eine Anfängerregel. Die Begierde soll „vorerst“ ganz ausgesetzt werden, nicht weil Wünschen an sich schlecht wäre, sondern weil der Anfänger noch nicht weiß, welche inneren Güter des Wünschens wert sind. Bis dahin soll er nur über Trieb und Abneigung handeln, und auch das „sachte, mit Auswahl und mit Zurückhaltung“. In den Lehrgesprächen beschreibt Epiktet dies als das erste von drei Übungsfeldern; die beiden anderen betreffen das Handeln und das Urteilen."
+    },
+    {
+      "number": 3,
+      "roman": "III",
+      "sections": [
+        {
+          "number": 1,
+          "heading": "Gemüthsruhe.",
+          "text": "Bei Allem, was die Seele ergötzt, oder Nutzen schafft, oder dir lieb und werth ist, vergiß nicht, ausdrücklich zu erwägen, welcher Art es sei, und fange beim Geringsten an. Wenn du einen Topf liebst, denke: ich liebe einen Topf. Zerbricht er dann, so wird es dich nicht anfechten. Wenn du dein Kind oder Weib herzest, so sage dir, daß du einen Menschen herzest. Stirbt er, so wird es dich nicht anfechten."
+        }
+      ],
+      "commentary": "Bevor man sich an etwas hängt, soll man sich sagen, was es ist. Ein Topf ist zerbrechlich; wenn er zerbricht, ist nichts Unerwartetes geschehen. Das ist noch harmlos. Dann macht Epiktet denselben Schritt mit Frau und Kind: Wer sie liebt, liebt Menschen, und Menschen sind sterblich. Stirbt einer, so ist auch das nichts, was außerhalb der Natur der Sache läge.\n\nKaum eine Stelle des Handbüchleins wirkt auf moderne Leser so kalt wie diese, und der Schock ist beabsichtigt. Epiktet verbietet nicht die Liebe. Er verlangt, dass man den Sterblichen als Sterblichen liebt, so dass der Tod nicht als Verrat ankommt, sondern als das, was von Anfang an zur Sache gehörte. Die Reihenfolge „fange beim Geringsten an“ ist dabei eine echte Übungsanweisung: Man übt am Topf, um später beim Menschen bestehen zu können.\n\nDie Stoiker nannten diese Übung das Vorausbedenken der Übel, lateinisch praemeditatio malorum. Seneca und Marc Aurel empfehlen sie ebenso. Der Gedanke dahinter ist, dass der größte Teil des Schmerzes bei einem Verlust aus der Überraschung stammt, aus dem Gefühl, so etwas hätte nicht passieren dürfen. Wem klar ist, was er liebt, dem bleibt beim Verlust die Trauer, aber die Empörung fällt weg."
+    },
+    {
+      "number": 4,
+      "roman": "IV",
+      "sections": [
+        {
+          "number": 1,
+          "heading": "Wie man die Fassung behauptet.",
+          "text": "Wenn du an ein Geschäft gehen willst, so erinnere dich beiläufig, wie das Geschäft beschaffen sei. – Wenn du zum Baden gehst, stelle dir vor, was im Bad zu geschehen pflegt, wie sie einander mit Wasser spritzen, einander stoßen, schimpfen und bestehlen. So wirst du mit größerer Sicherheit zu Werk gehen, indem du dabei alsbald zu dir selbst sprichst: Ich will jetzt baden, zugleich aber auch meinen der Natur gemäßen Grundsatz festhalten. Und so bei jedem Geschäfte. Auf diese Weise wirst du dann, wenn dir beim Baden etwas in den Weg kommt, sogleich den Trost bei der Hand haben: Ich wollte ja nicht dieses allein, sondern auch meinen naturgemäßen Grundsatz festhalten. Ich werde ihn aber nicht festhalten, wenn ich mich über das Vorgefallene ärgere."
+        }
+      ],
+      "commentary": "Vor jedem Vorhaben soll man sich klarmachen, was es tatsächlich mit sich bringt. Das Beispiel ist das öffentliche Bad. Römische Bäder waren voll, laut und rau; die Beschreibung mit Spritzen, Stoßen, Schimpfen und Stehlen ist keine komische Übertreibung, sondern realistisch. Wer mit dieser Erwartung hineingeht, kann von einer Rempelei nicht mehr überrascht werden.\n\nDer eigentliche Kunstgriff ist die doppelte Absicht. Man wollte baden, gewiss. Aber man wollte zugleich „den der Natur gemäßen Grundsatz festhalten“, also die eigene Urteilskraft in Ordnung halten. Das erste Ziel kann durch andere vereitelt werden, das zweite nicht, denn es liegt ganz bei einem selbst. Wer sich im Bad ärgert, gibt ausgerechnet das Ziel auf, das ihm niemand hätte nehmen können.\n\nDas Kapitel zeigt, wie Epiktet die Regel aus Kapitel 1 in den Alltag holt. Es geht nicht um große Schicksalsschläge, sondern um das Gedränge im Bad, also um genau die Art von Kleinigkeit, an der die meisten Menschen täglich ihre Ruhe verlieren. Die Übung besteht darin, jedem Vorhaben eine zweite, unverlierbare Absicht mitzugeben."
+    },
+    {
+      "number": 5,
+      "roman": "V",
+      "sections": [
+        {
+          "number": 1,
+          "heading": "Der schrecklichste der Schrecken.",
+          "text": "Nicht die Dinge selbst, sondern die Meinungen von den Dingen beunruhigen die Menschen. So ist z.B. der Tod nichts Schreckliches, sonst wäre er auch dem Sokrates so erschienen; sondern die Meinung von dem Tod, daß er etwas Schreckliches sei, das ist das Schreckliche. Wenn wir nun auf Hindernisse stoßen, oder beunruhigt, oder bekümmert sind, so wollen wir niemals einen andern anklagen, sondern uns selbst, das heißt: unsere eigenen Meinungen. – Sache des Unwissenden ist es, andere wegen seines Mißgeschicks anzuklagen; Sache des Anfängers in der Weisheit, sich selbst anzuklagen; Sache des Weisen, weder einen andern, noch sich selbst anzuklagen."
+        }
+      ],
+      "commentary": "Der meistzitierte Satz des Buches steht hier: Nicht die Dinge selbst beunruhigen die Menschen, sondern ihre Meinungen von den Dingen. Der Tod ist der Prüfstein. Wäre der Tod an sich schrecklich, dann wäre er auch Sokrates so erschienen, der aber ruhig in ihn gegangen ist. Also muss das Schreckliche in dem Urteil liegen, dass der Tod schrecklich sei. Dieses Urteil hat man selbst gefällt, und deshalb kann man es auch selbst zurücknehmen.\n\nDaraus folgt eine Regel für den Umgang mit Ärger und Hindernissen: niemanden anklagen als sich selbst, und genauer: die eigenen Meinungen. Das ist nicht als Selbstvorwurf gemeint, sondern als Hinweis darauf, wo die Reparatur anzusetzen hat. Wer andere beschuldigt, sucht die Ursache an einer Stelle, an der er nichts ändern kann.\n\nDer Schlusssatz gibt eine Leiter mit drei Stufen. Der Ungebildete klagt andere an. Der Anfänger klagt sich selbst an. Der Weise klagt niemanden mehr an, weder andere noch sich, weil bei ihm das falsche Urteil gar nicht erst entsteht und es deshalb nichts mehr zu korrigieren gibt. Die Selbstanklage ist also ein Durchgangsstadium, nicht das Ziel."
+    },
+    {
+      "number": 6,
+      "roman": "VI",
+      "sections": [
+        {
+          "number": 1,
+          "heading": "Thörichter Stolz.",
+          "text": "Sei auf keinen fremden Vorzug stolz. Wenn das Pferd sich stolz erhebend spräche: wie schön bin ich! so könnte man sich das gefallen lassen. Wenn aber du selbst voll Stolz sprächest: welch ein schönes Pferd habe ich! so wisse, daß du auf die Vorzüge deines Pferdes stolz bist. Was ist nun aber dein? – Der Gebrauch deiner Vorstellungen! – Wenn du also von deinen Vorstellungen einen naturgemäßen Gebrauch machst, dann magst du stolz sein; denn alsdann bist du stolz auf einen Vorzug, der dir gehört."
+        }
+      ],
+      "commentary": "Man soll nicht auf einen Vorzug stolz sein, der einem anderen gehört. Wenn das Pferd sagte „wie schön bin ich“, ließe man es gelten. Wenn aber der Reiter sagt „welch ein schönes Pferd habe ich“, dann ist er stolz auf die Vorzüge des Pferdes und nicht auf eigene. Dasselbe gilt für Reichtum, Herkunft, Amt oder gutes Aussehen: lauter Dinge, die man hat, aber nicht ist.\n\nWas ist dann wirklich das eigene? Epiktets Antwort lautet „der Gebrauch deiner Vorstellungen“, griechisch chrēsis phantasiōn. Eine Vorstellung stellt sich ungefragt ein: Man sieht das Pferd, es erscheint schön. Ob man dieser Vorstellung zustimmt, ob man aus ihr die Folgerung „also bin ich etwas“ zieht oder nicht, das ist der eigene Akt. Genau hier, und nur hier, kann man sich auszeichnen.\n\nDer Satz ist ein Schlüsselbegriff der ganzen Lehre. In den Lehrgesprächen sagt Epiktet, der Mensch sei nichts anderes als der Gebrauch seiner Vorstellungen; alles Übrige, auch der Körper, sei Zubehör. Der Stolz, den das Kapitel erlaubt, ist deshalb kein Stolz auf Besitz, sondern auf eine Tätigkeit: darauf, die eintreffenden Eindrücke naturgemäß verarbeitet zu haben."
+    },
+    {
+      "number": 7,
+      "roman": "VII",
+      "sections": [
+        {
+          "number": 1,
+          "heading": "Zum Sterben fertig!",
+          "text": "Wenn du auf einer Seereise, während das Schiff im Hafen liegt, ausgehst, um Wasser zu schöpfen, so hebst du wohl nebenbei auch ein Muschelchen oder Zwiebelchen am Wege auf; deine Gedanken aber mußt du auf das Schiff gerichtet haben, und fleißig zurückschauen, ob nicht etwa der Steuermann rufe; und wenn er ruft, so mußt du alle jene Dinge zurücklassen, damit du nicht gebunden hineingeworfen werdest, wie die Schafe. So ist's auch im Leben. Wenn dir statt Zwiebelchen und Muschelchen ein Weibchen oder Kindchen geschenkt wird, so wird nichts dagegen einzuwenden sein. Wenn aber der Steuermann ruft, so renne zum Schiff und laß alle jene Dinge zurück, ohne dich auch nur umzuschauen. Bist du aber ein Greis, so entferne dich nicht einmal weit vom Schiff, damit du nicht zurückbleibest, wann jener ruft."
+        }
+      ],
+      "commentary": "Das Leben ist ein Zwischenhalt auf einer Seereise. Wenn das Schiff im Hafen liegt, darf man an Land gehen, Wasser holen und nebenbei ein Muschelchen oder Zwiebelchen aufheben. Aber man behält das Schiff im Blick und hört auf den Ruf des Steuermanns. Wenn er ruft, lässt man alles liegen und läuft zurück, sonst wird man gebunden hineingeworfen „wie die Schafe“.\n\nDann werden die Muscheln und Zwiebeln durch „ein Weibchen oder Kindchen“ ersetzt. Die Verkleinerungsformen stehen schon im Griechischen und sind kein Zufall: Frau und Kind werden absichtlich in dieselbe Reihe wie die Strandfunde gestellt. Der Steuermann ist der Tod. Epiktet sagt nicht, man solle diese Geschenke ausschlagen; „es wird nichts dagegen einzuwenden sein“. Er sagt, man solle sie so halten, dass man sie loslassen kann, ohne sich umzuschauen.\n\nDer letzte Satz gilt den Alten. Wer alt ist, soll sich vom Schiff nicht mehr weit entfernen, also keine großen neuen Bindungen mehr eingehen und keine langen Pläne mehr machen, damit er nicht zurückbleibt, wenn der Ruf kommt. Das Bild vom Schiff, das jederzeit ablegen kann, ist die Vorstufe zum ausdrücklichen Gedanken an den Tod in Kapitel 21."
+    },
+    {
+      "number": 8,
+      "roman": "VIII",
+      "sections": [
+        {
+          "number": 1,
+          "heading": "Schwimme nicht gegen den Strom.",
+          "text": "Verlange nicht, daß die Dinge gehen, wie du es wünschest, sondern wünsche sie so, wie sie gehen, und dein Leben wird ruhig dahin fließen."
+        }
+      ],
+      "commentary": "Das kürzeste Kapitel ist zugleich das dichteste. Zu verlangen, dass die Dinge so gehen, wie man es wünscht, ist eine Forderung an etwas, das nicht in unserer Gewalt steht, und diese Forderung wird abgewiesen werden. Wer stattdessen wünscht, dass die Dinge so gehen, wie sie gehen, beseitigt die Reibung zwischen Wunsch und Welt. Das Ergebnis ist das, was die Stoiker euroia nannten, das gute Fließen des Lebens, das Conz mit „ruhig dahinfließen“ wiedergibt.\n\nDer Satz wird oft als Aufforderung zur Passivität gelesen, und das ist ein Missverständnis. Epiktet spricht vom Wünschen, nicht vom Handeln. Man darf weiterhin arbeiten, um etwas zu verändern, und soll es an der richtigen Stelle auch. Was man nicht soll, ist den eigenen Seelenfrieden vom Ausgang abhängig machen. Der Landwirt bestellt das Feld und wünscht sich dann das Wetter, das kommt.\n\nHinter dem Satz steht die stoische Überzeugung, dass der Weltlauf vernünftig geordnet ist. Wer will, was geschieht, will damit zugleich, was die Vernunft der Welt will. Das Kapitel 31 über die Frömmigkeit entfaltet diese Seite des Gedankens; hier steht nur die praktische Folge."
+    },
+    {
+      "number": 9,
+      "roman": "IX",
+      "sections": [
+        {
+          "number": 1,
+          "heading": "Der Wille ist frei.",
+          "text": "Krankheit ist ein Hinderniß des Körpers, aber nicht des Willens, wenn er nicht selbst will. Lähmung ist ein Hinderniß des Fußes, aber nicht des Willens. Und so denke bei allem, was dir begegnet; denn du wirst finden, daß es wohl ein Hinderniß für etwas anderes ist, aber nicht für dich."
+        }
+      ],
+      "commentary": "Krankheit hindert den Körper, Lähmung hindert das Bein, aber keines von beiden hindert den Willen, es sei denn, der Wille lässt sich hindern. Conz' „Wille“ übersetzt prohairesis, das Vermögen der Entscheidung, das Epiktet als das eigentliche Selbst des Menschen betrachtet. Alles andere, auch der Körper, ist etwas, das man hat, nicht etwas, das man ist.\n\nDas Beispiel hat eine persönliche Seite. Epiktet war als Sklave nach Rom gekommen und ging zeitlebens hinkend, nach der Überlieferung wegen einer Verletzung, die ihm sein Herr zugefügt hatte. Wenn er über Lähmung spricht, spricht er nicht abstrakt.\n\nDie Regel am Schluss ist allgemein: Bei allem, was einem begegnet, soll man fragen, wofür es tatsächlich ein Hindernis ist. Man wird finden, dass es immer etwas anderes trifft, den Fuß, das Vermögen, den Ruf, und niemals „dich“. Der Satz setzt voraus, dass man das „Ich“ bereits an der richtigen Stelle angesiedelt hat, nämlich in der Urteilskraft. Genau das ist die Arbeit, die die Kapitel 1 und 6 verlangen."
+    },
+    {
+      "number": 10,
+      "roman": "X",
+      "sections": [
+        {
+          "number": 1,
+          "heading": "Versuchung und Widerstand.",
+          "text": "Vergiß nicht, bei jedem Vorfall in dich zu gehen, und zu untersuchen, welches Mittel du besitzest, um daraus Nutzen zu ziehen. Erblickst du einen Schönen oder eine Schöne, so wirst du ein Mittel dagegen finden, – die Selbstbeherrschung. Kommt Anstrengung, so findest du Ausdauer; kommt Schmach, so findest du Kraft zum Erdulden des Bösen. Und wenn du dich so gewöhnst, so wird dich die Vorstellung nicht hinreißen."
+        }
+      ],
+      "commentary": "Jede Lage bringt ihr eigenes Mittel mit. Ein schöner Mensch ruft die Selbstbeherrschung auf den Plan, Anstrengung die Ausdauer, Schmach die Kraft zum Ertragen. Das griechische Wort für das, was man in sich findet, ist dynamis, ein Vermögen, eine Kraft, die man bereits besitzt und die durch den Anlass hervorgerufen wird.\n\nDie Übung besteht darin, jede Vorstellung mit einer Gegenfrage zu empfangen: Welche Tugend verlangt das jetzt von mir? Wer so fragt, ist nicht mehr das Objekt der Vorstellung, sondern ihr Prüfer. Epiktet verspricht, dass der Eindruck mit der Gewöhnung an diese Frage seinen Sog verliert.\n\nBemerkenswert ist die Umkehrung, die das Kapitel vornimmt. Versuchung, Mühsal und Beleidigung erscheinen zunächst als Widrigkeiten, als das, was der Ruhe im Wege steht. Hier werden sie zu Gelegenheiten, ohne die die entsprechende Tugend gar nicht in Erscheinung treten könnte. Man kann nicht ausdauernd sein, ohne dass etwas anstrengend ist. Diese Sicht auf Schwierigkeiten als Trainingsgelegenheiten kehrt in Kapitel 18 wieder, wo sogar das böse Omen zur Gelegenheit wird."
+    },
+    {
+      "number": 11,
+      "roman": "XI",
+      "sections": [
+        {
+          "number": 1,
+          "heading": "Der Weise verliert nichts.",
+          "text": "Sage nie von einem Ding: ich habe es verloren; sondern: ich habe es zurückgegeben. Dein Kind ist gestorben; – es ist zurückgegeben worden. Dein Weib ist gestorben; – es ist zurückgegeben worden. Dein Landgut wurde dir genommen. – Nun also auch dieses ist nur zurückgegeben worden. – »Aber der es dir genommen hat, ist ein Schurke.« – Was geht es aber dich an, durch wen es dir derjenige wieder abgefordert hat, der es dir gab? – So lange er es aber dir überläßt, behandle es als fremdes Gut, so wie die Reisenden die Herberge."
+        }
+      ],
+      "commentary": "Sag nie „ich habe es verloren“, sondern „ich habe es zurückgegeben“. Kind, Frau und Landgut waren Leihgaben, und der Verleiher hat sie zurückgefordert. Dass die Rückforderung durch einen Schurken erfolgte, ändert nichts, denn man hat es mit dem zu tun, der gegeben hat, nicht mit dem Boten, durch den er zurücknimmt.\n\nDas Kapitel ist die praktische Form der Regel aus Kapitel 3. Dort sollte man sich vor dem Verlust klarmachen, was man liebt; hier wird die Sprache beim Verlust selbst geändert. Die Wortwahl ist keine Kleinigkeit. „Verloren“ enthält den Anspruch, dass die Sache einem gehört hätte; „zurückgegeben“ enthält das Eingeständnis, dass sie nie ganz die eigene war. Mit der Wortwahl ändert sich das Urteil, und mit dem Urteil die Empfindung.\n\nDas Schlussbild ist die Herberge. Reisende benutzen das Zimmer, richten sich ein, verhalten sich anständig darin, halten es aber nicht für ihr Haus. So soll man auch das behandeln, was einem für eine Weile überlassen ist: sorgfältig, aber ohne die Vorstellung, es sei auf Dauer das eigene. Die Stoiker sahen darin keine Gleichgültigkeit, sondern die einzig angemessene Form von Besitz für ein sterbliches Wesen."
+    },
+    {
+      "number": 12,
+      "roman": "XII",
+      "sections": [
+        {
+          "number": 1,
+          "heading": "Fort mit Sorgen.",
+          "text": "Willst du Fortschritte machen, so mußt du Gedanken, wie die folgenden, fahren lassen: Wenn ich das Meinige vernachläßige, so werde ich kein Brod haben; wenn ich meinen Jungen nicht züchtige, so wird er ein Bösewicht werden. Denn besser ist es, Hunger sterben, frei von Traurigkeit und Furcht, als im Ueberfluß leben mit Unruhe im Herzen; und besser ist's, daß der Junge ein Bösewicht werde, als daß du unglücklich seiest."
+        },
+        {
+          "number": 2,
+          "heading": "Was kostet Gemüthsruhe?",
+          "text": "Fange also mit geringfügigen Dingen an. Man verschüttet dir dein Bischen Oel, man stiehlt dir dein Restchen Wein. Denke dabei: so theuer kauft man Gelassenheit, so theuer Gemüthsruhe. Umsonst bekommt man nichts."
+        }
+      ],
+      "commentary": "Die Sorge um Folgen ist das Erste, was ein Schüler ablegen muss. „Wenn ich das Meinige vernachlässige, werde ich kein Brot haben; wenn ich meinen Jungen nicht züchtige, wird er ein Bösewicht.“ Epiktets Antwort ist hart: Besser hungernd sterben ohne Furcht und Trauer als im Überfluss leben mit Unruhe im Herzen; und besser, der Junge werde schlecht, als dass du unglücklich seiest.\n\nDer „Junge“ ist im Griechischen ein junger Sklave, kein Sohn. Das mildert die Stelle etwas, ändert aber nichts an der Logik. Epiktet behauptet nicht, das Brot oder die Erziehung seien unwichtig. Er behauptet, dass beides nicht in unserer Gewalt steht und deshalb nicht der Gegenstand sein darf, an dem die eigene Ruhe hängt. Man kann für Brot arbeiten und den Jungen erziehen, und soll es; nur die Angst um den Ausgang ist es, die abgelegt werden muss.\n\nDer zweite Abschnitt holt das Ganze auf Alltagsmaß herunter. Ein bisschen verschüttetes Öl, ein Rest gestohlener Wein: „so teuer kauft man Gelassenheit, so teuer Gemütsruhe. Umsonst bekommt man nichts.“ Das ist eine der praktischsten Stellen des Buches. Sie sagt, dass Seelenruhe einen Preis hat, dass dieser Preis in kleinen Verlusten bezahlt wird, und dass man ihn nicht als Verlust verbuchen soll, sondern als Kaufpreis."
+    },
+    {
+      "number": 13,
+      "roman": "XIII",
+      "sections": [
+        {
+          "number": 1,
+          "heading": "Sei ein Thor vor der Welt.",
+          "text": "Willst du Fortschritte machen, so laß es dir gefallen, daß man dich in Bezug auf äußere Dinge für dumm und einfältig hält. Du mußt nicht scheinen wollen, als wissest du etwas. Wenn auch gewisse Leute etwas auf dich halten, so traue dir selbst nicht. Wisse nemlich, daß es nicht leicht ist, die naturgemäßen Grundsätze, die du hast, und zugleich die äußeren Dinge im Auge zu behalten. Vielmehr, wer für das eine sorgen will, muß ganz nothwendig das andere vernachläßigen."
+        }
+      ],
+      "commentary": "Wer Fortschritte machen will, muss es hinnehmen, in Bezug auf äußere Dinge für dumm gehalten zu werden. Er darf nicht scheinen wollen, als wisse er etwas, und wenn manche Leute ihn schätzen, soll er sich selbst misstrauen. Der Grund ist einfach: Man kann nicht zugleich auf die eigenen Grundsätze und auf die äußeren Dinge achten. Wer das eine besorgt, vernachlässigt notwendig das andere.\n\nDas Kapitel ist das Gegenstück zu Kapitel 12. Dort war der Preis der Gelassenheit materiell, hier ist er der Ruf. Beides steht nicht in unserer Gewalt, und beides muss deshalb losgelassen werden. Der Ruf ist allerdings die schwerere Übung, weil das Verlangen, für klug gehalten zu werden, tiefer sitzt als das Verlangen nach Öl und Wein.\n\nDer Satz „so traue dir selbst nicht“ ist eine Warnung vor dem Beifall. Wer gelobt wird, ist geneigt, das Lob für ein Zeichen von Fortschritt zu halten. Für Epiktet ist eher das Gegenteil wahrscheinlich: Wer von der Menge geschätzt wird, hat vermutlich nach den Maßstäben der Menge gehandelt. Kapitel 48 wird daraus ein Kennzeichen des Fortschreitenden machen: Er lacht bei sich über den, der ihn lobt."
+    },
+    {
+      "number": 14,
+      "roman": "XIV",
+      "sections": [
+        {
+          "number": 1,
+          "heading": "Begehre nichts Unmögliches.",
+          "text": "Wenn du willst, daß deine Kinder, dein Weib und deine Freunde ewig leben sollen, so bist du ein Thor. Du willst damit, daß Dinge, die nicht in deiner Gewalt sind, in deiner Gewalt sein sollen, und was nicht dein ist, soll dir gehören."
+        },
+        {
+          "number": 2,
+          "heading": "Herr oder Knecht.",
+          "text": "Ein Herr über alles ist der, welcher die Macht hat, das, was er will, oder nicht will, anzuschaffen oder wegzuschaffen. Wer nun frei sein will, der muß weder etwas wollen, noch etwas nicht wollen von dem, was in anderer Leute Gewalt ist. Wo nicht, so muß er ein Sklave sein."
+        }
+      ],
+      "commentary": "Wer will, dass Kinder, Frau und Freunde ewig leben, ist ein Tor, denn er will, dass etwas in seiner Gewalt sei, was es nicht ist. Der erste Abschnitt wiederholt Kapitel 1 mit dem schmerzhaftesten Beispiel, das sich denken lässt, und zieht daraus keine tröstende, sondern eine logische Folgerung: Der Wunsch ist nicht traurig, sondern unmöglich.\n\nDer zweite Abschnitt definiert Herrschaft und Knechtschaft neu. Herr ist, wer die Macht hat, das zu geben oder zu nehmen, was ein anderer will oder nicht will. Wer also frei sein will, darf nichts wollen und nichts fürchten, was in anderer Leute Gewalt liegt. Sonst hat er, ob er es weiß oder nicht, einen Herrn.\n\nDiese Umkehrung ist der Kern von Epiktets Freiheitsbegriff, und er war wie kaum ein anderer berechtigt, ihn zu formulieren. Er war Sklave gewesen und später freigelassen worden. Für ihn war Freiheit kein Rechtsstatus, sondern ein Zustand des Willens. Der rechtlich freie Senator, der um seine Stellung zittert, ist unfreier als der Sklave, dem nichts genommen werden kann, weil er an nichts hängt, was ihm genommen werden könnte. In den Lehrgesprächen ist dem ein ganzes langes Kapitel „Über die Freiheit“ gewidmet."
+    },
+    {
+      "number": 15,
+      "roman": "XV",
+      "sections": [
+        {
+          "number": 1,
+          "heading": "Selbstverleugnung.",
+          "text": "Vergiß nicht, daß du dich (im Leben) wie bei einem Gastmahl betragen mußt. Man bietet etwas herum, und es gelangt zu dir: – strecke die Hand aus, und nimm bescheiden davon. Es geht an dir vorüber: – halte es nicht auf. Es will immer noch nicht kommen: – blicke nicht aus der Ferne begehrlich darauf hin, sondern warte, bis es an dich kommt. Ebenso halte es in Bezug auf Kinder, Weib, Aemter und Reichthum; dann wirst du einst ein würdiger Tischgenosse der Götter sein. – Wenn du aber selbst von dem, was dir vorgelegt wird, nichts annimmst, sondern darüber wegsiehst, so wirst du nicht bloß mit den Göttern zu Tische sitzen, sondern auch mit herrschen. So handelten Diogenes und Heraklit und ihresgleichen, und deßhalb waren und hießen sie mit Recht göttliche Menschen."
+        }
+      ],
+      "commentary": "Im Leben soll man sich wie ein anständiger Gast beim Gastmahl benehmen. Kommt eine Schüssel zu einem, nimmt man bescheiden davon. Geht sie vorüber, hält man sie nicht auf. Ist sie noch nicht da, starrt man ihr nicht begehrlich entgegen, sondern wartet. Auf Kinder, Frau, Ämter und Reichtum angewandt, macht das zu einem „würdigen Tischgenossen der Götter“: Man nimmt, was das Leben bringt, ohne zu greifen.\n\nDann kommt eine höhere Stufe. Wer nicht einmal das nimmt, was ihm vorgelegt wird, sondern darüber hinwegsieht, sitzt nicht bloß mit den Göttern zu Tisch, sondern herrscht mit ihnen. Das ist die Haltung der Kyniker, und Diogenes von Sinope ist ihr Vorbild: der Mann, der in der Tonne wohnte und Alexander bat, ihm aus der Sonne zu gehen. Der Stoiker verzichtet nicht grundsätzlich; der Kyniker verzichtet aus Prinzip, und Epiktet hat für diese Radikalität eine offene Bewunderung.\n\nDie Nennung des Heraklit an dieser Stelle ist rätselhaft. Der Philosoph aus Ephesos passt schlecht in die Reihe der Verzichtenden, und mehrere Herausgeber vermuten einen Fehler in der Überlieferung, etwa für Krates, den Schüler des Diogenes, der sein Vermögen weggab. Für die Sache spielt es keine Rolle: Gemeint sind Menschen, die die Gaben des Lebens nicht einmal mehr brauchten."
+    },
+    {
+      "number": 16,
+      "roman": "XVI",
+      "sections": [
+        {
+          "number": 1,
+          "heading": "Spare das Mitleiden.",
+          "text": "Wenn du jemand weinen siehst aus Betrübniß, entweder weil sein Sohn in die Fremde gegangen ist, oder weil er das Seinige verloren hat, so gib Achtung, daß dich nicht die Vorstellung hinreiße, als sei jener im Unglück durch äußere Ursachen; sondern sprich nur sogleich: jenen drückt nicht das Begegniß selbst, – einen andern drückt es ja auch nicht, – sondern was er sich darunter vorstellt. Zögere zwar nicht, dich wenigstens in deinen Worten nach ihm zu richten, und wenn es sich gerade schickt, auch mit ihm zu seufzen. Hüte dich aber, daß du nicht auch innerlich mitseufzest."
+        }
+      ],
+      "commentary": "Wenn jemand weint, weil der Sohn in die Fremde gegangen ist oder das Vermögen verloren, soll man sich nicht von der Vorstellung hinreißen lassen, er sei durch das äußere Ereignis im Unglück. Ihn drückt nicht das Ereignis, sondern was er sich darunter vorstellt. Der Beweis ist derselbe wie in Kapitel 5: Ein anderer in derselben Lage weint nicht, also kann die Lage allein nicht die Ursache sein.\n\nDer praktische Rat ist sorgfältiger, als er auf den ersten Blick wirkt. Man soll nicht zögern, sich in Worten nach dem Trauernden zu richten und, wenn es sich schickt, mit ihm zu seufzen. Nur innerlich soll man nicht mitseufzen. Das ist keine Aufforderung zur Heuchelei, sondern eine Unterscheidung zwischen dem Trost, den man einem Menschen schuldet, und dem Urteil, das man nicht mit ihm teilen darf. Wer wirklich helfen will, darf nicht in dasselbe falsche Urteil hineingezogen werden, das den anderen unglücklich macht.\n\nLeser haben seit jeher darüber gestritten, ob das Mitgefühl ist oder nur dessen Nachahmung. Epiktet würde antworten, dass das Mitleiden im starken Sinn, das Mit-Leiden, dem Leidenden nichts nützt: Zwei Ertrinkende retten sich nicht gegenseitig. Der Arzt, so würde er sagen, erkrankt nicht mit dem Patienten, und gerade das macht ihn nützlich. Ob das ausreicht, ist eine der offenen Fragen der stoischen Ethik."
+    },
+    {
+      "number": 17,
+      "roman": "XVII",
+      "sections": [
+        {
+          "number": 1,
+          "heading": "Vom Schauspieler lerne!",
+          "text": "Bedenke, daß du Schauspieler bist in einem solchen Stück, wie es eben dem Dichter beliebt; ist es kurz, in einem kurzen; ist es lang, in einem langen. Will er, daß du einen Bettler vorstellen sollst, so stelle auch einen solchen naturgetreu dar. Ebenso einen Lahmen, einen Herrscher, einen gemeinen Mann. Deine Sache ist es nemlich, die Rolle, welche dir übertragen worden ist, gut zu spielen; sie anzuwählen, Sache eines Andern."
+        }
+      ],
+      "commentary": "Du bist Schauspieler in einem Stück, das ein anderer geschrieben hat. Ob es kurz oder lang ist, ob du einen Bettler, einen Lahmen, einen Herrscher oder einen gewöhnlichen Mann darstellen sollst, das bestimmt der Dichter. Deine Sache ist es, die Rolle gut zu spielen; sie auszuwählen, ist Sache eines anderen.\n\nDas Bild gehört zu den ältesten der stoischen Schule und erfüllt hier eine genaue Aufgabe: Es trennt zwei Dinge, die sich leicht verwechseln. Die Rolle selbst, ihre Länge und ihre Umstände sind äußerlich, sie liegen nicht in unserer Gewalt. Die Qualität der Darstellung liegt ganz bei uns. Ein guter Schauspieler kann in der Rolle des Bettlers großartig sein und in der Rolle des Königs erbärmlich. Der Rang der Rolle sagt nichts über den Schauspieler.\n\nDer „Dichter“ ist bei Epiktet Gott oder, was für einen Stoiker dasselbe ist, die vernünftige Ordnung der Welt. Das Bild hat aber auch ohne diesen Hintergrund seine Kraft. Es erlaubt, die eigene Lage anzunehmen, ohne sie gutzuheißen, und die eigene Leistung zu beurteilen, ohne sie mit der Leistung anderer in anderen Rollen zu vergleichen. Kapitel 37 fügt die Warnung hinzu, keine Rolle zu übernehmen, der man nicht gewachsen ist."
+    },
+    {
+      "number": 18,
+      "roman": "XVIII",
+      "sections": [
+        {
+          "number": 1,
+          "heading": "Böses nimm auch für gut.",
+          "text": "Wenn ein Rabe durch sein Krächzen Unheil verkündet, so laß dich nicht von der Vorstellung hinreißen; sondern unterscheide sogleich bei dir selbst und sprich: keines von diesen Vorzeichen gilt mir; sondern entweder meinem elenden Leib, oder meinen paar Pfennigen, oder meinem bischen Reputation, oder meinen Kindern, oder meinem Weibe. Mir selbst aber wird lauter Glück geweissagt, sofern ich nur will; denn was immer von jenen Dingen sich ereignen mag, es steht bei mir, Nutzen daraus zu ziehen."
+        }
+      ],
+      "commentary": "Die römische Religion nahm Vogelzeichen ernst; das Krächzen eines Raben galt als schlechtes Vorzeichen. Epiktet bestreitet das Omen nicht, sondern lenkt es um. Was immer es ankündigt, es betrifft den Leib, die paar Pfennige, das bisschen Ruf, die Kinder oder die Frau, also lauter Dinge, die nicht „ich“ sind. Mir selbst, dem Willen, wird lauter Glück geweissagt, denn was immer eintritt, ich kann Nutzen daraus ziehen.\n\nDie Aufzählung ist absichtlich abschätzig gehalten: „meinem elenden Leib, meinen paar Pfennigen, meinem bisschen Reputation“. Das ist Übungssprache. Man spricht die Dinge klein, um sie an ihren Platz zu verweisen, so wie man in Kapitel 3 den Topf einen Topf nennt.\n\nDas Kapitel ist eine kleine Fallstudie zu dem Test aus Kapitel 1, angewandt auf den Aberglauben. Es zeigt, dass Epiktets Methode nicht darauf angewiesen ist, den Aberglauben zu widerlegen. Selbst wenn das Omen wahr wäre, könnte es nur Dinge betreffen, die ohnehin nicht in unserer Gewalt stehen. Der Stoiker ist damit gegen Weissagung immun, nicht weil er sie für falsch hält, sondern weil sie ihn nichts angeht. Kapitel 32 wird denselben Gedanken auf das Orakel anwenden."
+    },
+    {
+      "number": 19,
+      "roman": "XIX",
+      "sections": [
+        {
+          "number": 1,
+          "heading": "Sicherer Sieg.",
+          "text": "Du kannst unüberwindlich sein, wenn du dich in keinen Kampf einlässest, in welchem es nicht in deiner Macht steht, obzusiegen."
+        },
+        {
+          "number": 2,
+          "heading": "Geistesfreiheit.",
+          "text": "Wenn du einen hochgeehrten, oder vielvermögenden, oder sonst angesehenen Mann siehst, so hüte dich, daß du nicht, von der Vorstellung hingerissen, ihn glücklich preisest. Denn wenn das wahre Gut in den Dingen besteht, welche in unsrer Gewalt sind, so findet weder Neid noch Eifersucht Raum; und du selbst wirst nicht Heerführer, oder Rathsherr, oder Consul sein wollen, sondern frei. Dazu führt nur ein Weg: – Verachtung der Dinge, die nicht in unsrer Gewalt sind."
+        }
+      ],
+      "commentary": "Unüberwindlich ist, wer sich in keinen Kampf einlässt, den er verlieren kann. Der einzige solche Kampf ist der um den Gebrauch der eigenen Urteilskraft. Alles andere, Wettkämpfe, Wahlen, Prozesse, Ansehen, kann verloren werden, ganz gleich, wie gut man ist.\n\nDer zweite Abschnitt wendet das auf den Neid an. Wer einen Mann sieht, der geehrt oder mächtig oder angesehen ist, wird versucht, ihn glücklich zu preisen. Wenn aber das wahre Gut in dem liegt, was in unserer Gewalt steht, dann hat weder Neid noch Eifersucht einen Gegenstand. Man wird nicht Heerführer, Ratsherr oder Konsul sein wollen, sondern frei. Und dahin führt nur ein Weg: die Verachtung dessen, was nicht in unserer Gewalt steht.\n\nDas Wort „Verachtung“ ist stark, und Conz gibt es richtig wieder. Es meint nicht Feindschaft gegen die äußeren Dinge, sondern die Weigerung, ihnen einen Wert beizumessen, den sie nicht haben. Die drei genannten Ämter sind die Spitze der römischen Laufbahn, und Epiktets Hörer in Nikopolis waren zum Teil junge Römer aus genau den Familien, die solche Ämter anstrebten. Der Satz ist also keine Bemerkung über ferne Größen, sondern eine Ansage an die eigenen Schüler."
+    },
+    {
+      "number": 20,
+      "roman": "XX",
+      "sections": [
+        {
+          "number": 1,
+          "heading": "Langsam zum Zorn!",
+          "text": "Bedenke, daß nicht derjenige dich kränkt, welcher dich schmäht, oder schlägt; sondern die Meinung, als liege darin etwas Kränkendes. Wenn dich also jemand ärgert, so wisse, daß dich deine Meinung geärgert hat. Deßhalb versuche es vor Allem, dich nicht von der Vorstellung hinreißen zu lassen. Hast du nur einmal Zeit und Aufschub gefunden, so wirst du dich um so leichter beherrschen."
+        }
+      ],
+      "commentary": "Nicht der kränkt dich, der dich schmäht oder schlägt, sondern die Meinung, darin liege etwas Kränkendes. Der andere liefert den Anlass; das Urteil, das aus dem Anlass eine Kränkung macht, liefert man selbst. Wer sich also über jemanden ärgert, soll wissen, dass ihn seine eigene Meinung geärgert hat.\n\nDer praktische Rat betrifft den Zeitpunkt. Vorstellungen reißen einen im ersten Augenblick mit; wer es schafft, „Zeit und Aufschub“ zu gewinnen, hat den Zorn schon halb besiegt. Die alte Regel, vor einer Antwort bis zehn zu zählen, stammt aus dieser Einsicht. Epiktet verlangt nicht, den Zorn nicht zu spüren; er verlangt, dem ersten Eindruck nicht sofort zuzustimmen.\n\nDie Stoiker unterschieden dabei genau. Die erste Regung, das Erröten, das Herzklopfen, hielten sie für unvermeidlich und schuldlos. Der Zorn beginnt erst mit der Zustimmung, mit dem Urteil „das war eine Kränkung, und ich muss sie erwidern“. Zwischen der Regung und der Zustimmung liegt ein kleiner Zeitraum, und genau dort setzt die Übung an. Kapitel 34 verwendet dieselbe Technik gegen die Lust: die Sache warten lassen."
+    },
+    {
+      "number": 21,
+      "roman": "XXI",
+      "sections": [
+        {
+          "number": 1,
+          "heading": "Der Tod der Lüste.",
+          "text": "Tod und Verbannung und Alles, was als schrecklich erscheint, soll dir täglich vor Augen schweben, am meisten aber der Tod; so wirst du nie weder an etwas Gemeines denken, noch etwas allzuheftig begehren."
+        }
+      ],
+      "commentary": "Tod und Verbannung und alles, was schrecklich erscheint, soll einem täglich vor Augen stehen, der Tod am meisten. Zwei Wirkungen werden versprochen: Man denkt an nichts Gemeines mehr, und man begehrt nichts allzu heftig.\n\nDas ist die stoische Form des memento mori, und sie ist nicht schwermütig gemeint. Wer den Tod ständig vor Augen hat, sieht die Ambitionen auf ihre wahre Größe schrumpfen. Der Streit um die Sitzordnung beim Gastmahl, der Ärger über den Nachbarn, der Wunsch nach einem Amt: Im Licht des Todes verlieren diese Dinge ihre Wichtigkeit, und mit ihr ihren Griff. Die Gier lässt nach, weil man sieht, wie kurz man das Ergriffene halten kann.\n\nFür die Stoiker war der tägliche Gedanke an den Tod außerdem eine Vorbereitung im wörtlichen Sinn. Wer den Tod jeden Tag bedenkt, hat ihn, wenn er kommt, tausendmal durchdacht und wird nicht überrascht. Seneca schreibt, dass man das ganze Leben lang lernen müsse zu leben, und, was noch mehr überrasche, das ganze Leben lang lernen müsse zu sterben. Marc Aurel beginnt viele Einträge seiner Selbstbetrachtungen mit demselben Gedanken. Epiktet formuliert ihn hier auf einer einzigen Zeile."
+    },
+    {
+      "number": 22,
+      "roman": "XXII",
+      "sections": [
+        {
+          "number": 1,
+          "heading": "Laß die Spötter spotten!",
+          "text": "Du willst ein Philosoph sein. Mache dich von Stund an darauf gefaßt, daß man dich auslacht, daß dich viele verspotten und sagen: Er ist plötzlich als Philosoph zu uns zurückgekommen; und weßhalb trägt er seinen Kopf gegen uns so hoch? – Du sollst aber den Kopf nicht hoch tragen; sondern was dir das Beste zu sein dünkt, das halte fest, gerade so, als ob du von Gott selbst auf diesen Posten gestellt worden wärest; und bedenke, daß dich, wenn du immer auf dem Gleichen beharrst, diejenigen, welche dich zuerst verlacht haben, zuletzt bewundern werden. Lässest du dich aber von ihnen besiegen, so wirst du zwiefältigen Spott ernten."
+        }
+      ],
+      "commentary": "Wer Philosoph werden will, soll sich vom ersten Tag an auf Spott einstellen. Die Leute werden sagen: Er ist plötzlich als Philosoph zu uns zurückgekommen, und woher hat er auf einmal diesen hochmütigen Blick? Das Griechische ist anschaulicher als die Übersetzung: Sie fragen, woher er die hochgezogene Augenbraue hat. Epiktets Antwort ist doppelt. Erstens: Zieh die Augenbraue nicht hoch, trag den Kopf nicht hoch. Zweitens: Halte fest, was dir das Beste scheint, „als ob du von Gott selbst auf diesen Posten gestellt worden wärest“.\n\nDas Bild vom Posten ist militärisch; Sokrates verwendet es in der Apologie, wo er sagt, er dürfe den Platz, auf den ihn der Gott gestellt habe, so wenig verlassen wie ein Soldat seinen Posten. Für Epiktet ist der Anfänger in der Philosophie ein solcher Posteninhaber, und der Spott der Umgebung ist die Belagerung.\n\nDie Beharrlichkeit ist die einzige Antwort auf Spott. Wer beim Gleichen bleibt, wird zuletzt von denen bewundert, die zuerst gelacht haben. Wer sich aber besiegen lässt, erntet zweifachen Spott: einmal für den Anfang, einmal für das Aufgeben. Das Kapitel setzt voraus, was Kapitel 13 verlangt hat, nämlich die Bereitschaft, für einfältig gehalten zu werden. Neu ist hier der Hinweis, dass die Lächerlichkeit vergeht, wenn man sie aushält."
+    },
+    {
+      "number": 23,
+      "roman": "XXIII",
+      "sections": [
+        {
+          "number": 1,
+          "heading": "Nach innen schau!",
+          "text": "Wenn es dir einmal begegnet, daß du dich nach außen wendest, in der Absicht, irgend einem zu gefallen, so wisse, daß du deine innere Stellung verloren hast. Es genüge dir also durchaus, ein Philosoph zu sein. Willst du aber auch (von jemand) dafür angesehen sein, so sieh dich selbst dafür an. Dies vermagst du."
+        }
+      ],
+      "commentary": "Sobald man sich nach außen wendet, um irgendjemandem zu gefallen, hat man seinen inneren Standort verloren. Es soll genügen, ein Philosoph zu sein. Wer zusätzlich als einer angesehen werden will, soll sich selbst dafür ansehen; das vermag er.\n\nDas Kapitel ist eine kurze Fortsetzung von Kapitel 13 und bereitet Kapitel 46 vor. Der Ruf als Philosoph ist ebenso äußerlich wie jeder andere Ruf, und der Wunsch danach ist besonders verräterisch, weil er unter dem Deckmantel der Sache selbst auftritt. Wer möchte, dass andere ihn für weise halten, hat sein Urteil über sich in fremde Hände gelegt, und genau das war nach Kapitel 14 die Definition der Knechtschaft.\n\nDer Schlusssatz „Dies vermagst du“ ist typisch für Epiktets Verfahren. Er nimmt ein Bedürfnis, das er nicht wegdiskutieren kann, das Bedürfnis nach Anerkennung, und verlegt seine Erfüllung an den einzigen Ort, an dem sie nicht vereitelt werden kann: in das eigene Urteil. Man wird dann zwar vom eigenen Urteil abhängig, aber das ist die einzige Abhängigkeit, die die Stoiker gelten lassen."
+    },
+    {
+      "number": 24,
+      "roman": "XXIV",
+      "sections": [
+        {
+          "number": 1,
+          "heading": "Tugend verloren – Alles verloren!",
+          "text": "Gedanken, wie die folgenden, laß dich nicht anfechten: Ich soll in Schande leben, und als der Garnichts auf der Gotteswelt. Denn wenn die Schande ein Uebel ist, so kann dir das Uebel ebensowenig durch einen andern aufgenöthigt werden, als etwas Sittlich-schlechtes. Ist es etwa dein eigen Werk, mit einem Amte bekleidet, oder zur Tafel gezogen zu werden? Keineswegs. Wie könnte also das eine Schande sein? Und in wiefern wirst du der Garnichtssein, da du doch nur in den Dingen etwas sein sollst, in welchen es ganz bei dir steht, dich auf's höchste auszuzeichnen?"
+        },
+        {
+          "number": 2,
+          "heading": null,
+          "text": "Aber du wirst deine Freunde ohne Unterstützung lassen müssen? – Was soll das heißen: ohne Unterstützung? – Sie werden kein Geld von dir bekommen; du wirst ihnen das römische Bürgerrecht nicht verschaffen können? – Wer hat dir denn gesagt, daß dieß zu den Dingen gehöre, die in unsrer Gewalt sind, und nicht vielmehr etwas sei, das uns fremd ist? – Wer kann einem andern geben, was er selbst nicht hat?"
+        },
+        {
+          "number": 3,
+          "heading": null,
+          "text": "So erwirb, heißt es jetzt, daß wir auch etwas haben! – Wenn ich erwerben kann ohne Verletzung des Ehrgefühls, der Treue und der großherzigen Gesinnung, so zeige mir den Weg, und ich will es thun. Wenn ihr mir aber zumuthet, ich soll die Güter, die mir selbst gehören, verlieren, damit ihr erlanget, was kein Gut ist, so erkennet doch, wie unbillig ihr seid, und wie unverständig. Was wollet ihr denn lieber? Geld, oder einen treuen und ehrliebenden Freund? – So verhelfet mir doch lieber zu dem letzteren, und muthet mir nicht zu, etwas zu thun, wodurch ich eben dies verlieren müßte."
+        },
+        {
+          "number": 4,
+          "heading": null,
+          "text": "Aber das Vaterland, sagt man, wird, wenigstens von mir, keine Unterstützung haben. Ich frage: wie so keine Unterstützung? – Es wird keine Säulengänge und keine Bäder durch dich bekommen. Und was liegt daran? Bekommt es doch auch keine Schuhe vom Schmied, und keine Waffen vom Schuster. – Es genügt aber, wenn jeder sein Werk recht thut. Wenn du ihm einen andern zu einem treuen und ehrenhaften Bürger heranbildest, hast du ihm dann nichts genützt? – Ja doch! Also wärest doch auch du nicht so ganz ohne Nutzen für dasselbe!"
+        },
+        {
+          "number": 5,
+          "heading": null,
+          "text": "Welche Stellung werde ich nun im Staate einnehmen? so fragt man. Diejenige, welche du einnehmen kannst, ohne daß du aufhören mußt, beides, ein treuer und ein ehrliebender Mensch zu sein. Wirfst du aber dieses von dir, um dem Staate zu nützen, welchen Nutzen hätte er wohl von dir, wenn du ehr- und treulos geworden wärest? –"
+        }
+      ],
+      "commentary": "Das längste Argument des Buches beantwortet drei Einwände gegen das philosophische Leben: dass man dann in Schande und Bedeutungslosigkeit lebe, dass man seinen Freunden nicht helfen könne und dass man dem Vaterland nichts nütze. Jeder Einwand wird mit dem Test aus Kapitel 1 abgewiesen. Ämter und Einladungen stehen nicht in unserer Gewalt, also kann ihr Fehlen keine Schande sein. Man kann Freunden kein Geld und kein römisches Bürgerrecht verschaffen, aber man kann ihnen einen treuen und ehrliebenden Freund geben, und man kann nicht geben, was man selbst nicht hat.\n\nDie Beispiele sind genau römisch. Von wohlhabenden Bürgern erwartete man, dass sie ihrer Stadt Säulenhallen und Bäder stifteten, und von einem Patron, dass er seinen Klienten das Bürgerrecht vermittelte. Epiktet antwortet, dass die Stadt auch vom Schmied keine Schuhe und vom Schuster keine Waffen bekommt. Es genügt, wenn jeder sein eigenes Werk recht tut. Wer der Stadt einen einzigen treuen und ehrenhaften Bürger heranbildet, hat ihr genützt.\n\nDie Schlusswendung ist die schärfste. Die Freunde, die einen zum Erwerb drängen, sollen sich fragen, was sie lieber wollen: Geld oder einen treuen Freund. Denn was sie verlangen, läuft darauf hinaus, dass man das eigene Gut, die Rechtschaffenheit, hergibt, damit sie etwas bekommen, was kein Gut ist. Und dem Staat gegenüber gilt dasselbe: Eine Stellung, die einen ehr- und treulos macht, ist für den Staat wertlos, weil ein ehr- und treuloser Mann ihm nichts mehr nützen kann."
+    },
+    {
+      "number": 25,
+      "roman": "XXV",
+      "sections": [
+        {
+          "number": 1,
+          "heading": "Verkaufst du deine Freiheit um ein Linsengericht?",
+          "text": "Einem andern ist beim Gastmahl, oder beim Grüßen, oder beim Herbeiziehen zu einer Berathung mehr Ehre widerfahren, als dir? Wenn dieß ein Gut ist, so sollst du dich freuen, daß jener andere es erlangt hat. Ist es aber ein Uebel, so klage nicht, daß es dich nicht betroffen hat. Bedenke übrigens, daß du nicht denselben Lohn ansprechen kannst, wenn du nicht dasselbe thust, um die Dinge zu erlangen, die nicht in unsrer Gewalt sind."
+        },
+        {
+          "number": 2,
+          "heading": null,
+          "text": "Denn wie kann derjenige, welcher einem andern keine Aufwartung macht, so viel bekommen, wie der, welcher sie macht? oder der, welcher nicht im Gefolge mitgeht, so viel wie der, welcher mitgeht, und welcher nicht lobt, so viel wie der, welcher lobt? Du bist also ungerecht und ungenügsam, wenn du, ohne den Preis zu bezahlen, um welchen man jene Dinge verkauft, sie umsonst erlangen willst."
+        },
+        {
+          "number": 3,
+          "heading": null,
+          "text": "Wie theuer verkauft man den Lattich? Ungefähr um einen Groschen. Wenn nun einer den Groschen bezahlt, und Lattich dafür bekommt, du aber bezahlst nichts, und bekommst nichts, so glaube nicht, daß du weniger habest, als der, welcher etwas bekommen hat. Denn wie jener den Lattich, so hast du den Groschen, den du nicht ausgegeben hast."
+        },
+        {
+          "number": 4,
+          "heading": null,
+          "text": "Ganz eben so auch hier. Es hat dich einer nicht zur Mahlzeit eingeladen. Du hast eben dem Wirth den Preis nicht bezahlt, um den er sein Gastmahl verkauft. Er verkauft es aber für Lob; er verkauft es für Aufwartung. Bezahle also den Preis, um den es feil ist, wenn es dir taugt. Willst du ihn aber nicht bezahlen, und doch jenes erlangen, so bist du unersättlich und unverständig."
+        },
+        {
+          "number": 5,
+          "heading": null,
+          "text": "Hast du nun nichts zum Ersatz für das Gastmahl? – Das hast du, daß du den nicht zu loben brauchtest, welchen du nicht loben wolltest, und daß du dir nichts gefallen lassen mußtest von seinen Thürstehern."
+        }
+      ],
+      "commentary": "Jemand ist beim Gastmahl höher gesetzt worden, wurde freundlicher gegrüßt oder zuerst zur Beratung gezogen. Wenn das Güter sind, freue dich, dass der andere sie bekommen hat; wenn nicht, klage nicht, dass sie dir entgangen sind. Dann folgt die schärfere Pointe: Diese Ehren werden verkauft, und der Preis ist Schmeichelei, der morgendliche Besuch beim Patron und das Mitlaufen in seinem Gefolge. Wer den Preis nicht bezahlt hat, hat auf die Ware keinen Anspruch.\n\nDer Lattich ist das Schlüsselbeispiel. Wer einen Groschen für Lattich bezahlt, hat Lattich; wer nicht bezahlt hat, hat noch seinen Groschen. Keiner von beiden ist im Nachteil. Wer nicht zum Essen eingeladen wurde, hat den Preis nicht bezahlt, für den der Gastgeber seine Einladungen verkauft, nämlich Lob und Aufwartung. Und er hat dafür etwas behalten: Er musste niemanden loben, den er nicht loben wollte, und sich nichts von den Türstehern gefallen lassen.\n\nDer Hintergrund ist die römische salutatio, der rituelle Besuch der Klienten beim Patron in der Morgenfrühe, oft mit stundenlangem Warten vor der Tür und dem anschließenden Begleiten des Patrons auf das Forum. Epiktets Hörer kannten das aus eigener Erfahrung, von beiden Seiten. Die Einsicht des Kapitels ist ökonomisch: Ehre ist eine Ware mit einem Preis, und wer die Ware nicht kauft, ist nicht ärmer, sondern hat sein Geld noch. Was er behält, ist die Freiheit, die er sonst hätte hergeben müssen."
+    },
+    {
+      "number": 26,
+      "roman": "XXVI",
+      "sections": [
+        {
+          "number": 1,
+          "heading": "Der Wille der Natur.",
+          "text": "Der Wille der Natur läßt sich erkennen aus dem, worüber keine Meinungsverschiedenheit unter uns herrscht. Z.B. wenn der Sklave eines andern ein Trinkglas zerbricht, so sind wir gleich bereit zu sagen: so geht es eben. – Wisse nun, daß du, wenn das deinige ebenfalls zerbricht, dich ebenso betragen mußt, wie wenn das des andern zerbricht."
+        }
+      ],
+      "commentary": "Was die Natur will, lässt sich aus den Fällen lernen, in denen wir uns alle einig sind. Zerbricht der Sklave eines anderen ein Trinkglas, sagen wir sofort: So geht es eben. Zerbricht unser eigenes, sollen wir uns genauso verhalten.\n\nDas Kapitel ist mehr Methode als Regel. Die Reaktion auf den Verlust eines anderen zeigt, welches Urteil wir tatsächlich für richtig halten, wenn wir nicht selbst betroffen sind. Bei fremden Verlusten sind wir alle Stoiker: Gläser zerbrechen, Menschen sterben, Vermögen gehen verloren, und wir wissen es. Die Aufgabe besteht nur darin, das Urteil, das wir bei anderen ohne Zögern anwenden, auch auf uns selbst anzuwenden. Der Doppelstandard, den wir uns leisten, ist der Ort, an dem das Unglück sitzt.\n\nDas Griechische setzt den Gedanken mit einem härteren Beispiel fort, das in Conz' Fassung fehlt: Wenn das Kind oder die Frau eines anderen stirbt, sagt jeder, das sei nun einmal Menschenlos. Stirbt aber das eigene, ruft man „ich Unglücklicher“. Und man solle sich erinnern, wie einem zumute war, als man von dem fremden Fall hörte. Der Gedanke ist derselbe wie beim Glas, aber die Zumutung ist größer, und vermutlich hat Conz ihn deshalb weggelassen."
+    },
+    {
+      "number": 27,
+      "roman": "XXVII",
+      "sections": [
+        {
+          "number": 1,
+          "heading": "Wem es gilt, den trifft's.",
+          "text": "Gleichwie ein Ziel nicht zum Verfehlen aufgesteckt wird, so auch nicht die Natur des Uebels in der Welt."
+        }
+      ],
+      "commentary": "Ein einziger Satz und ein altes Rätsel. Ein Ziel wird nicht aufgesteckt, damit man es verfehlt, und ebenso wenig gibt es in der Welt eine „Natur des Übels“, also das Übel als eigenständige Sache.\n\nDer stoische Gedanke dahinter ist, dass das Übel keine Substanz ist, sondern ein Verfehlen, so wie das Danebenschießen keine eigene Art des Treffens ist. Die Welt stellt das Ziel auf; das Schlechte ist unser Vorbeischießen. Es hat keine eigene Existenz, sondern ist ein Mangel an Richtigkeit in unserem Handeln. Daraus folgt für die Stoiker, dass die Welt als Ganzes gut geordnet ist und das Böse nur in den Urteilen und Handlungen der Menschen vorkommt, nicht in der Einrichtung der Dinge. Kapitel 31 macht daraus die Grundlage der Frömmigkeit.\n\nConz' Überschrift „Wem es gilt, den trifft's“ gibt eine andere und wahrscheinlich irrige Lesart wieder, als ginge es darum, dass Unglück den Richtigen trifft. Das steht nicht im Text. Der Vergleich mit dem Ziel soll zeigen, dass Verfehlen kein Zweck ist, und das Übel deshalb nicht zur Einrichtung der Welt gehört. Die Stelle war schon in der Antike umstritten, und Simplikios, der im 6. Jahrhundert einen Kommentar zum Handbüchlein schrieb, widmet ihr viele Seiten."
+    },
+    {
+      "number": 28,
+      "roman": "XXVIII",
+      "sections": [
+        {
+          "number": 1,
+          "heading": "Körper und Geist.",
+          "text": "Wenn jemand deinen Körper jedem, der dir begegnet, preisgäbe, so würdest du es übel aufnehmen. Daß aber du selbst deinen Geist dem nächsten besten preisgibst, so daß er in Aufregung und Verwirrung geräth, wenn man dich schilt, – schämst du dich dessen nicht?"
+        }
+      ],
+      "commentary": "Wenn jemand deinen Körper dem nächsten Besten preisgäbe, wärst du empört. Aber du selbst gibst deinen Geist jedem preis, der dich schilt, und lässt ihn in Aufregung und Verwirrung geraten, und schämst dich nicht.\n\nDer Vergleich soll treffen. Wir bewachen den Körper, der nach Kapitel 1 gar nicht unser ist, mit Eifersucht, und lassen das eine unbewacht, was wirklich uns gehört. Jeder Beliebige kann durch ein paar Worte den Zustand unseres Geistes bestimmen, und wir halten das für normal. Epiktet macht darauf aufmerksam, dass wir damit einem Wildfremden eine Macht einräumen, die wir ihm über unseren Körper niemals zugestehen würden.\n\nDas Kapitel gehört mit 20 und 42 zu einer Gruppe über die Beleidigung. Kapitel 20 sagt, dass die Kränkung im Urteil liegt; Kapitel 42 sagt, dass der Beleidiger sich selbst schadet. Hier wird die Sache von der Seite der Scham angegangen. Man soll sich schämen, so leicht aus der Fassung zu geraten, und diese Scham ist ein nützlicheres Gefühl als der Zorn auf den Beleidiger, weil sie an der Stelle ansetzt, an der man etwas ändern kann."
+    },
+    {
+      "number": 29,
+      "roman": "XXIX",
+      "sections": [
+        {
+          "number": 1,
+          "heading": "Vorbedacht – Nachgethan!",
+          "text": "Bei allem, was du thun willst, achte auf das, was vorangeht, und was nachfolgt, und so mache dich daran. Wo aber nicht, so wirst du wohl anfangs lustig daran gehen, weil du nicht bedacht hast, was nachkommt; hernach aber, wenn sich etliche Schwierigkeiten zeigen, wirst du mit Schanden davon gehen."
+        },
+        {
+          "number": 2,
+          "heading": null,
+          "text": "Du willst in Olympia siegen? – Auch ich, bei den Göttern! denn das bringt Ehre. Aber achte auf das, was vorangeht, und was nachfolgt; dann greife das Werk an. Du mußt geordnet leben, nach Vorschrift essen, der Leckerbissen dich enthalten, dich üben nach fester Regel, zur vorgeschriebenen Stunde, in Hitze und Kälte; nichts Kaltes trinken, keinen Wein zur beliebigen Zeit; kurz, du mußt dich dem Lehrmeister wie einem Arzt übergeben. Sodann beim Kampfe selbst mußt du dich mit Sand überschütten lassen. Möglich ist es auch, daß du dir die Hand verzerrst, den Knöchel verrenkst, und vielen Staub schluckst; möglich, daß du durchgeprügelt, und nach allem diesem noch besiegt wirst."
+        },
+        {
+          "number": 3,
+          "heading": null,
+          "text": "Das überlege wohl, und wenn du dann noch Lust hast, so gehe zum Kampf. Wo nicht, so wirst du dich wie die Kinder betragen, welche bald die Rolle eines Ringers spielen, bald die eines Fechters, das einemal Trompeten blasen, dann wieder ein Schauspiel aufführen. So auch du! Bald bist du ein Athlet, bald ein Fechter, dann ein Rhetor, dann ein Philosoph, aber nichts von ganzer Seele; sondern wie ein Affe ahmst du jeden Auftritt, den du siehst, nach; und bald gefällt dir dies, bald das. Denn du bist nicht mit Ueberlegung an eine Sache gegangen, und nicht mit Umsicht, sondern auf Gerathewohl, und mit frostigem Interesse."
+        },
+        {
+          "number": 4,
+          "heading": null,
+          "text": "So wollen manche Leute, wenn Sie einen Philosophen gesehen haben, oder wenn sie jemand reden hörten, wie Euphrates redet (und doch: wer kann so reden, wie er?), selbst auch Philosophen sein."
+        },
+        {
+          "number": 5,
+          "heading": null,
+          "text": "O Mensch, zuerst überlege, wie die Sache beschaffen ist; dann prüfe auch deine eigene Natur, ob dir die Last nicht zu schwer ist. Willst du ein Pentathlete sein, oder nur ein Ringer? Betrachte deine Arme, deine Schenkel, prüfe deine Hüften; denn der eine ist von Natur zu diesem, der andere zu anderem bestimmt."
+        },
+        {
+          "number": 6,
+          "heading": null,
+          "text": "Glaubst du, du könnest, während du solche Dinge treibst, ebensoviel essen, ebensoviel trinken, eben solche Begierden haben, und ebenso mißvergnügt sein? Wachen muß man, und sich anstrengen, sich von den Hausgenossen zurückziehen, sich von einem Sklaven verachten, und von den Vorübergehenden auslachen lassen, und in allem zurückstehen, in der Achtung, im Amt, im Gericht und in jedem Geschäftchen."
+        },
+        {
+          "number": 7,
+          "heading": null,
+          "text": "Das überlege dir, ob du um diesen Preis Gelassenheit, Freiheit und Gemüthsruhe eintauschen willst; wo aber nicht, so verzichte darauf. Sei du nicht, wie die Kinder, jetzt ein Philosoph, hernach ein Zolleinnehmer, sodann ein Rhetor, und zuletzt ein kaiserlicher Prokurator. Diese Dinge passen nicht zusammen. Ein Mensch aus einem Guß mußt du sein, entweder ein guter, oder ein schlechter. Entweder mußt du den herrschenden Theil deiner selbst ausbilden, oder die äußere Seite, entweder auf das Innere deine Kunst verwenden, oder auf das Aeußere; d.h. entweder die Stellung eines Philosophen, oder die eines gewöhnlichen Menschen einnehmen."
+        }
+      ],
+      "commentary": "Bei allem, was man tun will, soll man bedenken, was vorangeht und was nachfolgt. Das Kapitel ist beinahe wörtlich aus den Lehrgesprächen übernommen (3,15). Das Hauptbeispiel ist der Athlet in Olympia: strenge Diät, Training nach fester Regel in Hitze und Kälte, kein Wein nach Belieben, und im Wettkampf selbst Sand, verrenkte Knöchel, geschluckter Staub, Prügel und am Ende womöglich die Niederlage. Das alles soll man vorher erwägen, und erst dann entscheiden.\n\nWer diesen Schritt überspringt, benimmt sich wie die Kinder, die heute Ringer, morgen Fechter und übermorgen Trompeter sind. Dasselbe tun die Erwachsenen, die einen Philosophen gehört haben, etwa einen so glänzenden Redner wie Euphrates, einen Stoiker aus Epiktets eigener Zeit, und sofort selbst Philosophen sein wollen. Die Forderung lautet, dass man erst die Sache prüft und dann die eigene Natur, ob man die Last tragen kann, so wie der Athlet seine Arme und Schenkel prüft.\n\nDer Preis der Philosophie wird ohne Beschönigung genannt: Wachen, sich anstrengen, sich von den Hausgenossen zurückziehen, sich von einem Sklaven verachten und auf der Straße auslachen lassen, in Amt und Ansehen zurückstehen. Wer das nicht will, soll es bleiben lassen und nicht wie ein Kind erst Philosoph, dann Zolleinnehmer, dann Rhetor und zuletzt kaiserlicher Prokurator sein wollen. „Ein Mensch aus einem Guß mußt du sein.“ Man muss sich entscheiden, ob man den herrschenden Teil seiner selbst ausbilden will oder die äußere Seite; beides zugleich geht nicht. Das Kapitel ist Epiktets Warnung vor der Philosophie als Mode, und es ist an seine eigenen Schüler gerichtet."
+    },
+    {
+      "number": 30,
+      "roman": "XXX",
+      "sections": [
+        {
+          "number": 1,
+          "heading": "Sittengesetz und Naturgesetz.",
+          "text": "Die Pflichten sind so ziemlich überall den Verhältnissen angemessen. Es ist einer Vater: Die Pflicht gebietet, sein zu pflegen, ihm in allem nachzugeben, sein Schimpfen, seine Schläge geduldig hinzunehmen."
+        }
+      ],
+      "commentary": "Die Pflichten ergeben sich aus den Verhältnissen. Das Beispiel ist der Vater: Die Beziehung selbst gebietet, ihn zu pflegen, ihm nachzugeben und sein Schimpfen und seine Schläge geduldig hinzunehmen, unabhängig davon, ob er ein guter Vater ist.\n\nDiese Fassung bricht nach dem ersten Beispiel ab. Im Griechischen geht das Kapitel weiter, und der Fortgang ist wichtig: „Aber er ist ein schlechter Vater.“ Die Natur hat dich nicht an einen guten Vater gebunden, sondern an einen Vater. Ein Bruder, der dir Unrecht tut, bleibt dein Bruder, und worauf es ankommt, ist dein Verhalten in der Beziehung, nicht seines, denn niemand kann dir schaden, wenn du dich nicht für geschädigt hältst. Auf dieselbe Weise, so schließt das Kapitel, findet man die Pflichten des Nachbarn, des Bürgers und des Feldherrn, wenn man sich gewöhnt, auf die Verhältnisse zu achten.\n\nDer Gedanke ist ein Grundstein der stoischen Ethik. Die Pflicht hängt nicht daran, wie der andere sich verhält, sondern an der Rolle, in der man zu ihm steht. Das Kapitel ist damit die Ergänzung zu Kapitel 17: Dort war die Rolle das, was der Dichter zuweist; hier ist sie das Netz von Beziehungen, in das man hineingeboren wird. Kapitel 43 mit den zwei Handhaben gibt dazu die praktische Anweisung. Warum Conz nur den ersten Satz übersetzt hat, ist unklar; möglicherweise lag ihm ein verkürzter Text vor."
+    },
+    {
+      "number": 31,
+      "roman": "XXXI",
+      "sections": [
+        {
+          "number": 1,
+          "heading": "Weisheit und Frömmigkeit.",
+          "text": "Die Hauptsache in der Frömmigkeit, mußt du wissen, ist dieß, daß man richtige Vorstellungen von den Göttern habe, nemlich, daß es Götter gebe, und daß sie alles gut und gerecht regieren, daß sie dir die Bestimmung gegeben haben, ihnen zu gehorchen, und dich in alles, was geschieht, zu schicken, und willig zu folgen, weil es ja in bester Absicht geschieht. So wirst du niemals die Götter tadeln, noch sie beschuldigen, als bekümmern sie sich nichts um dich."
+        },
+        {
+          "number": 2,
+          "heading": null,
+          "text": "Anders aber kann dieß gar nicht geschehen, als bis du die Begriffe Gut oder Uebel von denjenigen Dingen lostrennst, welche nicht in unserer Gewalt sind, und sie ausschließlich in dasjenige verlegst, was in unserer Gewalt ist. Denn sobald du etwas von den ersteren für ein Gut oder für ein Uebel ansiehst, kann es nicht anders sein, als daß du diejenigen anklagst und hassest, welche schuld daran sind, daß dir etwas entgeht, was du dir wünschest, oder daß dir etwas widerfährt, was du nicht wünschest."
+        },
+        {
+          "number": 3,
+          "heading": null,
+          "text": "Denn es ist allem, was da lebt, angeboren, das, was ihm schädlich vorkommt, sammt seiner Ursache zu fliehen und zu meiden, das Nützliche aber sammt seiner Ursache zu begehren und zu bewundern. Unmöglich kann einer, der im Schaden zu sein glaubt, an dem, was ihm schädlich scheint, eine Freude haben, wie es auch unmöglich ist, sich zu freuen über den Schaden selbst."
+        },
+        {
+          "number": 4,
+          "heading": null,
+          "text": "Deßhalb wird selbst ein Vater von seinem Sohne geschmäht, wenn er seinem Kinde nichts von den Dingen mittheilt, die man für Güter hält. Auch den Polynikes und Eteokles entzweite eben das, daß sie die Alleinherrschaft für etwas Gutes hielten. Aus demselben Grunde flucht der Bauer über die Götter, aus demselben der Schiffer, aus demselben der Kaufmann, aus demselben diejenigen, welche Weib und Kind verlieren. Denn so weit ihr Nutzen reicht, reicht auch ihre Frömmigkeit. – Wer also sich befleißigt, nur das zu begehren und zu meiden, was er soll, der befleißigt sich eben damit auch der Frömmigkeit."
+        },
+        {
+          "number": 5,
+          "heading": null,
+          "text": "Pflicht ist es übrigens in jedem Fall, Trankopfer und Brandopfer und Erstlingsgaben darzubringen nach väterlicher Weise, mit reinem Sinn und nicht gedankenlos, auch nicht gleichgiltig; weder kärglich, noch auch über Vermögen."
+        }
+      ],
+      "commentary": "Frömmigkeit beginnt mit richtigen Vorstellungen von den Göttern: dass es sie gibt, dass sie alles gut und gerecht regieren und dass sie uns bestimmt haben, ihnen zu gehorchen und uns in alles zu schicken, was geschieht, weil es in bester Absicht geschieht. Das ist aber nur möglich, wenn man Gut und Übel ausschließlich in das verlegt, was in unserer Gewalt steht. Denn wer einen äußeren Verlust für ein Übel hält, muss zwangsläufig den hassen, der ihn verursacht hat, und am Ende trifft dieser Hass die Götter.\n\nDie Beispiele weiten den Kreis. Ein Vater wird von seinem Sohn geschmäht, wenn er ihm vorenthält, was der Sohn für ein Gut hält. Polyneikes und Eteokles, die Söhne des Ödipus, töteten einander vor Theben, weil jeder die Alleinherrschaft für ein Gut hielt. Aus demselben Grund flucht der Bauer über das Wetter, der Schiffer über den Sturm, der Kaufmann über den Verlust. „So weit ihr Nutzen reicht, reicht auch ihre Frömmigkeit“: Sie sind fromm, solange es ihnen gut geht. Wer dagegen nur begehrt und meidet, was er soll, ist eben damit auch fromm, weil er nichts mehr hat, was er den Göttern vorwerfen könnte.\n\nDer letzte Abschnitt überrascht manche Leser: eine schlichte Anweisung, Trankopfer, Brandopfer und Erstlingsgaben nach väterlicher Sitte darzubringen, mit reinem Sinn und weder kärglich noch über Vermögen. Für Epiktet ist das kein Widerspruch. Die Stoiker sahen in den überlieferten Kulten eine angemessene Form, die Ordnung der Welt zu ehren, und Epiktet hatte für Religionskritik im Stil der Epikureer wenig übrig. Der Kult ist eine Pflicht wie die gegenüber dem Vater in Kapitel 30; die Frömmigkeit selbst aber sitzt im Urteil."
+    },
+    {
+      "number": 32,
+      "roman": "XXXII",
+      "sections": [
+        {
+          "number": 1,
+          "heading": "Die Orakel und das Gewissen.",
+          "text": "Wenn du zum Orakel gehst, so erinnere dich, daß du nicht weißt, was geschehen wird, sondern daß du kommst, um es von dem Seher zu erfahren. Wie aber eine Sache beschaffen ist, das weißt du schon beim Kommen, wenn du ein Philosoph bist. Ist es nemlich etwas von den Dingen, die nicht in unsrer Gewalt sind, so kann es schlechterdings weder ein Gut, noch ein Uebel sein."
+        },
+        {
+          "number": 2,
+          "heading": null,
+          "text": "Du sollst also zum Seher weder Begierde, noch Widerwillen mitbringen. Auch gehe nicht mit Angst zu ihm, sondern als einer, der weiß, daß alles, was da kommen mag, gleichgiltig ist, und nichts, das dich angienge. Wie es aber auch sein mag, man wird einen guten Gebrauch davon machen können; und das kann dir niemand wehren."
+        },
+        {
+          "number": 3,
+          "heading": "Gutes Muths also, wie vertrauen Rathgebern, nahe dich den Göttern; und im übrigen, wenn du Rath empfangen hast, so erinnere dich, wer die sind, die du zu Berathern angenommen hast, und wem du ungehorsam wirst, wenn du nicht folgst.",
+          "text": "Gehe aber, nach dem Rath des Sokrates, nur wegen solcher Dinge zum Orakel, die nach allem Betracht eine Beziehung auf die Zukunft haben, und bei welchen weder die Vernunft, noch ein anderes Mittel eine Möglichkeit darbietet, zu erkennen, was bevorsteht."
+        }
+      ],
+      "commentary": "Wer zum Orakel geht, erfährt dort, was geschehen wird. Was für eine Art von Sache das ist, weiß der Philosoph aber schon beim Hingehen: Wenn es nicht in unserer Gewalt steht, kann es weder gut noch schlecht sein. Also soll man weder Begierde noch Furcht zum Seher mitbringen, sondern die Gewissheit, dass alles, was kommen mag, gleichgültig ist und sich gut gebrauchen lässt. Das ist Kapitel 18 über die Vogelzeichen, angewandt auf die offizielle Weissagung.\n\nDer Satz, der hier in eckigen Klammern als Überschrift des dritten Abschnitts erscheint, ist in Wahrheit Text: Man soll gutes Muts zu den Göttern gehen wie zu vertrauten Ratgebern, und wenn man Rat empfangen hat, bedenken, wen man zum Ratgeber genommen hat und wem man ungehorsam wird, wenn man nicht folgt. Die Klammern gehen vermutlich auf die Vorlage zurück und markieren eine Stelle, deren Überlieferung unsicher ist.\n\nDie Schlussregel stammt von Sokrates, wie Xenophon ihn in den Erinnerungen überliefert: Man soll das Orakel nur für Dinge befragen, die in der Zukunft liegen und bei denen weder die Vernunft noch ein anderes Mittel eine Möglichkeit bietet, das Bevorstehende zu erkennen. Was man selbst herausfinden kann, soll man selbst herausfinden. Ob man einen Freund in Gefahr unterstützen soll, ist keine Frage an das Orakel, sondern eine Frage der Pflicht, und die Antwort kennt man schon. In den Lehrgesprächen erzählt Epiktet abschätzig von einem Mann, der genau das das Orakel gefragt hatte."
+    },
+    {
+      "number": 33,
+      "roman": "XXXIII",
+      "sections": [
+        {
+          "number": 1,
+          "heading": "Vorbild und Nachfolge.",
+          "text": "Stelle dir ein Muster und Vorbild auf, und lebe ihm nach, sowohl wenn du allein bist, als wenn du unter die Leute kommst."
+        },
+        {
+          "number": 2,
+          "heading": "Schweigen, Reden und Lachen.",
+          "text": "Auch schweige man meistens oder spreche nur, so viel nöthig, und mit wenigen Worten. Bisweilen aber, wenn die Umstände zum Reden auffordern, sollst du reden; aber nicht von jenen alltäglichen Dingen, nicht von Fechterspielen, nicht von Pferderennen, nicht von den Athleten, nicht von Essen und Trinken, wovon man allerorten redet, besonders aber nicht von Personen, weder tadelnd, noch lobend, noch vergleichend."
+        },
+        {
+          "number": 3,
+          "heading": null,
+          "text": "Wenn es nun in deiner Macht steht, so lenke durch deine Reden auch die der Mitanwesenden auf das Schickliche. Stehst du aber zufällig unter Fremden allein, so schweige."
+        },
+        {
+          "number": 4,
+          "heading": null,
+          "text": "Lache nicht viel, und nicht über vieles, und nicht ausgelassen."
+        },
+        {
+          "number": 5,
+          "heading": "Vom Eid.",
+          "text": "Den Eid verweigere, wenn es angeht, ganz; wo aber nicht, doch so viel als möglich."
+        },
+        {
+          "number": 6,
+          "heading": "Böse Gesellschaft.",
+          "text": "Gastmähler bei Fremden und bei ungebildeten Leuten schlage aus. Kommt aber der Fall einmal vor, so mache es dir zum Gesetz, wohl aufzumerken, daß du nicht unversehens in Gemeinheit versinkest. Denn wisse: wenn einer einen unfläthigen Menschen zum Kameraden hat, so muß er, der sich mit ihm einläßt, ebenfalls besudelt werden, auch wenn er selbst vielleicht rein ist."
+        },
+        {
+          "number": 7,
+          "heading": "Einfacher Sinn.",
+          "text": "In Bezug auf das Leibliche versieh dich nicht weiter, als mit dem schlechthin nothwendigen Bedarf an Speise, Trank, Kleidung, Obdach, Dienerschaft. Was aber zum Gepränge, oder zum Luxus gehört, schneide völlig ab."
+        },
+        {
+          "number": 8,
+          "heading": "Keuschheit.",
+          "text": "In Bezug auf geschlechtlichen Umgang halte dich vor der Ehe so keusch als möglich. Wer sich aber damit befassen will, genieße ihn, wie es gesetzlich erlaubt ist. Du aber sei nicht unbillig gegen die, welche Gebrauch davon machen, und verdamme sie nicht. Auch führe es nicht bei jeder Gelegenheit an, daß du dich dessen enthaltest."
+        },
+        {
+          "number": 9,
+          "heading": "Wie man dem Lästerer das Maul stopft.",
+          "text": "Wenn dir jemand hinterbringt, daß der oder jener Schlimmes von dir rede, so vertheidige dich nicht gegen das Gesagte, sondern antworte: Der wußte also nichts von meinen übrigen Fehlern, sonst würde er wohl nicht bloß von diesen gesprochen haben."
+        },
+        {
+          "number": 10,
+          "heading": "Sei ein kühler Beobachter.",
+          "text": "Oft in das Theater zu gehen, ist nicht nothwendig. Kommst du aber zufällig einmal dahin, so laß niemand, als dich selbst, merken, daß du innerlich Antheil nimmst, d.h. wünsche, daß nur das geschehe, was geschieht, und nur der siege, welcher siegt; denn auf diese Weise wird dir alles nach Wunsch gehen. Des Schreiens aber und Beifall-Zulachens, oder häufiger Mitbewegungen enthalte dich gänzlich. Nach dem Weggehen unterhalte dich nicht viel über das Vorgekommene, so weit es nicht zu deiner Besserung beiträgt. Denn hiedurch gewönne es den Anschein, als habest du das Schauspiel bewundert."
+        },
+        {
+          "number": 11,
+          "heading": "a) Ueber den Besuch öffentlicher Vorlesungen.",
+          "text": "Zu den Vorträgen gewisser Leute gehe nicht ohne Ursache oder leichtsinnig hin. Gehst du aber hin, so beobachte ein würdevolles, festes, und doch nicht abstoßendes Betragen."
+        },
+        {
+          "number": 12,
+          "heading": "b) Ueber den Verkehr mit Vornehmen.",
+          "text": "Wenn du im Begriff stehst, dich mit jemand in ein Gespräch einzulassen, besonders mit einem von denen, welche für sehr vornehm gelten, so stelle dir vor, was in diesem Fall Sokrates oder Zeno gethan hätte, und du wirst nicht verfehlen, dich den Umständen angemessen zu betragen."
+        },
+        {
+          "number": 13,
+          "heading": null,
+          "text": "Wenn du zu einem großen Herrn gehst, so stelle dir vor, du werdest ihn nicht zu Hause treffen, man werde vor dir verriegeln, man werde dir die Thüren vor der Nase zuschlagen, er werde sich nichts um dich bekümmern. Ist es bei alledem deine Pflicht, hinzugehen, so gehe hin, und ertrage, was kommt, und sprich nie bei dir selbst: es war nicht der Mühe werth. Denn das wäre gemein, und hieße sich ärgern über äußerliche Dinge."
+        },
+        {
+          "number": 14,
+          "heading": "c) In Gesellschaft.",
+          "text": "In Gesellschaften vermeide man es, seiner eigenen etwaigen Thaten oder Abenteuer häufig und maßlos zu gedenken. Denn nicht ebenso angenehm, als es dir ist, deiner Abenteuer zu gedenken, ist es den andern, zu hören, was dir zugestoßen ist."
+        },
+        {
+          "number": 15,
+          "heading": null,
+          "text": "Auch sei es ferne von dir, Lachen zu erregen; denn das ist ein Betragen, das sehr leicht in Gemeinheit übergeht, und zugleich kann es die Wirkung haben, die Achtung deiner Nebenmenschen vor dir zu mindern."
+        },
+        {
+          "number": 16,
+          "heading": null,
+          "text": "Gefährlich ist es auch, es bis zu garstigen Reden kommen zu lassen. Wenn nun etwas derart geschieht, so gib, wenn es die Umstände erlauben, dem, der so weit gegangen ist, eine Zurechtweisung. Wo nicht, so zeige wenigstens durch Schweigen, durch Erröthen und durch eine tiefernste Miene dein Mißfallen an der Rede."
+        }
+      ],
+      "commentary": "Ein Kapitel mit praktischen Regeln für den Alltag, im Ton ganz anders als die Lehrkapitel und vermutlich näher an dem, wie es in Epiktets Schule von Tag zu Tag zuging. Man soll sich ein Vorbild setzen und ihm folgen, ob allein oder unter Leuten. Man soll meist schweigen und, wenn man redet, nicht über die üblichen Themen, nicht über Fechterspiele, Pferderennen, Athleten, Essen und Trinken, und vor allem nicht über Personen, weder lobend noch tadelnd. Lachen mit Maß, Eide vermeiden, Gastmähler bei ungebildeten Leuten ausschlagen, den Bedarf des Körpers auf das Nötige beschränken.\n\nDie Regeln zu Sexualität, Verleumdung, Theater, Vorträgen, dem Umgang mit Vornehmen und dem Verhalten in Gesellschaft folgen alle demselben Muster: Die Strenge richtet sich gegen einen selbst, nie gegen andere. Wer enthaltsam lebt, soll die nicht verurteilen, die es nicht tun, und seine Enthaltsamkeit nicht bei jeder Gelegenheit anführen. Die schönste Zeile ist die Antwort auf üble Nachrede: „Der wußte also nichts von meinen übrigen Fehlern, sonst würde er wohl nicht bloß von diesen gesprochen haben.“ Wer so antwortet, hat dem Verleumder nichts mehr zu bieten.\n\nDie Anweisung für den Gang zu einem großen Herrn ist eine Übung nach Kapitel 4: Man stellt sich vorher vor, dass man ihn nicht antrifft, dass man vor verschlossener Tür steht, dass er sich nicht um einen kümmert. Ist der Gang trotzdem Pflicht, geht man hin und erträgt, was kommt, ohne zu sagen, es sei nicht der Mühe wert gewesen. Zeno, der neben Sokrates als Vorbild genannt wird, ist Zenon von Kition, der Gründer der Stoa. Das ganze Kapitel zeigt, dass Epiktets Philosophie keine Theorie für den Schreibtisch war, sondern eine Ordnung für den Tag, bis hin zum Verhalten beim Wagenrennen."
+    },
+    {
+      "number": 34,
+      "roman": "XXXIV",
+      "sections": [
+        {
+          "number": 1,
+          "heading": "Der Wahn ist kurz, die Reu' ist lang.",
+          "text": "Wenn du die Vorstellung irgend einer sinnlichen Lust in dich aufnimmst, so hüte dich, wie auch in andern Dingen, daß du nicht von ihr hingerissen werdest; sondern laß die Sache auf dich warten, und nimm dir längere Zeit dazu. Alsdann vergegenwärtige dir die beiden Momente, sowohl denjenigen, da du die Lust genießen, als denjenigen, da du hernach, wenn der Genuß vorüber ist, Reue fühlen, und dir selbst Vorwürfe machen wirst. Und dem stelle nun gegenüber, wie du dich freuen und dich selbst loben wirst, wenn du enthaltsam gewesen bist. Wenn es dir aber schicklich scheint, dich mit der Sache zu befassen, so gib wohl Achtung, daß dich nicht das Reizende, Angenehme und Verführerische derselben überwinde, sondern stelle dir vielmehr vor, wie viel wohler dir das Bewußtsein thun muß, einen solchen Sieg erkämpft zu haben."
+        }
+      ],
+      "commentary": "Wenn sich die Vorstellung einer sinnlichen Lust einstellt, soll man sich nicht von ihr hinreißen lassen, sondern die Sache warten lassen und sich Zeit nehmen. Dann soll man zwei Augenblicke nebeneinanderstellen: den des Genusses und den danach, wenn man Reue fühlt und sich Vorwürfe macht. Und beiden soll man gegenüberstellen, wie man sich freuen und loben wird, wenn man enthaltsam war.\n\nDas Kapitel erlaubt ausdrücklich, dass die Lust manchmal angemessen sein kann: „Wenn es dir aber schicklich scheint, dich mit der Sache zu befassen.“ Epiktet ist kein Asket aus Prinzip. Auch dann aber soll man sich vor dem Reizenden und Verführerischen der Sache hüten und sich vor Augen halten, wie viel wohler das Bewusstsein eines Sieges tut. Der Maßstab ist nicht die Lust, sondern das Urteil darüber, ob sie sich gehört.\n\nDie Technik ist dieselbe wie in Kapitel 20 gegen den Zorn: Aufschub. Die Vorstellung hat ihre größte Macht im ersten Augenblick; wer sie warten lässt, hat schon einen Teil ihrer Macht gebrochen. Neu ist hier die Methode des Vergleichs, bei der man die künftige Reue und die künftige Zufriedenheit als Vorstellungen gegen die gegenwärtige Versuchung aufbietet. Das ist die Vorstellungskraft gegen die Vorstellung, und Epiktet hält das für ein legitimes Werkzeug."
+    },
+    {
+      "number": 35,
+      "roman": "XXXV",
+      "sections": [
+        {
+          "number": 1,
+          "heading": "Thue recht, scheue niemand.",
+          "text": "Wenn du etwas thust, wovon du dich überzeugt hast, daß es gethan werden muß, so vermeide es nie, gesehen zu werden, während du es thust, auch wenn der große Haufe anderer Meinung darüber sein sollte. Denn, ist es unrecht, was du thust, so meide die That selbst: ist es aber recht, was fürchtest du dich vor denen, die es unrecht schelten wollen?"
+        }
+      ],
+      "commentary": "Wenn man sich überzeugt hat, dass etwas getan werden muss, soll man nie vermeiden, dabei gesehen zu werden, auch wenn die Menge anderer Meinung ist. Entweder ist die Tat unrecht, dann soll man sie ganz lassen; oder sie ist recht, dann gibt es nichts zu fürchten von denen, die sie unrecht schelten.\n\nDie Regel ist eine Alternative mit zwei Ausgängen, und beide führen zum selben Ergebnis: Es gibt nie einen Grund, sich zu verstecken. Wer etwas heimlich tut, hat entweder ein Urteil über die Tat, dem er nicht traut, oder ein Urteil über die Zuschauer, dem er zu viel Gewicht gibt. Im ersten Fall soll er die Tat prüfen, im zweiten die Zuschauer geringschätzen.\n\nDas Kapitel gehört zur Reihe der Warnungen vor der Rücksicht auf den Ruf (Kapitel 13, 22, 23). Es ist zugleich eine Regel gegen die Heuchelei. Epiktet verlangt nicht, dass man den Beifall der Menge sucht, aber ebenso wenig, dass man ihre Missbilligung fürchtet. Beides wäre eine Abhängigkeit von einem Urteil, das nicht in unserer Gewalt steht."
+    },
+    {
+      "number": 36,
+      "roman": "XXXVI",
+      "sections": [
+        {
+          "number": 1,
+          "heading": "Tischregel.",
+          "text": "Wie die Sätze: »Es ist Tag« und »Es ist Nacht« zwar vortrefflich zu einem disjunktiven Urtheil, dagegen zu einer Conjunktion gar nichts taugen, so mag es auch für den Körper einen großen Werth haben, wenn man sich die größte Portion herausnimmt; aber zur geziemenden Beobachtung der gesellschaftlichen Pflichten beim Gastmahl trägt es nichts bei. Wenn du nun bei einem andern zu Gast geladen bist, so vergiß nicht, daß man nicht bloß darauf sehen darf, welchen Werth das Aufgetragene für den Leib hat, sondern daß man auch die Schicklichkeit gegenüber dem Wirth beobachten muß."
+        }
+      ],
+      "commentary": "Das Kapitel beginnt mit einer Lektion aus der Logik. „Es ist Tag“ und „Es ist Nacht“ ergeben eine gute Disjunktion (entweder das eine oder das andere), aber eine wertlose Konjunktion (beides zugleich). Ebenso mag es für den Körper einen großen Wert haben, sich beim Gastmahl die größte Portion zu nehmen; für die gesellschaftliche Pflicht des Gastes ist es wertlos. Die beiden Gesichtspunkte lassen sich nicht zu einem einzigen verbinden, so wie sich Tag und Nacht nicht zu einem einzigen Zustand verbinden lassen.\n\nDer praktische Punkt ist einfach: Bei einem Gastmahl ist man nicht nur ein Körper, der gefüttert wird, sondern ein Gast mit einer Verpflichtung gegenüber dem Gastgeber, und der zweite Maßstab bestimmt, wie viel man nimmt. Was dem Leib nützt, ist nicht das einzige, was zählt, und oft nicht einmal das wichtigste.\n\nDie logische Einkleidung ist für Epiktet typisch. Er unterrichtete Logik und verlangte von seinen Schülern, dass sie die Lehre von den zusammengesetzten Aussagen beherrschten, aber er hatte keine Geduld mit denen, die sie um ihrer selbst willen betrieben (Kapitel 52). Die Logik sollte zeigen, wo ein Schluss nicht aufgeht, und hier geht der Schluss vom Wert für den Leib auf das erlaubte Verhalten nicht auf. Kapitel 44 verwendet dasselbe Verfahren gegen den Schluss vom Reichtum auf den Wert der Person."
+    },
+    {
+      "number": 37,
+      "roman": "XXXVII",
+      "sections": [
+        {
+          "number": 1,
+          "heading": "Ne sutor ultra crepidam!",
+          "text": "Wenn du eine Rolle übernimmst, welcher du nicht gewachsen bist, so wirst du sowohl in dieser zu Schanden werden, als auch jene, die du hättest ausfüllen können, vernachläßigen."
+        }
+      ],
+      "commentary": "Wer eine Rolle übernimmt, der er nicht gewachsen ist, wird in dieser zu Schanden und vernachlässigt zugleich die, die er hätte ausfüllen können. Das ist die Kehrseite von Kapitel 17: Spiele deine Rolle gut, aber wisse auch, welche Rollen deine sind. Kapitel 29 hatte dazu die Prüfung der eigenen Natur verlangt, der Arme und Schenkel des angehenden Ringers.\n\nDer Satz warnt vor zwei Verlusten auf einmal. Der erste ist offensichtlich: das Scheitern in der zu großen Rolle. Der zweite wird leicht übersehen: die kleinere Rolle, die man hätte gut spielen können, bleibt unbesetzt. Der Ehrgeizige schadet also nicht nur sich selbst, sondern lässt die Arbeit liegen, für die er tatsächlich getaugt hätte.\n\nConz' lateinische Überschrift „Ne sutor ultra crepidam“, der Schuster soll nicht über die Sandale hinaus urteilen, stammt aus einer Anekdote bei Plinius über den Maler Apelles. Ein Schuster hatte an einem Gemälde die Sandale zutreffend kritisiert, und als er sich anschließend auch über das Bein äußerte, wies ihn der Maler zurecht. Die Formel „Schuster, bleib bei deinem Leisten“ ist die deutsche Fassung, und sie trifft Epiktets Gedanken genau."
+    },
+    {
+      "number": 38,
+      "roman": "XXXVIII",
+      "sections": [
+        {
+          "number": 1,
+          "heading": "Vorsichtig wandeln.",
+          "text": "Wie du dich beim Gehen wohl hütest, in einen Nagel zu treten, oder den Fuß zu verrenken, so hüte dich auch, den herrschenden Theil deiner selbst zu beschädigen; und wenn wir dies bei jeder Handlung beobachten, so werden wir um so sicherer zu Werk gehen."
+        }
+      ],
+      "commentary": "Beim Gehen hütet man sich, in einen Nagel zu treten oder den Fuß zu verrenken. So soll man sich auch hüten, den herrschenden Teil seiner selbst zu beschädigen. Der „herrschende Theil“ übersetzt hēgemonikon, den stoischen Fachbegriff für den leitenden Teil der Seele, den Sitz des Urteils, der Zustimmung und der Entscheidung.\n\nDer Vergleich macht die sittliche Aufmerksamkeit zu etwas ganz Gewöhnlichem. Niemand hält es für übertrieben, beim Gehen auf den Boden zu achten, und niemand wird davon ängstlich. Genau diese Art von Aufmerksamkeit, beiläufig und ständig, verlangt Epiktet für das Innere. Man geht nicht besser, wenn man bei jedem Schritt überlegt; man geht besser, wenn man gewohnt ist hinzusehen.\n\nDer Schluss „so werden wir um so sicherer zu Werk gehen“ deutet an, dass die Vorsicht nicht bremst, sondern die Handlung sicherer macht. Das ist gegen den Einwand gerichtet, ein Stoiker könne aus lauter Selbstbeobachtung nichts mehr tun. Nach Epiktet ist das Gegenteil richtig: Wer weiß, was er nicht beschädigen darf, kann alles andere ruhiger tun. Kapitel 48 zeichnet das Bild dieser Vorsicht im Detail, mit dem Kranken, der ein frisch gerichtetes Glied nicht bewegt."
+    },
+    {
+      "number": 39,
+      "roman": "XXXIX",
+      "sections": [
+        {
+          "number": 1,
+          "heading": "Maß halten.",
+          "text": "Einem jeden dient sein Leib als Maßstab für den Besitz, wie der Fuß für den Schuh. Wenn du dabei stehen bleibst, so wirst du Maß halten. Gehst du aber darüber hinaus, so wirst du unfehlbar vollends wie von einer steilen Höhe heruntergerissen werden. Gerade wie mit dem Schuh! Willst du auf größerem Fuß leben, so kommt zuerst ein vergoldeter Schuh, dann ein purpurner, dann ein gestickter. Denn was einmal über das Maß hinaus ist, hat keine Gränze mehr."
+        }
+      ],
+      "commentary": "Der Leib ist das Maß für den Besitz, wie der Fuß das Maß für den Schuh. Wer dabei bleibt, hält Maß; wer darüber hinausgeht, wird „wie von einer steilen Höhe heruntergerissen“. Erst kommt der vergoldete Schuh, dann der purpurne, dann der gestickte. „Denn was einmal über das Maß hinaus ist, hat keine Gränze mehr.“\n\nDas Argument ist, dass das Bedürfnis eine natürliche Grenze hat, das Begehren über das Bedürfnis hinaus aber keine. Ein Schuh, der passt, ist fertig; ein Schuh, der beeindrucken soll, kann immer noch prächtiger werden, weil der Maßstab, an dem er gemessen wird, mitwächst. Sobald man das natürliche Maß verlassen hat, gibt es kein zweites Maß, das einen auffängt. Deshalb das Bild vom Absturz und nicht vom langsamen Abgleiten.\n\nDas Kapitel ist die stoische Fassung eines Gedankens, den auch Epikur vertrat: Die natürlichen Bedürfnisse sind leicht zu befüllen, die eingebildeten nie. Für den Alltag heißt das, sich bei jedem Erwerb zu fragen, ob er noch auf den Leib bezogen ist, auf Nahrung, Kleidung, Obdach, wie in Kapitel 33 aufgezählt, oder schon auf das Gepränge. Die Grenze ist nicht Askese; der Schuh darf passen und gut sein. Die Grenze liegt dort, wo der Schuh anfängt, etwas anderes zu bedeuten als einen Schuh."
+    },
+    {
+      "number": 40,
+      "roman": "XL",
+      "sections": [
+        {
+          "number": 1,
+          "heading": "Der Schmuck der Frauenzimmer.",
+          "text": "Die Frauenzimmer werden sogleich vom vierzehnten Jahre an von den Männern Herrinnen genannt. Wenn sie nun sehen, daß sie kein anderes Verdienst haben, als daß sie bei den Männern wohnen, so fangen sie an, sich zu putzen, und hierauf alle ihre Hoffnungen zu setzen. Es wäre nun wohl der Mühe werth, sie merken zu lassen, daß man sie nur dann ehren wolle, wenn sie sich bescheiden und sittsam aufführen."
+        }
+      ],
+      "commentary": "Mädchen werden vom vierzehnten Jahr an von den Männern „Herrinnen“ genannt. Wenn sie sehen, dass sie kein anderes Verdienst haben, als bei den Männern zu wohnen, fangen sie an, sich zu putzen und alle Hoffnungen darauf zu setzen. Es wäre der Mühe wert, so Epiktet, sie merken zu lassen, dass man sie nur ehren wolle, wenn sie sich bescheiden und sittsam aufführen.\n\nSo wie es dasteht, nimmt das Kapitel die gesellschaftliche Ordnung, die es beschreibt, hin und gibt den Frauen die Schuld dafür, dass sie sich in ihr zurechtfinden. Das Höchste, was sich für die Stelle sagen lässt, ist, dass Epiktet die Ursache immerhin bei den Männern sieht, nämlich in der Art, wie sie die Mädchen anreden, und dass er das Heilmittel darin sieht, den Charakter zu ehren statt das Aussehen. Der Gedanke, dass den Frauen die Philosophie oder irgendein anderer Weg zur Selbstachtung offenstehen könnte, kommt nicht vor.\n\nModerne Leser werden die Stelle mit Recht bevormundend finden, und man sollte nicht versuchen, sie zurechtzudeuten. Sie ist ein Beleg dafür, dass Epiktets Lehre vom Willen, der allen Menschen gleich gegeben ist, in seiner Vorstellungswelt nicht durchgehend auf Frauen angewandt wurde, obwohl die Stoiker in der Theorie behaupteten, Frauen seien zur Tugend ebenso fähig wie Männer. Musonius Rufus, Epiktets eigener Lehrer, hatte das ausdrücklich gelehrt. Von dieser Lehre ist in diesem Kapitel nichts zu spüren."
+    },
+    {
+      "number": 41,
+      "roman": "XLI",
+      "sections": [
+        {
+          "number": 1,
+          "heading": "Der Unedle.",
+          "text": "Es ist das Merkmal einer gemeinen Natur, wenn Einer bei körperlichen Dingen lange verweilt, z.B. lange turnt, lange ißt, lange trinkt, lange abseits geht, lange beim Weibe bleibt. Solches sollte man vielmehr nur nebenher thun; auf den Geist dagegen verwende man seine ganze Sorgfalt."
+        }
+      ],
+      "commentary": "Es ist das Merkmal einer gemeinen Natur, bei körperlichen Dingen lange zu verweilen: lange zu turnen, lange zu essen, lange zu trinken, lange „abseits zu gehen“, lange bei der Frau zu bleiben. Conz' „abseits gehen“ ist eine Umschreibung für den Gang zum Abort, wie schon das griechische Wort. Solche Dinge soll man nebenher tun; die ganze Sorgfalt gehört dem Geist.\n\nDas Kapitel ist keine Askese um ihrer selbst willen. Der Körper hat seine Bedürfnisse, und Epiktet leugnet sie nicht; er verlangt nur, dass sie nicht zum Mittelpunkt der Aufmerksamkeit werden. Der Fehler liegt im „lange“, im Verweilen, in der Bedeutung, die man diesen Verrichtungen beimisst. Wer den halben Tag mit Sport, Essen und Trinken verbringt, hat damit gezeigt, was er für wichtig hält, und das Urteil über seine Natur ergibt sich daraus.\n\nDer Gedanke steht in einer alten Tradition. Sokrates hatte nach Platon gesagt, der Philosoph befasse sich mit dem Körper nur so weit, wie es nötig sei. Epiktet macht daraus eine Regel für die Zeiteinteilung. Die Stelle wird verständlicher, wenn man sich die römischen Verhältnisse vorstellt, mit stundenlangen Gastmählern und einem Badebetrieb, der den ganzen Nachmittag füllen konnte. Gegen diese Sitte ist das Wort „nebenher“ gerichtet."
+    },
+    {
+      "number": 42,
+      "roman": "XLII",
+      "sections": [
+        {
+          "number": 1,
+          "heading": "Wer hat den Schaden?",
+          "text": "Wenn dich jemand schlimm behandelt, oder Schlimmes von dir redet, so bedenke, daß er es thut oder redet in der Meinung, er sei im Recht. Es ist nun nicht möglich, daß er dem folge, was du für richtig hältst, sondern dem, was er dafür hält. Wenn nun seine Meinung falsch ist, so hat er den Schaden, sofern er sich in einer Täuschung befindet. Denn wenn einer eine richtige Satzverbindung für falsch hält, so schadet dies der Satzverbindung nichts, sondern dem, welcher sich geirrt hat. Davon ausgehend wirst du dich gegen den Lästerer sanftmüthig betragen. Denke nur jedesmal: er war der Meinung u.s.w."
+        }
+      ],
+      "commentary": "Wer dich schlecht behandelt oder Schlechtes von dir redet, tut es in der Meinung, im Recht zu sein. Er kann nicht deiner Ansicht folgen, sondern nur seiner eigenen. Ist seine Ansicht falsch, dann hat er den Schaden, denn er ist es, der sich täuscht. Der Vergleich stammt aus der Logik: Wer eine wahre Satzverbindung, also einen richtigen Bedingungssatz, für falsch hält, schadet nicht dem Satz, sondern sich selbst.\n\nDas praktische Ergebnis ist Sanftmut. Bei jeder Beleidigung soll man sich sagen: Er war der Meinung, im Recht zu sein. Damit hat der Groll nichts mehr, woran er sich halten könnte. Der Beleidiger wird nicht entschuldigt, aber er wird als jemand gesehen, der einen Fehler gemacht hat, und einen Fehler bemitleidet man eher, als dass man ihn rächt.\n\nDer Gedanke geht auf Sokrates zurück, nach dem niemand wissentlich Unrecht tut; wer Unrecht tut, hält es für richtig und ist deshalb im Irrtum. Epiktet zieht daraus die Folgerung für den Betroffenen: Wenn der andere irrt, ist er der Geschädigte, und du bist es nicht. Zusammen mit Kapitel 20 (die Kränkung liegt im Urteil) und Kapitel 28 (schäme dich, so leicht erschüttert zu werden) ergibt das eine vollständige Anweisung für den Umgang mit Beleidigungen: von der Seite des Betroffenen, von der Seite des Beleidigers und von der Seite der eigenen Fassung."
+    },
+    {
+      "number": 43,
+      "roman": "XLIII",
+      "sections": [
+        {
+          "number": 1,
+          "heading": "Zweierlei Handhaben.",
+          "text": "Jedes Ding hat zwei Handhaben, eine zum Anfassen, die andere nicht zum Anfassen. Wenn nun dein Bruder Unrecht (an dir) thut, so nimm die Sache nicht von der Seite, daß er Unrecht thut; denn das ist nicht ihre anfaßbare Handhabe, vielmehr von der, daß er dein Bruder ist, daß er mit dir auferzogen worden ist. Das heißt die Sache da nehmen, wo sie anfaßbar ist."
+        }
+      ],
+      "commentary": "Jedes Ding hat zwei Handhaben, eine, an der man es tragen kann, und eine, an der man es nicht tragen kann. Wenn dein Bruder dir Unrecht tut, fass die Sache nicht an der Handhabe an, dass er Unrecht tut; die trägt nicht. Fass sie an der Handhabe an, dass er dein Bruder ist und mit dir aufgewachsen. Dann hast du sie da gefasst, wo sie sich tragen lässt.\n\nDas Bild gehört zu den praktisch nützlichsten im ganzen Buch, und es leugnet das Unrecht nicht. Es fragt nur, welche Beschreibung der Lage man tatsächlich in eine Handlung umsetzen kann. „Er hat mir Unrecht getan“ führt zu Groll und zu nichts weiter. „Er ist mein Bruder“ führt zu einer Pflicht, die man erfüllen kann. Beide Beschreibungen sind wahr, aber nur eine ist brauchbar.\n\nDas Kapitel ist die Anwendung von Kapitel 30. Dort hieß es, dass die Pflichten aus den Verhältnissen folgen und nicht davon abhängen, wie sich der andere verhält. Hier wird gezeigt, wie man das im Streitfall anstellt: indem man die Beziehung und nicht die Verletzung zum Ausgangspunkt nimmt. Wer das einmal an einem Bruder geübt hat, kann es auf Kollegen, Nachbarn und Fremde übertragen. Die Frage „Wo ist die tragende Handhabe?“ ist eine der wenigen Formeln des Handbüchleins, die sich ohne stoische Voraussetzungen unmittelbar anwenden lassen."
+    },
+    {
+      "number": 44,
+      "roman": "XLIV",
+      "sections": [
+        {
+          "number": 1,
+          "heading": "Schlechte Logik – schlechte Moral.",
+          "text": "Folgende Schlüsse sind nicht richtig: »Ich bin reicher, als du, somit besser, als du«; – »ich bin beredter, als du, somit besser, als du«. – Richtiger sind die folgenden: »Ich bin reicher, als du, somit ist mein Besitz mehr werth, als der deinige«; »ich bin beredter, als du, somit ist meine Ausdrucksweise besser, als die deinige«. Du selbst aber bist weder Besitz, noch Ausdrucksweise."
+        }
+      ],
+      "commentary": "Zwei falsche Schlüsse: „Ich bin reicher als du, also besser als du“ und „Ich bin beredter, also besser“. Die richtigen Fassungen ergeben nur, dass mein Besitz mehr wert ist oder meine Ausdrucksweise besser. Du selbst aber bist weder Besitz noch Ausdrucksweise.\n\nEpiktet lehrte Logik genau für diesen Zweck: um den Übergang von einer wahren Prämisse über etwas Äußerliches zu einer falschen Folgerung über eine Person zu erkennen. Der Fehler ist eine Verwechslung des Habens mit dem Sein. Man hat Besitz und Beredsamkeit; man ist der Gebrauch seiner Vorstellungen (Kapitel 6). Ein Vergleich im Haben sagt deshalb nichts über den Rang im Sein.\n\nDas Argument schneidet in beide Richtungen, und das ist sein eigentlicher Nutzen. Wer ärmer oder weniger beredt ist, ist deshalb ebenso wenig schlechter, wie der Reichere besser ist. Das Kapitel entwaffnet damit zugleich den Hochmut und den Minderwertigkeitsgedanken. Es ist die Fortsetzung von Kapitel 6 über das Pferd: Wer auf sein Vermögen stolz ist, ist auf den Vorzug eines fremden Dings stolz. Hier wird zusätzlich gezeigt, dass der Vergleich zweier Menschen anhand ihrer Dinge ein logischer Fehler ist, nicht nur ein moralischer."
+    },
+    {
+      "number": 45,
+      "roman": "XLV",
+      "sections": [
+        {
+          "number": 1,
+          "heading": "Urtheile nicht vorschnell.",
+          "text": "Es badet einer zu frühe; sage nicht: er thut unrecht, sondern: er badet zu frühe. Es trinkt einer viel Wein; sage nicht: er thut Unrecht, sondern: er trinkt viel. Denn ehe du die Absicht kennst, woher weißt du, ob er Unrecht thut?"
+        }
+      ],
+      "commentary": "Einer badet zu früh; sag nicht, er tut unrecht, sondern: er badet zu früh. Einer trinkt viel Wein; sag nicht, er tut unrecht, sondern: er trinkt viel. Denn ehe du seine Absicht kennst, woher weißt du, ob er unrecht tut?\n\nDie Regel lautet: beschreiben statt urteilen. Sie folgt unmittelbar aus der stoischen Lehre von den Vorstellungen. „Er trinkt viel“ ist das, was man wahrgenommen hat; „er tut unrecht“ ist ein Urteil, das man hinzugefügt hat, und zwar ohne die Kenntnis, die ein solches Urteil voraussetzen würde. Die Übung besteht darin, die beiden auseinanderzuhalten und beim ersten stehenzubleiben, bis man mehr weiß.\n\nDas Kapitel ist die Ergänzung zu allen Stellen, in denen es um das eigene Urteil in eigener Sache geht. Hier geht es um das Urteil über andere, und Epiktet ist ebenso streng. Wer sich vorschnelle Urteile über andere abgewöhnt, gewöhnt sich zugleich ab, den Vorstellungen überhaupt vorschnell zuzustimmen, und das ist die Grundübung. Außerdem hat die Regel einen sozialen Nutzen, den Kapitel 33 schon gefordert hat: nicht über Personen reden, weder lobend noch tadelnd. Wer nur beschreibt, hat über niemanden geurteilt."
+    },
+    {
+      "number": 46,
+      "roman": "XLVI",
+      "sections": [
+        {
+          "number": 1,
+          "heading": "Anspruchslosigkeit.",
+          "text": "Niemals nenne dich selbst einen Philosophen. Auch sprich unter Laien nicht viel von den Lehrsätzen der Wissenschaft, sondern handle nach denselben. So sprich z.B. bei der Mahlzeit nicht davon, wie man essen soll, sondern iß, wie man essen soll."
+        },
+        {
+          "number": 2,
+          "heading": "Werke sind besser als Worte.",
+          "text": "Wenn man unter Laien auf einen Satz aus der Wissenschaft zu sprechen kommt, so schweige in der Regel. Denn die Gefahr ist groß, daß du sofort wieder ausspeiest, was du noch nicht verdaut hast. Und wenn jemand zu dir sagt, du wissest nichts, und es beißt dich nicht, so wisse, daß du bereits einen Anfang in der Sache gemacht hast. Denn auch die Schafe tragen nicht das Gras her, um den Hirten zu zeigen, wie viel sie fressen, sondern verdauen das Futter in wendig; auswendig aber geben sie Wolle und Milch. So stelle auch du nicht deine Wissenschaft vor den Laien zur Schau, sondern, wenn du sie verdaut hast, die Werke."
+        }
+      ],
+      "commentary": "Nenn dich nie einen Philosophen, und sprich unter Laien nicht viel von Lehrsätzen, sondern handle nach ihnen. Beim Essen erkläre nicht, wie man essen soll; iss so. Kommt unter Laien das Gespräch auf einen Lehrsatz, schweige in der Regel, denn die Gefahr ist groß, dass du wieder ausspeist, was du noch nicht verdaut hast. Und wenn dir jemand sagt, du wüsstest nichts, und es beißt dich nicht, dann hast du einen Anfang gemacht.\n\nDas Bild von den Schafen macht die Sache deutlich. Die Schafe tragen das Gras nicht herbei, um dem Hirten zu zeigen, wie viel sie gefressen haben; sie verdauen es innerlich und geben äußerlich Wolle und Milch. So soll man auch die Wissenschaft nicht vor den Laien zur Schau stellen, sondern, wenn man sie verdaut hat, die Werke. Die Lehre ist Futter, nicht Ertrag. Wer die Lehre vorzeigt, zeigt damit, dass er sie noch nicht verarbeitet hat.\n\nDas Kapitel gehört zu der Reihe der Warnungen vor dem Schein (13, 22, 23) und bereitet die Kapitel 49 und 52 vor, in denen die Gelehrsamkeit ohne Anwendung angegriffen wird. Es hat auch eine schulpolitische Seite: Epiktets Schüler kamen nach Nikopolis, hörten ein paar Jahre zu und kehrten dann in ihre Städte und Ämter zurück. Dort wollte er sie nicht als Prediger sehen, sondern als Leute, deren Verhalten sich verändert hatte. Das Schweigen war die beste Werbung für die Schule."
+    },
+    {
+      "number": 47,
+      "roman": "XLVII",
+      "sections": [
+        {
+          "number": 1,
+          "heading": "Wahre und falsche Ascese.",
+          "text": "Wenn du hinsichtlich deines Körpers an Einfachheit gewöhnt bist, so bilde dir darauf nichts ein. Auch sprich nicht, wenn du Wasser trinkst, bei jeder Gelegenheit: ich trinke Wasser. Und willst du dich einmal üben in anstrengender Arbeit, so thu' es für dich, und nicht vor Fremden. Umarme nicht die Bildsäulen, sondern wenn dich einmal heftig dürstet, so nimm frisches Wasser in den Mund, und speie es wieder aus, und sage es niemand."
+        }
+      ],
+      "commentary": "Wer sich in Bezug auf den Körper an Einfachheit gewöhnt hat, soll sich nichts darauf einbilden. Er soll nicht bei jeder Gelegenheit sagen, dass er Wasser trinkt. Will er sich in anstrengender Arbeit üben, soll er es für sich tun und nicht vor Fremden. „Umarme nicht die Bildsäulen“ spielt auf Diogenes den Kyniker an, der im Winter kalte Statuen umarmt haben soll, um sich abzuhärten, und zwar auf dem Marktplatz, vor Publikum.\n\nDie letzte Anweisung ist die eigentliche Probe. Wenn man einmal heftig dürstet, soll man frisches Wasser in den Mund nehmen, es wieder ausspucken und es niemandem sagen. Eine Disziplin, die niemand sieht, ist die einzige, von der man sicher weiß, dass sie um ihrer selbst willen geübt wird. Alles andere könnte auch für die Zuschauer geschehen.\n\nDas Kapitel unterscheidet damit wahre und falsche Askese, wie Conz' Überschrift richtig sagt. Die falsche Askese ist eine Form von Eitelkeit; der Wassertrinker, der es jedem erzählt, hat aus seinem Verzicht eine Auszeichnung gemacht und damit genau das getan, wovor Kapitel 6 warnt. Die wahre Askese ist eine Übung des Willens und braucht keinen Zeugen. Epiktet steht hier zugleich in einer freundlichen Distanz zu den Kynikern: Er bewundert ihre Härte, aber nicht ihre Vorliebe für die Bühne."
+    },
+    {
+      "number": 48,
+      "roman": "XLVIII",
+      "sections": [
+        {
+          "number": 1,
+          "heading": "Ein ächter Jünger der Weisheit.",
+          "text": "Der Standpunkt und das Kennzeichen eines gewöhnlichen Menschen ist dies: er erwartet niemals von sich selbst Nutzen oder Schaden, sondern von äußerlichen Dingen; der Standpunkt und das Kennzeichen eines Philosophen: er erwartet allen Nutzen und Schaden von sich selbst."
+        },
+        {
+          "number": 2,
+          "heading": null,
+          "text": "Kennzeichen eines Fortschreitenden sind: er tadelt niemand, er lobt niemand, er beschuldigt niemand, er klagt niemand an, er spricht nicht von sich selbst, als sei er etwas, oder als wisse er etwas. Ist ihm etwas beschwerlich, oder hinderlich, so klagt er sich selbst an. Lobt ihn jemand, so lacht er bei sich selbst über den, der ihn lobt, und wenn er getadelt wird, so vertheidigt er sich nicht. Er geht einher, wie die Kranken und fürchtet sich, etwas, das kaum erst eingerichtet worden ist, zu bewegen, ehe es Festigkeit erlangt hat."
+        },
+        {
+          "number": 3,
+          "heading": null,
+          "text": "Die Begierde hat er ganz aus sich entfernt, den Widerwillen aber nur auf das gelenkt, was der Natur der Dinge zuwiderläuft, die in unsrer Gewalt sind. Von dem Trieb macht er in allem nur mäßigen Gebrauch. Ob man ihn auch für dumm oder unwissend hielte, er achtet es nicht; und, um es kurz zu sagen, er bewacht sich selbst wie einen Feind, und wie einen, der ihm Netze stellt."
+        }
+      ],
+      "commentary": "Ein Porträt des Fortschreitenden, der in der stoischen Sprache zwischen dem gewöhnlichen Menschen und dem Weisen steht. Der gewöhnliche Mensch erwartet Nutzen und Schaden von außen; der Philosoph erwartet beides von sich selbst. Der Fortschreitende tadelt niemanden, lobt niemanden, klagt niemanden an, spricht nicht von sich, als sei er etwas oder wisse etwas. Wird er gelobt, lacht er bei sich über den, der ihn lobt; wird er getadelt, verteidigt er sich nicht.\n\nDas Bild der Genesung steht in der Mitte. Er geht einher wie die Kranken und fürchtet sich, etwas zu bewegen, das erst kürzlich gerichtet worden ist und noch keine Festigkeit hat. Das ist ehrlich: Der Fortschreitende ist nicht geheilt, sondern in der Heilung, und weiß, wie leicht ein frisch gerichtetes Urteil wieder bricht. Die Begierde hat er ganz entfernt, den Widerwillen nur auf das eigene Fehlurteil gerichtet, vom Trieb macht er mäßigen Gebrauch, wie Kapitel 2 es verlangt hatte.\n\nDer letzte Satz ist der stärkste: „er bewacht sich selbst wie einen Feind, und wie einen, der ihm Netze stellt.“ Der Feind ist nicht die Welt, sondern die eigene Neigung, den Vorstellungen zuzustimmen. Das Kapitel sammelt die Regeln aus 2, 5, 13 und 46 in einer einzigen Figur und ist so etwas wie die Zwischenbilanz des Buches. Wer sich mit dem Porträt vergleicht, sieht, wo er steht, und die meisten sehen, dass sie noch am Anfang stehen."
+    },
+    {
+      "number": 49,
+      "roman": "XLIX",
+      "sections": [
+        {
+          "number": 1,
+          "heading": "Seid Thäter des Worts!",
+          "text": "Wenn sich einer groß macht, daß er die Schriften des Chrysippus verstehe und auslegen könne, so sprich du bei dir selbst: Hätte Chrysippus nicht unklar geschrieben, so hätte dieser nichts, womit er sich groß machen könnte. Ich aber, was will ich? Die Natur kennen lernen, und ihr folgen. Ich frage nun, wer legt sie mir aus? und wenn ich höre: Chrysippus, so gehe ich zu ihm. Aber ich verstehe seine Schriften nicht. Ich suche also einen Ausleger, und bis dahin ist gar nichts Großes an der Sache. Wenn ich aber den Ausleger gefunden habe, so bleibt noch übrig die Anwendung der Gebote im Leben. Diese letztere allein ist etwas Großes. Bewundere ich aber das Auslegen an sich, was bin ich zuletzt anders, als ein Grammatiker, anstatt ein Philosoph? – Mit dem Unterschied jedoch, daß ich statt des Homer den Chrysipp auslegen kann! – Um so mehr werde ich also erröthen müssen, wenn jemand zu mir sagt: lies mir den Chrysippus vor, und ich bin nicht im Stand, den Worten ähnliche und entsprechende Thaten aufzuweisen."
+        }
+      ],
+      "commentary": "Jemand macht sich groß damit, dass er die Schriften des Chrysippos verstehen und auslegen kann. Chrysippos war der dritte Schulvorsteher der Stoa und berüchtigt für seinen schwierigen Stil. Epiktet antwortet: Hätte Chrysippos nicht unklar geschrieben, hätte dieser Mann nichts, womit er sich groß machen könnte. Was will ich selbst? Die Natur kennenlernen und ihr folgen. Wenn Chrysippos sie auslegt und ich für Chrysippos wieder einen Ausleger brauche, dann ist an dieser ganzen Kette nichts Großes. Groß ist allein die Anwendung der Gebote im Leben.\n\nWer die Auslegung um ihrer selbst willen bewundert, ist am Ende ein Grammatiker, der zufällig Chrysippos statt Homer erklärt. Der Grammatiker war in der Antike der Philologe, der Texte erläuterte; für einen Philosophen war das eine abschätzige Bezeichnung. Das Kapitel endet mit der peinlichen Szene, dass jemand sagt „Lies mir den Chrysippus vor“ und man keine Taten hat, die den Worten entsprechen.\n\nDas Kapitel ist mit 46 und 52 die schärfste Kritik an der Gelehrsamkeit im ganzen Buch, und sie kommt von einem Mann, der selbst gelehrt war und Chrysippos gründlich kannte. Epiktet verachtet die Exegese nicht; er stellt sie an ihren Platz als Mittel. Der Maßstab ist immer derselbe: Hat sich das Leben geändert? Für seine Schüler, die zum Teil aus Bildungsehrgeiz zu ihm kamen, war das eine unbequeme Botschaft."
+    },
+    {
+      "number": 50,
+      "roman": "L",
+      "sections": [
+        {
+          "number": 1,
+          "heading": "Die Stimme der Weisheit ist Gottes Stimme.",
+          "text": "Alles Vorgetragene beobachte wie Gesetze, und als begiengest du eine Gottlosigkeit, wenn du es überträtest. Was man aber auch über dich sagen möge, kehre dich nicht daran; denn dies ist nicht mehr deine Sache."
+        }
+      ],
+      "commentary": "Alles hier Vorgetragene soll man wie Gesetze beobachten und es für eine Gottlosigkeit halten, sie zu übertreten. Was die Leute über einen sagen, geht einen nichts mehr an, denn das ist nicht mehr die eigene Sache.\n\nDas Kapitel ist ein Siegel auf die praktischen Regeln, die ihm vorausgehen. Das Wort Gottlosigkeit ist nicht beiläufig gewählt. Für einen Stoiker ist die Vernunft göttlich, ein Teil der Vernunft, die die Welt durchwaltet, und ein Grundsatz, den man als wahr erkannt hat, ist eine Stimme dieser Vernunft. Ihn zu übertreten, ist deshalb nicht bloß eine Inkonsequenz, sondern ein Ungehorsam gegen das Göttliche in einem selbst. Conz' Überschrift „Die Stimme der Weisheit ist Gottes Stimme“ trifft das genau.\n\nDer zweite Satz über das Gerede der Leute ist an dieser Stelle kein Nachtrag. Wer die Regeln wie Gesetze hält, wird auffallen, und die Reaktion der Umgebung ist nach den Kapiteln 13 und 22 vorauszusehen. Das Kapitel schließt diese Reaktion von vornherein aus dem Bereich des Erheblichen aus. Man hat einen Gesetzgeber, und das ist nicht die Menge."
+    },
+    {
+      "number": 51,
+      "roman": "LI",
+      "sections": [
+        {
+          "number": 1,
+          "heading": "Wann wirst du weise werden?",
+          "text": "Wie lange willst du es noch aufschieben, dich der besten Güterwerth zu achten, und in nichts den Aussprüchen der Vernunft zuwider zu handeln? Du hast die Lehrsätze vernommen, nach welchen du dich richten solltest, und hast du dich darnach gerichtet? Auf welchen Lehrmeister wartest du denn noch, um ihm das Werk deiner Besserung zu übertragen? Du bist kein Knabe mehr, sondern bereits ein Mann in reifem Alter. Wenn du auch jetzt noch fahrläßig und leichtsinnig bist, immer einen Aufschub um den andern machst, und immer wieder neue Tage festsetzest, nach deren Verfluß du für dich selbst Sorge tragen willst, so wirst du, ohne es zu merken, dahintenbleiben, und bis an's Ende ein Laie bleiben – im Leben und im Sterben."
+        },
+        {
+          "number": 2,
+          "heading": null,
+          "text": "So halte dich nun endlich dessen werth, zu leben als ein Vollkommener und als Jünger der Weisheit. Alles, was du für das Beste erkannt hast, sei dir unverbrüchliches Gesetz. Und wenn dir etwas Beschwerliches, oder etwas Angenehmes, oder etwas Ruhmvolles, oder etwas Ruhmloses daherkommt, so erinnere dich, daß jetzt die Zeit des Kampfes ist, und die Olympischen Spiele schon da sind und sich nicht aufschieben lassen, und daß an einem einzigen Tag und durch eine einzige Handlung das bisher Gewonnene entweder verloren gehen, oder gesichert werden kann."
+        },
+        {
+          "number": 3,
+          "heading": null,
+          "text": "Sokrates ist dadurch vollkommen geworden, daß er in allem, was ihm vorkam, auf nichts anderes, als auf die Vernunft achtete. Du aber, wenn du auch noch kein Sokrates bist, solltest doch leben als einer, der wünscht, ein Sokrates zu sein."
+        }
+      ],
+      "commentary": "Wie lange willst du es noch aufschieben, dich der besten Güter wert zu achten und in nichts gegen die Vernunft zu handeln? Du hast die Lehrsätze gehört und angenommen. Auf welchen Lehrmeister wartest du noch? Du bist kein Knabe mehr, sondern ein reifer Mann, und wenn du weiter Termin um Termin setzt, nach dem du für dich selbst sorgen willst, wirst du unversehens zurückbleiben und bis ans Ende ein Laie sein, „im Leben und im Sterben“. Der Laie, griechisch idiōtēs, ist der Mensch ohne Fachkenntnis, hier: ohne die Kunst zu leben.\n\nDer zweite Abschnitt erhöht den Einsatz. Die Zeit des Kampfes ist jetzt; die Olympischen Spiele sind schon da und lassen sich nicht verschieben; an einem einzigen Tag und durch eine einzige Handlung kann das bisher Gewonnene verloren gehen oder gesichert werden. Das Bild des Athleten kehrt aus Kapitel 29 zurück, aber nun ist die Vorbereitung vorbei und der Wettkampf hat begonnen. Jede Lage, ob beschwerlich oder angenehm, ruhmvoll oder ruhmlos, ist eine Runde in diesem Wettkampf.\n\nSokrates ist dadurch vollkommen geworden, dass er in allem auf nichts anderes als die Vernunft achtete. Der Schlusssatz ist der großzügigste des ganzen Buches: „Du aber, wenn du auch noch kein Sokrates bist, solltest doch leben als einer, der wünscht, ein Sokrates zu sein.“ Epiktet verlangt nicht die Vollkommenheit, sondern die Richtung. Das Kapitel ist die Ansprache, die ein Lehrer an Schüler hält, die alles gehört haben und nun nach Hause gehen. Mit Kapitel 52 und 53 bildet es den Schluss des Handbüchleins."
+    },
+    {
+      "number": 52,
+      "roman": "LII",
+      "sections": [
+        {
+          "number": 1,
+          "heading": "Theorie und Praxis.",
+          "text": "Das erste und nothwendigste Kapitel in der Philosophie ist das von der Anwendung der Lehrsätze im Leben, wie z.B. daß man nicht lügen soll. Erst das zweite ist das von den Beweisen, z.B. aus welchem Grunde man nicht lügen soll. Das dritte dient zur Begründung und Erklärung des vorigen, z.B. aus welchem Grunde dieses ein Beweis ist. Denn was ist ein Beweis? Was eine Folge? Was ein Widerspruch? Was ist wahr, was falsch?"
+        },
+        {
+          "number": 2,
+          "heading": null,
+          "text": "Ist also nicht das dritte Kapitel nothwendig wegen des zweiten, das zweite aber wegen des ersten? Das nothwendigste aber, und das, bei welchem man verweilen sollte, ist das erste. Wir aber machen es umgekehrt; denn wir halten uns am dritten Kapitel auf und verwenden auf dieses allen Fleiß, um das erste aber kümmern wir uns ganz und gar nicht; und so kommt es, daß wir zwar lügen, aber wie man beweist, daß man nicht lügen soll, das ist uns ganz geläufig."
+        }
+      ],
+      "commentary": "Die Philosophie hat drei Teile. Der erste und notwendigste ist die Anwendung der Lehrsätze im Leben, zum Beispiel: dass man nicht lügen soll. Der zweite sind die Beweise: aus welchem Grund man nicht lügen soll. Der dritte begründet und erklärt den zweiten: was ein Beweis ist, was eine Folgerung, was ein Widerspruch, was wahr und was falsch. Der dritte Teil ist um des zweiten willen da und der zweite um des ersten willen.\n\nWir aber machen es umgekehrt. Wir halten uns beim dritten Teil auf, verwenden allen Fleiß auf die Logik, und um den ersten kümmern wir uns gar nicht. „Und so kommt es, daß wir zwar lügen, aber wie man beweist, daß man nicht lügen soll, das ist uns ganz geläufig.“ Das ist Epiktets wiederkehrende Klage über Schüler, die die Logik meistern und unverändert bleiben, und es ist die Klage eines Mannes, der Logik unterrichtete.\n\nDie Dreiteilung entspricht in etwa den drei Übungsfeldern, die Epiktet in den Lehrgesprächen beschreibt: das Feld der Begierden und Abneigungen, das Feld des Handelns und das Feld des Urteilens und der Zustimmung. Das dritte, sagt er dort, sei für die Fortgeschrittenen, und die meisten fingen fälschlich damit an. Das Kapitel ist keine Absage an die Theorie; der zweite und dritte Teil sind ausdrücklich notwendig. Es ist eine Ansage über die Reihenfolge und die Gewichtung. Wer das Handbüchlein liest und dabei auf Definitionen und Beweise stößt, sollte sich erinnern, dass es nach Epiktets eigener Rangordnung nur um den ersten Teil geht: nicht zu lügen."
+    },
+    {
+      "number": 53,
+      "roman": "LIII",
+      "sections": [
+        {
+          "number": 0,
+          "heading": "Die Summe der Weisheit.",
+          "text": "In allen Fällen müssen wir folgende Sätze in Bereitschaft halten:"
+        },
+        {
+          "number": 1,
+          "heading": null,
+          "text": "So führe mich, o Zeus, und göttliches Geschick,\nWohin es mir von euch zu gehn verordnet ist.\nIch will euch folgen ohne Zögern; wollt' ich's nicht,\nWär' ich ein Feigling; aber folgen müßt' ich doch."
+        },
+        {
+          "number": 2,
+          "heading": null,
+          "text": "Und wer das Unvermeidliche mit Würde trägt,\nDer heißt ein Philosoph uns, ja ein Theolog."
+        },
+        {
+          "number": 3,
+          "heading": null,
+          "text": "Drum, Krito, wenn es den Göttern also beliebt, so mag's geschehen."
+        },
+        {
+          "number": 4,
+          "heading": null,
+          "text": "Anytus und Melitus können mich zwar tödten, aber mir schaden, – das können sie nicht."
+        }
+      ],
+      "commentary": "Das Buch schließt mit vier Sätzen, die man in allen Lagen bereithalten soll. Die ersten vier Zeilen stammen aus dem Zeus-Hymnus des Kleanthes, des zweiten Schulvorstehers der Stoa: Führe mich, Zeus und Schicksal, wohin ihr mich bestimmt habt; ich folge ohne Zögern, und wollte ich nicht, so wäre ich ein Feigling und müsste doch folgen. Der Gedanke ist der von Kapitel 8: Was geschieht, geschieht ohnehin, und der einzige Unterschied liegt darin, ob man mitgeht oder geschleift wird. Seneca hat die Zeilen ins Lateinische übertragen und ihnen den berühmten Zusatz gegeben: Den Willigen führt das Schicksal, den Unwilligen zerrt es.\n\nDas Zweizeiler über den, der das Unvermeidliche mit Würde trägt, ist ein Bruchstück aus einem verlorenen Stück des Euripides. Dass ein solcher Mensch „ein Philosoph, ja ein Theolog“ heißt, verbindet die praktische Haltung mit der Erkenntnis der göttlichen Ordnung, wie es Kapitel 31 verlangt hatte.\n\nDie beiden letzten Sätze sind Sokrates. „Drum, Krito, wenn es den Göttern also beliebt, so mag's geschehen“ steht in Platons Kriton, als Sokrates die Flucht aus dem Gefängnis ablehnt. „Anytus und Melitus können mich zwar tödten, aber mir schaden, das können sie nicht“ ist aus der Apologie, an die Ankläger gerichtet. Zusammen fassen die vier Zitate das Handbüchlein zusammen: Nimm an, was nicht in deiner Gewalt steht, und wisse, dass nichts außerhalb deines Willens dir schaden kann. Dass Epiktet am Ende nicht mit eigenen Worten schließt, sondern mit denen des Kleanthes, des Euripides und des Sokrates, ist selbst eine Lehre: Die Sätze sind alt, und es kommt nicht darauf an, sie zu erfinden, sondern sie bereitzuhalten."
+    }
+  ],
+  "commentary_note": "Der Kommentar wurde im September 2026 von Claude, einem KI-Modell von Anthropic, als Lesehilfe zu Conz' Übersetzung geschrieben. Er gibt jedes Kapitel in heutiger Sprache wieder, ergänzt den historischen Hintergrund und vermerkt, wo die deutsche Fassung vom griechischen Text abweicht. Er ist keine wissenschaftliche Arbeit."
+}
