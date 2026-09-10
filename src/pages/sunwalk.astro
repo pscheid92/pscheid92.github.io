@@ -1,4 +1,1210 @@
 ---
-import raw from '../../public/sunwalk/index.html?raw';
+import Layout from '../layouts/Layout.astro';
+
+interface PhaseRow {
+    name: string;
+    from: string;
+    to: string;
+    color: string;
+}
+
+const MORNING_PHASES: PhaseRow[] = [
+    {name: 'Astronomical twilight', from: 'astronomicalDawn', to: 'nauticalDawn', color: '#818cf8'},
+    {name: 'Nautical twilight', from: 'nauticalDawn', to: 'civilDawn', color: '#60a5fa'},
+    {name: 'Civil twilight', from: 'civilDawn', to: 'sunriseStart', color: '#38bdf8'},
+    {name: 'Sunrise', from: 'sunriseStart', to: 'sunriseEnd', color: '#fbbf24'},
+    {name: 'Golden hour', from: 'sunriseEnd', to: 'goldenHourEnd', color: '#fde047'},
+    {name: 'Daylight', from: 'goldenHourEnd', to: 'goldenHourStart', color: '#94a3b8'},
+];
+
+const EVENING_PHASES: PhaseRow[] = [
+    {name: 'Golden hour', from: 'goldenHourStart', to: 'sunsetStart', color: '#fde047'},
+    {name: 'Sunset', from: 'sunsetStart', to: 'sunsetEnd', color: '#fbbf24'},
+    {name: 'Civil twilight', from: 'sunsetEnd', to: 'civilDusk', color: '#38bdf8'},
+    {name: 'Nautical twilight', from: 'civilDusk', to: 'nauticalDusk', color: '#60a5fa'},
+    {name: 'Astronomical twilight', from: 'nauticalDusk', to: 'astronomicalDusk', color: '#818cf8'},
+];
 ---
-<Fragment set:html={raw}/>
+
+<Layout
+    title="Sun Walk - Patrick Scheid"
+    description="Sunrise, sunset, golden hour and twilight phases for any place on Earth, on any day."
+    pageClass="page-sunwalk"
+>
+    <section class="sunwalk-shell" aria-labelledby="sunwalk-title">
+        <div class="sunwalk-header">
+            <p class="eyebrow">App</p>
+            <h1 id="sunwalk-title">Sun Walk</h1>
+            <p class="tagline">Sunrise, sunset, golden hour and twilight — for any place, on any day.</p>
+        </div>
+
+        <form class="controls" id="sunwalk-form" autocomplete="off">
+            <div class="place-row">
+                <div class="search">
+                    <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="11" cy="11" r="8"/>
+                        <path d="m21 21-4.3-4.3"/>
+                    </svg>
+                    <label class="sr-only" for="place-query">Search a place</label>
+                    <input
+                        id="place-query"
+                        type="search"
+                        placeholder="Search a place…"
+                        role="combobox"
+                        aria-expanded="false"
+                        aria-controls="place-results"
+                        aria-autocomplete="list"
+                        spellcheck="false"
+                    />
+                    <ul class="results" id="place-results" role="listbox" aria-label="Matching places" hidden></ul>
+                </div>
+
+                <button type="button" class="icon-button" id="locate" title="Use my location" aria-label="Use my location">
+                    <svg class="icon-pin" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/>
+                        <circle cx="12" cy="10" r="3"/>
+                    </svg>
+                    <svg class="icon-spinner" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="date-row">
+                <button type="button" class="icon-button" id="prev-day" title="Previous day" aria-label="Previous day">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="m15 18-6-6 6-6"/>
+                    </svg>
+                </button>
+
+                <label class="date-field" for="date">
+                    <span class="sr-only">Date</span>
+                    <input id="date" name="date" type="date"/>
+                </label>
+
+                <button type="button" class="icon-button" id="next-day" title="Next day" aria-label="Next day">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="m9 18 6-6-6-6"/>
+                    </svg>
+                </button>
+
+                <button type="button" class="text-button" id="today">Today</button>
+            </div>
+        </form>
+
+        <p class="location-line">
+            <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="4"/>
+                <path d="M12 2v2"/><path d="M12 20v2"/>
+                <path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/>
+                <path d="M2 12h2"/><path d="M20 12h2"/>
+                <path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>
+            </svg>
+            <span class="place-name" id="place-name" aria-live="polite">Loading…</span>
+            <span class="coords" id="coords"></span>
+        </p>
+
+        <div class="times-panel">
+            <section class="times-column" aria-labelledby="morning-title">
+                <h2 class="column-title morning" id="morning-title">Morning</h2>
+                <ol class="phase-list">
+                    {MORNING_PHASES.map((phase) => (
+                        <li class="phase-row" data-from={phase.from} data-to={phase.to} style={`--dot: ${phase.color}`}>
+                            <span class="phase-dot" aria-hidden="true"></span>
+                            <span class="phase-name">{phase.name}</span>
+                            <span class="phase-time">--:--</span>
+                            <span class="phase-duration"></span>
+                        </li>
+                    ))}
+                </ol>
+            </section>
+
+            <section class="times-column" aria-labelledby="evening-title">
+                <h2 class="column-title evening" id="evening-title">Evening</h2>
+                <ol class="phase-list">
+                    {EVENING_PHASES.map((phase) => (
+                        <li class="phase-row" data-from={phase.from} data-to={phase.to} style={`--dot: ${phase.color}`}>
+                            <span class="phase-dot" aria-hidden="true"></span>
+                            <span class="phase-name">{phase.name}</span>
+                            <span class="phase-time">--:--</span>
+                            <span class="phase-duration"></span>
+                        </li>
+                    ))}
+                    <li class="phase-row" id="night-row" style="--dot: #4f46e5">
+                        <span class="phase-dot" aria-hidden="true"></span>
+                        <span class="phase-name">Night</span>
+                        <span class="phase-time">--:--</span>
+                        <span class="phase-duration"></span>
+                    </li>
+                </ol>
+            </section>
+        </div>
+
+        <p class="error-message" id="sunwalk-error" role="alert"></p>
+
+        <p class="credits">
+            Times are computed in your browser with
+            <a href="https://github.com/mourner/suncalc" rel="noopener">SunCalc</a>.
+            Place search by <a href="https://photon.komoot.io" rel="noopener">Photon</a> (OpenStreetMap).
+        </p>
+    </section>
+
+    <template id="result-item-template">
+        <li role="option" aria-selected="false">
+            <button type="button" class="result">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/>
+                    <circle cx="12" cy="10" r="3"/>
+                </svg>
+                <span class="result-text">
+                    <span class="result-name"></span>
+                    <span class="result-context"></span>
+                </span>
+            </button>
+        </li>
+    </template>
+</Layout>
+
+<script>
+    import SunCalc from 'suncalc';
+
+    /* ================= sun times ================= */
+    interface Times {
+        astronomicalDawn: Date;
+        nauticalDawn: Date;
+        civilDawn: Date;
+        sunriseStart: Date;
+        sunriseEnd: Date;
+        goldenHourEnd: Date;
+        solarNoon: Date;
+        goldenHourStart: Date;
+        sunsetStart: Date;
+        sunsetEnd: Date;
+        civilDusk: Date;
+        nauticalDusk: Date;
+        astronomicalDusk: Date;
+        nadir: Date;
+        nextAstronomicalDawn: Date;
+    }
+
+    function calculateTimes(lat: number, lng: number, date: Date): Times {
+        // Anchor at local noon so a DST switch never pushes the lookup onto a neighbouring day.
+        const solarDate = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 12);
+        const nextSolarDate = new Date(solarDate);
+        nextSolarDate.setDate(nextSolarDate.getDate() + 1);
+
+        const t = SunCalc.getTimes(solarDate, lat, lng);
+        const next = SunCalc.getTimes(nextSolarDate, lat, lng);
+
+        return {
+            astronomicalDawn: t.nightEnd,
+            nauticalDawn: t.nauticalDawn,
+            civilDawn: t.dawn,
+            sunriseStart: t.sunrise,
+            sunriseEnd: t.sunriseEnd,
+            goldenHourEnd: t.goldenHourEnd,
+            solarNoon: t.solarNoon,
+            goldenHourStart: t.goldenHour,
+            sunsetStart: t.sunsetStart,
+            sunsetEnd: t.sunset,
+            civilDusk: t.dusk,
+            nauticalDusk: t.nauticalDusk,
+            astronomicalDusk: t.night,
+            nadir: t.nadir,
+            nextAstronomicalDawn: next.nightEnd,
+        };
+    }
+
+    // SunCalc returns an invalid Date for phases that never happen (midnight sun, polar night).
+    const isValid = (d: Date | undefined): d is Date => d instanceof Date && !Number.isNaN(d.getTime());
+
+    /* ================= geocoding (Photon) ================= */
+    const PHOTON_URL = 'https://photon.komoot.io';
+    const PHOTON_LANG = 'en';
+
+    interface PhotonProperties {
+        osm_key?: string;
+        name?: string;
+        country?: string;
+        state?: string;
+        county?: string;
+        city?: string;
+        town?: string;
+        village?: string;
+        district?: string;
+        suburb?: string;
+        street?: string;
+        housenumber?: string;
+        postcode?: string;
+    }
+
+    interface PhotonFeature {
+        geometry: {coordinates: [number, number]};
+        properties?: PhotonProperties;
+    }
+
+    interface Place {
+        lat: number;
+        lon: number;
+        name: string;
+        context: string;
+        displayName: string;
+    }
+
+    async function fetchFeatures(url: URL, signal?: AbortSignal): Promise<PhotonFeature[]> {
+        const response = await fetch(url, {signal, headers: {Accept: 'application/json'}});
+        if (!response.ok) {
+            throw new Error(`Photon API error: HTTP ${response.status}`);
+        }
+        const data = (await response.json()) as {features?: PhotonFeature[]};
+        return data.features ?? [];
+    }
+
+    async function searchPlaces(query: string, signal?: AbortSignal): Promise<Place[]> {
+        const url = new URL('/api', PHOTON_URL);
+        url.searchParams.set('q', query);
+        url.searchParams.set('lang', PHOTON_LANG);
+        url.searchParams.set('limit', '10');
+
+        const features = await fetchFeatures(url, signal);
+        // Keep populated places only — no administrative boundaries, buildings or streets.
+        return features.filter((feature) => feature.properties?.osm_key === 'place').map(toPlace);
+    }
+
+    async function reversePlace(lat: number, lon: number, signal?: AbortSignal): Promise<Place | null> {
+        const url = new URL('/reverse', PHOTON_URL);
+        url.searchParams.set('lat', String(lat));
+        url.searchParams.set('lon', String(lon));
+        url.searchParams.set('lang', PHOTON_LANG);
+        url.searchParams.set('limit', '1');
+
+        const features = await fetchFeatures(url, signal);
+        return features.length > 0 ? toPlace(features[0]) : null;
+    }
+
+    function toPlace(feature: PhotonFeature): Place {
+        const p = feature.properties ?? {};
+        const [lon, lat] = feature.geometry.coordinates;
+
+        const name = p.name || p.district || p.suburb || p.village || p.town || p.city || p.street || 'Unnamed place';
+
+        const context: string[] = [];
+        if (p.street) context.push(p.housenumber ? `${p.street} ${p.housenumber}` : p.street);
+        if (p.district && p.district !== name) context.push(p.district);
+        if (p.suburb && p.suburb !== name) context.push(p.suburb);
+        if (p.city && p.city !== name) context.push(p.city);
+        if (p.county) context.push(p.county);
+        if (p.state) context.push(p.state);
+        if (p.country) context.push(p.country);
+
+        const displayName = [name, p.postcode, p.state, p.country].filter(Boolean).join(', ');
+
+        return {lat, lon, name, context: context.join(', '), displayName};
+    }
+
+    /* ================= default location from timezone ================= */
+    interface DefaultLocation {
+        place: string;
+        lat: number;
+        lng: number;
+    }
+
+    const TIMEZONE_LOCATIONS: Record<string, DefaultLocation> = {
+        'Europe/Berlin': {place: 'Berlin', lat: 52.52, lng: 13.405},
+        'Europe/Vienna': {place: 'Vienna', lat: 48.2082, lng: 16.3738},
+        'Europe/Zurich': {place: 'Zurich', lat: 47.3769, lng: 8.5417},
+        'Europe/Paris': {place: 'Paris', lat: 48.8566, lng: 2.3522},
+        'Europe/London': {place: 'London', lat: 51.5074, lng: -0.1278},
+        'Europe/Madrid': {place: 'Madrid', lat: 40.4168, lng: -3.7038},
+        'Europe/Rome': {place: 'Rome', lat: 41.9028, lng: 12.4964},
+        'Europe/Amsterdam': {place: 'Amsterdam', lat: 52.3676, lng: 4.9041},
+        'Europe/Brussels': {place: 'Brussels', lat: 50.8503, lng: 4.3517},
+        'Europe/Copenhagen': {place: 'Copenhagen', lat: 55.6761, lng: 12.5683},
+        'Europe/Stockholm': {place: 'Stockholm', lat: 59.3293, lng: 18.0686},
+        'Europe/Oslo': {place: 'Oslo', lat: 59.9139, lng: 10.7522},
+        'Europe/Helsinki': {place: 'Helsinki', lat: 60.1699, lng: 24.9384},
+        'Europe/Warsaw': {place: 'Warsaw', lat: 52.2297, lng: 21.0122},
+        'Europe/Prague': {place: 'Prague', lat: 50.0755, lng: 14.4378},
+        'Europe/Budapest': {place: 'Budapest', lat: 47.4979, lng: 19.0402},
+        'Europe/Lisbon': {place: 'Lisbon', lat: 38.7223, lng: -9.1393},
+        'Europe/Athens': {place: 'Athens', lat: 37.9838, lng: 23.7275},
+        'Europe/Istanbul': {place: 'Istanbul', lat: 41.0082, lng: 28.9784},
+        'Europe/Moscow': {place: 'Moscow', lat: 55.7558, lng: 37.6173},
+        'America/New_York': {place: 'New York', lat: 40.7128, lng: -74.006},
+        'America/Chicago': {place: 'Chicago', lat: 41.8781, lng: -87.6298},
+        'America/Denver': {place: 'Denver', lat: 39.7392, lng: -104.9903},
+        'America/Los_Angeles': {place: 'Los Angeles', lat: 34.0522, lng: -118.2437},
+        'America/Toronto': {place: 'Toronto', lat: 43.6532, lng: -79.3832},
+        'America/Sao_Paulo': {place: 'São Paulo', lat: -23.5505, lng: -46.6333},
+        'America/Mexico_City': {place: 'Mexico City', lat: 19.4326, lng: -99.1332},
+        'Asia/Tokyo': {place: 'Tokyo', lat: 35.6762, lng: 139.6503},
+        'Asia/Shanghai': {place: 'Shanghai', lat: 31.2304, lng: 121.4737},
+        'Asia/Kolkata': {place: 'Mumbai', lat: 19.076, lng: 72.8777},
+        'Asia/Dubai': {place: 'Dubai', lat: 25.2048, lng: 55.2708},
+        'Asia/Singapore': {place: 'Singapore', lat: 1.3521, lng: 103.8198},
+        'Asia/Seoul': {place: 'Seoul', lat: 37.5665, lng: 126.978},
+        'Australia/Sydney': {place: 'Sydney', lat: -33.8688, lng: 151.2093},
+        'Pacific/Auckland': {place: 'Auckland', lat: -36.8485, lng: 174.7633},
+    };
+
+    const FALLBACK_LOCATION: DefaultLocation = {place: 'Berlin', lat: 52.52, lng: 13.405};
+
+    function timezoneLocation(): DefaultLocation {
+        try {
+            const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            return TIMEZONE_LOCATIONS[timezone] ?? FALLBACK_LOCATION;
+        } catch {
+            return FALLBACK_LOCATION;
+        }
+    }
+
+    /* ================= browser geolocation ================= */
+    function currentPosition(): Promise<{lat: number; lng: number}> {
+        return new Promise((resolve, reject) => {
+            if (!('geolocation' in navigator)) {
+                reject(new Error('Geolocation is not supported'));
+                return;
+            }
+            navigator.geolocation.getCurrentPosition(
+                (position) => resolve({lat: position.coords.latitude, lng: position.coords.longitude}),
+                reject,
+                {enableHighAccuracy: true, timeout: 10_000, maximumAge: 20_000},
+            );
+        });
+    }
+
+    /* ================= formatting ================= */
+    const timeFormatter = new Intl.DateTimeFormat('en-GB', {hour: '2-digit', minute: '2-digit', hourCycle: 'h23'});
+    const formatTime = (date: Date) => timeFormatter.format(date);
+
+    function formatDuration(minutes: number): string {
+        const h = Math.floor(minutes / 60);
+        const m = minutes % 60;
+        if (h > 0 && m > 0) return `${h}h ${m}m`;
+        if (h > 0) return `${h}h`;
+        return `${m}m`;
+    }
+
+    const minutesBetween = (from: Date, to: Date) => Math.max(0, Math.round((to.getTime() - from.getTime()) / 60_000));
+    const minutesLeft = (until: Date, now: Date) => Math.max(0, Math.ceil((until.getTime() - now.getTime()) / 60_000));
+
+    function toDateString(date: Date): string {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
+    function fromDateString(value: string): Date | null {
+        const [year, month, day] = value.split('-').map(Number);
+        if (!year || !month || !day) return null;
+        return new Date(year, month - 1, day);
+    }
+
+    function isSameDay(a: Date, b: Date): boolean {
+        return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+    }
+
+    function formatCoords(lat: number, lng: number): string {
+        const ns = lat >= 0 ? 'N' : 'S';
+        const ew = lng >= 0 ? 'E' : 'W';
+        return `${Math.abs(lat).toFixed(2)}° ${ns}, ${Math.abs(lng).toFixed(2)}° ${ew}`;
+    }
+
+    /* ================= DOM ================= */
+    const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T | null;
+
+    const form = $<HTMLFormElement>('sunwalk-form');
+    const queryInput = $<HTMLInputElement>('place-query');
+    const resultsList = $<HTMLUListElement>('place-results');
+    const resultTemplate = $<HTMLTemplateElement>('result-item-template');
+    const locateButton = $<HTMLButtonElement>('locate');
+    const dateInput = $<HTMLInputElement>('date');
+    const prevButton = $<HTMLButtonElement>('prev-day');
+    const nextButton = $<HTMLButtonElement>('next-day');
+    const todayButton = $<HTMLButtonElement>('today');
+    const placeName = $('place-name');
+    const coords = $('coords');
+    const errorOutput = $('sunwalk-error');
+    const phaseRows = Array.from(document.querySelectorAll<HTMLElement>('.phase-row[data-from]'));
+    const nightRow = $('night-row');
+
+    function setText(element: Element | null, text: string) {
+        if (element) element.textContent = text;
+    }
+
+    function setError(message: string) {
+        setText(errorOutput, message);
+    }
+
+    /* ================= state ================= */
+    const initial = timezoneLocation();
+    const state = {place: initial.place, lat: initial.lat, lng: initial.lng, date: new Date()};
+    // Bumped whenever the location changes, so a slow reverse-geocode can't overwrite a newer choice.
+    let locationVersion = 0;
+
+    /* ================= rendering ================= */
+    function fillRow(row: HTMLElement, time: string, duration: string, active: boolean) {
+        setText(row.querySelector('.phase-time'), time);
+        setText(row.querySelector('.phase-duration'), duration);
+        row.classList.toggle('is-active', active);
+        if (active) {
+            row.setAttribute('aria-current', 'time');
+        } else {
+            row.removeAttribute('aria-current');
+        }
+    }
+
+    function render() {
+        const now = new Date();
+        const today = isSameDay(state.date, now);
+        const times = calculateTimes(state.lat, state.lng, state.date);
+
+        for (const row of phaseRows) {
+            const from = times[row.dataset.from as keyof Times];
+            const to = times[row.dataset.to as keyof Times];
+
+            if (!isValid(from) || !isValid(to)) {
+                fillRow(row, '--:--', '', false);
+                continue;
+            }
+
+            const active = today && now >= from && now < to;
+            const duration = active
+                ? `${formatDuration(minutesLeft(to, now))} left`
+                : formatDuration(minutesBetween(from, to));
+            fillRow(row, `${formatTime(from)} – ${formatTime(to)}`, duration, active);
+        }
+
+        if (nightRow) {
+            const dusk = times.astronomicalDusk;
+            const dawn = times.astronomicalDawn;
+
+            if (!isValid(dusk)) {
+                fillRow(nightRow, '--:--', '', false);
+            } else {
+                const afterDusk = today && now >= dusk;
+                const beforeDawn = today && isValid(dawn) && now < dawn;
+                const active = afterDusk || beforeDawn;
+                const nightEnds = afterDusk ? times.nextAstronomicalDawn : dawn;
+                const duration = active && isValid(nightEnds) ? `${formatDuration(minutesLeft(nightEnds, now))} left` : '';
+                fillRow(nightRow, `from ${formatTime(dusk)}`, duration, active);
+            }
+        }
+
+        setText(placeName, state.place);
+        setText(coords, formatCoords(state.lat, state.lng));
+        if (dateInput) dateInput.value = toDateString(state.date);
+        if (todayButton) todayButton.disabled = today;
+    }
+
+    /* ================= date navigation ================= */
+    function setDate(date: Date) {
+        state.date = date;
+        render();
+    }
+
+    function shiftDate(days: number) {
+        const next = new Date(state.date);
+        next.setDate(next.getDate() + days);
+        setDate(next);
+    }
+
+    prevButton?.addEventListener('click', () => shiftDate(-1));
+    nextButton?.addEventListener('click', () => shiftDate(1));
+    todayButton?.addEventListener('click', () => setDate(new Date()));
+    dateInput?.addEventListener('change', () => {
+        const picked = fromDateString(dateInput.value);
+        if (picked) setDate(picked);
+    });
+
+    /* ================= place search ================= */
+    let results: Place[] = [];
+    let highlighted = -1;
+    let debounceTimer: number | undefined;
+    let searchController: AbortController | null = null;
+
+    function setExpanded(expanded: boolean) {
+        if (!resultsList || !queryInput) return;
+        resultsList.hidden = !expanded;
+        queryInput.setAttribute('aria-expanded', String(expanded));
+        if (!expanded) queryInput.removeAttribute('aria-activedescendant');
+    }
+
+    function hideResults() {
+        setExpanded(false);
+    }
+
+    function clearResults() {
+        results = [];
+        highlighted = -1;
+        resultsList?.replaceChildren();
+        hideResults();
+    }
+
+    function showMessage(text: string) {
+        if (!resultsList) return;
+        const item = document.createElement('li');
+        item.className = 'results-message';
+        item.textContent = text;
+        resultsList.replaceChildren(item);
+        setExpanded(true);
+    }
+
+    function renderResults() {
+        if (!resultsList || !resultTemplate) return;
+        if (results.length === 0) {
+            showMessage('No places found.');
+            return;
+        }
+
+        const items = results.map((place, index) => {
+            const fragment = resultTemplate.content.cloneNode(true) as DocumentFragment;
+            const item = fragment.querySelector('li') as HTMLLIElement;
+            item.id = `place-option-${index}`;
+            item.dataset.index = String(index);
+            setText(item.querySelector('.result-name'), place.displayName);
+            setText(item.querySelector('.result-context'), place.context);
+            return item;
+        });
+
+        highlighted = -1;
+        resultsList.replaceChildren(...items);
+        setExpanded(true);
+    }
+
+    function setHighlight(index: number) {
+        if (!resultsList || !queryInput) return;
+        const options = resultsList.querySelectorAll<HTMLElement>('[role="option"]');
+        if (options.length === 0) return;
+
+        highlighted = ((index % options.length) + options.length) % options.length;
+        options.forEach((option, i) => {
+            const isCurrent = i === highlighted;
+            option.classList.toggle('is-highlighted', isCurrent);
+            option.setAttribute('aria-selected', String(isCurrent));
+        });
+
+        const current = options[highlighted];
+        queryInput.setAttribute('aria-activedescendant', current.id);
+        current.scrollIntoView({block: 'nearest'});
+    }
+
+    function selectPlace(place: Place) {
+        locationVersion += 1;
+        state.place = place.name;
+        state.lat = place.lat;
+        state.lng = place.lon;
+        if (queryInput) queryInput.value = place.name;
+        clearResults();
+        setError('');
+        render();
+    }
+
+    async function runSearch(query: string) {
+        searchController?.abort();
+        const controller = new AbortController();
+        searchController = controller;
+        showMessage('Searching…');
+
+        try {
+            const found = await searchPlaces(query, controller.signal);
+            if (controller.signal.aborted) return;
+            results = found;
+            renderResults();
+        } catch (error) {
+            if (controller.signal.aborted) return;
+            console.error('Place search failed:', error);
+            clearResults();
+            setError('Place search is unavailable right now. Please try again in a moment.');
+        }
+    }
+
+    queryInput?.addEventListener('input', () => {
+        const query = queryInput.value.trim();
+        window.clearTimeout(debounceTimer);
+        setError('');
+
+        if (query.length < 2) {
+            searchController?.abort();
+            clearResults();
+            return;
+        }
+
+        debounceTimer = window.setTimeout(() => runSearch(query), 300);
+    });
+
+    queryInput?.addEventListener('focus', () => {
+        if (results.length > 0) setExpanded(true);
+    });
+
+    queryInput?.addEventListener('blur', hideResults);
+
+    queryInput?.addEventListener('keydown', (event) => {
+        const open = !!resultsList && !resultsList.hidden && results.length > 0;
+
+        switch (event.key) {
+            case 'ArrowDown':
+                if (open) {
+                    event.preventDefault();
+                    setHighlight(highlighted + 1);
+                }
+                break;
+            case 'ArrowUp':
+                if (open) {
+                    event.preventDefault();
+                    setHighlight(highlighted - 1);
+                }
+                break;
+            case 'Enter':
+                event.preventDefault();
+                if (open) selectPlace(results[highlighted >= 0 ? highlighted : 0]);
+                break;
+            case 'Escape':
+                hideResults();
+                break;
+        }
+    });
+
+    // Keep the input focused while a result is being clicked, so blur doesn't close the list first.
+    resultsList?.addEventListener('mousedown', (event) => event.preventDefault());
+    resultsList?.addEventListener('click', (event) => {
+        const option = (event.target as HTMLElement).closest<HTMLElement>('[role="option"]');
+        if (!option) return;
+        const place = results[Number(option.dataset.index)];
+        if (place) selectPlace(place);
+    });
+
+    /* ================= geolocation ================= */
+    let locating = false;
+
+    async function locate(silent: boolean) {
+        if (locating) return;
+        locating = true;
+        locateButton?.classList.add('is-locating');
+        if (locateButton) locateButton.disabled = true;
+
+        try {
+            const position = await currentPosition();
+            locationVersion += 1;
+            const version = locationVersion;
+
+            state.lat = position.lat;
+            state.lng = position.lng;
+            state.place = 'My location';
+            if (queryInput) queryInput.value = '';
+            clearResults();
+            setError('');
+            render();
+
+            try {
+                const place = await reversePlace(position.lat, position.lng);
+                if (place && version === locationVersion) {
+                    state.place = place.name;
+                    render();
+                }
+            } catch (error) {
+                console.error('Reverse geocoding failed:', error);
+            }
+        } catch {
+            if (!silent) {
+                setError('Could not determine your location. Check the browser’s location permission and try again.');
+            }
+        } finally {
+            locating = false;
+            locateButton?.classList.remove('is-locating');
+            if (locateButton) locateButton.disabled = false;
+        }
+    }
+
+    locateButton?.addEventListener('click', () => locate(false));
+
+    /* ================= boot ================= */
+    form?.addEventListener('submit', (event) => event.preventDefault());
+
+    render();
+    locate(true);
+
+    // Keep "x left" on the active phase fresh.
+    window.setInterval(render, 30_000);
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') render();
+    });
+</script>
+
+<style>
+    :global(body.page-sunwalk main) {
+        width: 100%;
+        max-width: 54rem;
+    }
+
+    .sunwalk-shell {
+        display: grid;
+        gap: 1.5rem;
+        max-width: 54rem;
+        margin: 0 auto;
+    }
+
+    .sunwalk-header {
+        padding-top: 1rem;
+    }
+
+    .eyebrow {
+        margin: 0 0 0.35rem;
+        color: var(--color-accent);
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+    }
+
+    .sunwalk-header h1 {
+        margin-bottom: 0.4rem;
+    }
+
+    .tagline {
+        margin: 0;
+        color: var(--color-text-muted);
+        font-size: 1.1rem;
+    }
+
+    /* ---------- controls ---------- */
+    .controls {
+        display: grid;
+        gap: 0.75rem;
+        background: var(--color-surface);
+        border: 1px solid var(--color-border);
+        border-radius: 8px;
+        padding: 1.25rem;
+    }
+
+    .place-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 2.75rem;
+        gap: 0.75rem;
+    }
+
+    .date-row {
+        display: grid;
+        grid-template-columns: 2.75rem minmax(0, 1fr) 2.75rem auto;
+        gap: 0.75rem;
+    }
+
+    .controls input {
+        width: 100%;
+        min-height: 2.75rem;
+        border: 1px solid var(--color-border);
+        border-radius: 6px;
+        padding: 0.6rem 0.7rem;
+        background: var(--color-bg);
+        color: var(--color-text);
+        font: 400 1rem/1.2 "Atkinson", sans-serif;
+    }
+
+    .controls input:focus {
+        border-color: var(--color-accent);
+        outline: none;
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 18%, transparent);
+    }
+
+    .controls input::placeholder {
+        color: var(--color-text-muted);
+        opacity: 0.8;
+    }
+
+    .search {
+        position: relative;
+        min-width: 0;
+    }
+
+    .search input {
+        padding-left: 2.4rem;
+    }
+
+    .search input::-webkit-search-cancel-button {
+        cursor: pointer;
+    }
+
+    .search-icon {
+        position: absolute;
+        top: 50%;
+        left: 0.8rem;
+        width: 1.1rem;
+        height: 1.1rem;
+        transform: translateY(-50%);
+        color: var(--color-text-muted);
+        pointer-events: none;
+    }
+
+    .icon-button,
+    .text-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 2.75rem;
+        border: 1px solid var(--color-border);
+        border-radius: 6px;
+        background: var(--color-bg);
+        color: var(--color-text-muted);
+        font: 600 0.95rem/1 "Atkinson", sans-serif;
+        cursor: pointer;
+        transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+    }
+
+    .icon-button {
+        width: 2.75rem;
+        padding: 0;
+    }
+
+    .icon-button svg {
+        width: 1.15rem;
+        height: 1.15rem;
+    }
+
+    .text-button {
+        padding: 0 1rem;
+    }
+
+    .icon-button:hover:not(:disabled),
+    .text-button:hover:not(:disabled) {
+        border-color: var(--color-accent);
+        color: var(--color-accent);
+    }
+
+    .icon-button:disabled,
+    .text-button:disabled {
+        opacity: 0.5;
+        cursor: default;
+    }
+
+    .icon-spinner {
+        display: none;
+        animation: spin 0.9s linear infinite;
+    }
+
+    .icon-button.is-locating .icon-pin {
+        display: none;
+    }
+
+    .icon-button.is-locating .icon-spinner {
+        display: block;
+    }
+
+    @keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    /* ---------- date field (mirrors the severance calculator) ---------- */
+    .date-field {
+        position: relative;
+        display: block;
+        min-width: 0;
+    }
+
+    .date-field input {
+        padding-right: 2.6rem;
+    }
+
+    .date-field::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        right: 0.95rem;
+        width: 0.95rem;
+        height: 0.95rem;
+        transform: translateY(-50%);
+        pointer-events: none;
+        background: var(--color-text-muted);
+        mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M7 2a1 1 0 0 1 1 1v1h8V3a1 1 0 1 1 2 0v1h1a3 3 0 0 1 3 3v12a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3h1V3a1 1 0 0 1 1-1Zm12 9H5v8a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-8ZM6 6a1 1 0 0 0-1 1v2h14V7a1 1 0 0 0-1-1H6Z'/%3E%3C/svg%3E") center / contain no-repeat;
+    }
+
+    .date-field input[type="date"]::-webkit-calendar-picker-indicator {
+        cursor: pointer;
+        opacity: 0;
+    }
+
+    :global([data-theme="dark"]) .date-field input[type="date"] {
+        color-scheme: dark;
+    }
+
+    :global([data-theme="dark"]) .date-field::after {
+        background: var(--color-text-heading);
+    }
+
+    /* ---------- search results ---------- */
+    .results {
+        position: absolute;
+        top: calc(100% + 0.35rem);
+        left: 0;
+        right: 0;
+        z-index: 20;
+        max-height: min(20rem, 50vh);
+        overflow-y: auto;
+        margin: 0;
+        padding: 0.35rem;
+        list-style: none;
+        background: var(--color-bg);
+        border: 1px solid var(--color-border);
+        border-radius: 8px;
+        box-shadow: var(--box-shadow);
+    }
+
+    .results[hidden] {
+        display: none;
+    }
+
+    .results :global(.results-message) {
+        padding: 0.6rem 0.75rem;
+        color: var(--color-text-muted);
+        font-size: 0.9rem;
+    }
+
+    .results :global(.result) {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+        gap: 0.6rem;
+        align-items: start;
+        width: 100%;
+        padding: 0.55rem 0.7rem;
+        border: none;
+        border-radius: 6px;
+        background: none;
+        color: inherit;
+        font: inherit;
+        line-height: 1.35;
+        text-align: left;
+        cursor: pointer;
+    }
+
+    .results :global(.result svg) {
+        width: 1rem;
+        height: 1rem;
+        margin-top: 0.2rem;
+        color: #f59e0b;
+    }
+
+    .results :global(.result:hover),
+    .results :global(.is-highlighted .result) {
+        background: var(--color-surface);
+    }
+
+    .results :global(.result-text) {
+        display: grid;
+        gap: 0.1rem;
+        min-width: 0;
+    }
+
+    .results :global(.result-name) {
+        font-weight: 600;
+        color: var(--color-text-heading);
+        overflow-wrap: anywhere;
+    }
+
+    .results :global(.result-context) {
+        font-size: 0.85rem;
+        color: var(--color-text-muted);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    /* ---------- location line ---------- */
+    .location-line {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: 0.5rem 0.65rem;
+        margin: 0;
+        padding: 0 0.25rem;
+    }
+
+    .sun-icon {
+        width: 1.25rem;
+        height: 1.25rem;
+        align-self: center;
+        color: #f59e0b;
+    }
+
+    .place-name {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--color-text-heading);
+    }
+
+    .coords {
+        font-family: 'SFMono-Regular', 'Consolas', 'Liberation Mono', 'Menlo', monospace;
+        font-size: 0.85rem;
+        color: var(--color-text-muted);
+    }
+
+    /* ---------- times panel ---------- */
+    .times-panel {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        border: 1px solid var(--color-border);
+        border-radius: 8px;
+        background: var(--color-bg);
+        box-shadow: 0 2px 8px color-mix(in srgb, var(--color-shadow) 35%, transparent);
+    }
+
+    .times-column {
+        padding: 1.1rem 1.25rem;
+        min-width: 0;
+    }
+
+    .times-column + .times-column {
+        border-left: 1px solid var(--color-border);
+    }
+
+    .column-title {
+        margin: 0 0 0.5rem;
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+    }
+
+    .column-title.morning {
+        color: #d97706;
+    }
+
+    .column-title.evening {
+        color: #ea580c;
+    }
+
+    :global([data-theme="dark"]) .column-title.morning {
+        color: #fbbf24;
+    }
+
+    :global([data-theme="dark"]) .column-title.evening {
+        color: #fb923c;
+    }
+
+    .phase-list {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    .phase-row {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto minmax(3.6rem, auto);
+        gap: 0.6rem;
+        align-items: baseline;
+        margin: 0 -0.5rem;
+        padding: 0.4rem 0.5rem;
+        border-radius: 6px;
+        font-size: 0.95rem;
+        line-height: 1.4;
+        transition: background-color 0.2s ease;
+    }
+
+    .phase-row.is-active {
+        background: color-mix(in srgb, var(--color-accent) 9%, var(--color-bg));
+        box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-accent) 30%, transparent);
+    }
+
+    .phase-dot {
+        display: block;
+        align-self: center;
+        width: 0.55rem;
+        height: 0.55rem;
+        border-radius: 50%;
+        background: var(--dot);
+        border: 1px solid color-mix(in srgb, var(--dot) 70%, var(--color-text-heading));
+    }
+
+    .phase-name {
+        display: block;
+        min-width: 0;
+        color: var(--color-text);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .phase-row.is-active .phase-name {
+        font-weight: 700;
+        color: var(--color-text-heading);
+    }
+
+    .phase-time {
+        font-family: 'SFMono-Regular', 'Consolas', 'Liberation Mono', 'Menlo', monospace;
+        font-size: 0.9rem;
+        font-variant-numeric: tabular-nums;
+        color: var(--color-text-heading);
+        white-space: nowrap;
+    }
+
+    .phase-duration {
+        text-align: right;
+        font-size: 0.82rem;
+        font-variant-numeric: tabular-nums;
+        color: var(--color-text-muted);
+        white-space: nowrap;
+    }
+
+    .phase-row.is-active .phase-duration {
+        color: var(--color-accent);
+        font-weight: 600;
+    }
+
+    /* ---------- messages ---------- */
+    .error-message {
+        min-height: 1.5rem;
+        margin: 0;
+        color: #b42318;
+        font-weight: 600;
+    }
+
+    :global([data-theme="dark"]) .error-message {
+        color: #ff9b8f;
+    }
+
+    .credits {
+        margin: 0;
+        text-align: center;
+        font-size: 0.85rem;
+        color: var(--color-text-muted);
+    }
+
+    /* ---------- responsive ---------- */
+    @media (max-width: 760px) {
+        .date-row {
+            grid-template-columns: 2.75rem minmax(0, 1fr) 2.75rem;
+        }
+
+        .text-button {
+            grid-column: 1 / -1;
+        }
+
+        .times-panel {
+            grid-template-columns: 1fr;
+        }
+
+        .times-column + .times-column {
+            border-left: none;
+            border-top: 1px solid var(--color-border);
+        }
+
+        /* Stack each phase: dot + name on the first line, time + duration on the second. */
+        .phase-row {
+            grid-template-columns: auto minmax(0, 1fr) auto;
+            row-gap: 0.1rem;
+        }
+
+        .phase-name {
+            grid-column: 2 / 4;
+        }
+
+        .phase-time {
+            grid-column: 2;
+        }
+
+        .phase-duration {
+            grid-column: 3;
+        }
+    }
+</style>
