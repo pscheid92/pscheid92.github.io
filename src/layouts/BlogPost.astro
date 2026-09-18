@@ -6,10 +6,10 @@ import ReadingProgress from '../components/ReadingProgress.astro';
 import TableOfContents from '../components/TableOfContents.astro';
 import Layout from './Layout.astro';
 
-interface Props extends CollectionEntry<'blog'>['data'] {
+type Props = CollectionEntry<'blog'>['data'] & {
     headings?: { depth: number; slug: string; text: string }[];
     readTime?: number;
-}
+};
 
 const {title, description, pubDate, updatedDate, heroImage, tags = [], headings = [], readTime} = Astro.props;
 ---

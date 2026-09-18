@@ -6,7 +6,7 @@ import Layout from '../../layouts/Layout.astro';
 
 const posts = (await getCollection('blog'))
     .filter((post) => import.meta.env.DEV || !post.data.draft)
-    .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+    .sort((a, b) => (b.data.pubDate?.valueOf() ?? 0) - (a.data.pubDate?.valueOf() ?? 0));
 
 const allTags = [...new Set(posts.flatMap((post) => post.data.tags))].sort();
 
@@ -61,7 +61,7 @@ function estimateReadTime(body: string): number {
                                 )}
                                 <span class="post-meta-separator">&middot;</span>
                                 <time class="post-date">
-                                    <FormattedDate date={post.data.pubDate} />
+                                    {post.data.pubDate && <FormattedDate date={post.data.pubDate} />}
                                 </time>
                                 <span class="post-meta-separator">&middot;</span>
                                 <span class="post-read-time">{readTime} min read</span>
@@ -341,7 +341,7 @@ function estimateReadTime(body: string): number {
 
             cards.forEach((card) => {
                 const cardTags = card.getAttribute('data-tags') || '';
-                if (tag === 'all' || cardTags.split(',').includes(tag)) {
+                if (tag === 'all' || (tag !== null && cardTags.split(',').includes(tag))) {
                     card.classList.remove('hidden');
                 } else {
                     card.classList.add('hidden');

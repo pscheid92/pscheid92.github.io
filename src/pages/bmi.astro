@@ -73,8 +73,8 @@ import Layout from '../layouts/Layout.astro';
 
 <script>
     const form = document.querySelector('#bmi-form');
-    const weightInput = document.querySelector('#weight');
-    const heightInput = document.querySelector('#height');
+    const weightInput = document.querySelector<HTMLInputElement>('#weight');
+    const heightInput = document.querySelector<HTMLInputElement>('#height');
     const standardOutput = document.querySelector('#standard-output');
     const oxfordOutput = document.querySelector('#oxford-output');
     const standardCategory = document.querySelector('#standard-category');
@@ -88,12 +88,12 @@ import Layout from '../layouts/Layout.astro';
         maximumFractionDigits: 1,
     });
 
-    function parsePositiveNumber(value) {
+    function parsePositiveNumber(value: string | undefined) {
         const number = Number(value || 0);
         return Number.isFinite(number) && number > 0 ? number : 0;
     }
 
-    function classifyBmi(bmi) {
+    function classifyBmi(bmi: number) {
         if (bmi < 18.5) {
             return {key: 'underweight', label: 'Underweight'};
         }
@@ -106,13 +106,13 @@ import Layout from '../layouts/Layout.astro';
         return {key: 'obese', label: 'Obese'};
     }
 
-    function setOutput(element, value) {
+    function setOutput(element: Element | null, value: string) {
         if (element) {
             element.textContent = value;
         }
     }
 
-    function applyResult(card, valueEl, categoryEl, bmi) {
+    function applyResult(card: Element | null | undefined, valueEl: Element | null, categoryEl: Element | null, bmi: number | null) {
         if (bmi === null) {
             setOutput(valueEl, '-');
             setOutput(categoryEl, 'Enter your details');

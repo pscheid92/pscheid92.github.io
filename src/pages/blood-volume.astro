@@ -198,24 +198,24 @@ import Layout from '../layouts/Layout.astro';
     const form = document.querySelector('#bv-form');
     const errorOutput = document.querySelector('#calculator-error');
 
-    const adultFields = document.querySelector('#adult-fields');
-    const childFields = document.querySelector('#child-fields');
-    const adultResults = document.querySelector('#adult-results');
-    const childResults = document.querySelector('#child-results');
+    const adultFields = document.querySelector<HTMLElement>('#adult-fields')!;
+    const childFields = document.querySelector<HTMLElement>('#child-fields')!;
+    const adultResults = document.querySelector<HTMLElement>('#adult-results')!;
+    const childResults = document.querySelector<HTMLElement>('#child-results')!;
 
-    const sexInput = document.querySelector('#sex');
-    const buildInput = document.querySelector('#build');
-    const heightInput = document.querySelector('#height');
-    const weightInput = document.querySelector('#weight');
-    const ageGroupInput = document.querySelector('#age-group');
-    const childWeightInput = document.querySelector('#child-weight');
+    const sexInput = document.querySelector<HTMLSelectElement>('#sex');
+    const buildInput = document.querySelector<HTMLSelectElement>('#build');
+    const heightInput = document.querySelector<HTMLInputElement>('#height');
+    const weightInput = document.querySelector<HTMLInputElement>('#weight');
+    const ageGroupInput = document.querySelector<HTMLSelectElement>('#age-group');
+    const childWeightInput = document.querySelector<HTMLInputElement>('#child-weight');
 
     const atlsSection = document.querySelector('#atls-section');
-    const atlsBar = document.querySelector('#atls-bar');
-    const atlsLegend = document.querySelector('.atls-legend');
-    const atlsScale = document.querySelector('.atls-scale');
-    const atlsCaption = document.querySelector('#atls-caption');
-    const atlsChildNote = document.querySelector('#atls-child-note');
+    const atlsBar = document.querySelector<HTMLElement>('#atls-bar')!;
+    const atlsLegend = document.querySelector<HTMLElement>('.atls-legend')!;
+    const atlsScale = document.querySelector<HTMLElement>('.atls-scale')!;
+    const atlsCaption = document.querySelector<HTMLElement>('#atls-caption')!;
+    const atlsChildNote = document.querySelector<HTMLElement>('#atls-child-note')!;
 
     const litres = new Intl.NumberFormat('en-GB', {
         minimumFractionDigits: 2,
@@ -242,39 +242,43 @@ import Layout from '../layouts/Layout.astro';
         adolescent: {label: 'Adolescent (13–17 years)', low: 65, high: 70},
     };
 
-    function parsePositiveNumber(value) {
+    type Sex = keyof typeof GILCHER;
+    type Build = keyof typeof GILCHER.male;
+    type Estimate = {key: string; name: string; ml: number};
+
+    function parsePositiveNumber(value: string | undefined) {
         const number = Number(value || 0);
         return Number.isFinite(number) && number > 0 ? number : 0;
     }
 
-    function nadlerMl(sex, heightM, weightKg) {
+    function nadlerMl(sex: Sex, heightM: number, weightKg: number) {
         const litresValue = sex === 'female'
             ? 0.3561 * heightM ** 3 + 0.03308 * weightKg + 0.1833
             : 0.3669 * heightM ** 3 + 0.03219 * weightKg + 0.6041;
         return litresValue * 1000;
     }
 
-    function lemmensMl(bmi, weightKg) {
+    function lemmensMl(bmi: number, weightKg: number) {
         return (70 * weightKg) / Math.sqrt(bmi / 22);
     }
 
-    function gilcherMl(sex, build, weightKg) {
+    function gilcherMl(sex: Sex, build: Build, weightKg: number) {
         return GILCHER[sex][build] * weightKg;
     }
 
-    function setText(element, value) {
+    function setText(element: Element | null, value: string) {
         if (element) {
             element.textContent = value;
         }
     }
 
-    function setBadge(element, text, tone) {
+    function setBadge(element: Element | null, text: string, tone: string) {
         if (!element) return;
         element.textContent = text;
         element.className = text ? `validity-badge ${tone}` : 'validity-badge';
     }
 
-    function renderEstimate(valueEl, mlEl, ml) {
+    function renderEstimate(valueEl: Element | null, mlEl: Element | null, ml: number | null) {
         if (ml === null) {
             setText(valueEl, '-');
             setText(mlEl, '');
@@ -309,7 +313,7 @@ import Layout from '../layouts/Layout.astro';
      * escalating sooner. The two failure modes are not symmetric, so this does not
      * take the "best guess".
      */
-    function renderAtls(reference, highest) {
+    function renderAtls(reference: Estimate, highest: Estimate) {
         const referenceMl = reference.ml;
         const c15 = referenceMl * 0.15;
         const c30 = referenceMl * 0.30;
@@ -329,8 +333,8 @@ import Layout from '../layouts/Layout.astro';
         );
     }
 
-    function markAtlsReference(key) {
-        document.querySelectorAll('.atls-flag').forEach((flag) => {
+    function markAtlsReference(key: string | null) {
+        document.querySelectorAll<HTMLElement>('.atls-flag').forEach((flag) => {
             flag.hidden = flag.dataset.flag !== key;
         });
         ['nadler', 'lemmens', 'gilcher'].forEach((name) => {
@@ -341,7 +345,7 @@ import Layout from '../layouts/Layout.astro';
 
     function updateAdult() {
         const sex = sexInput?.value === 'female' ? 'female' : 'male';
-        const build = buildInput?.value ?? 'normal';
+        const build = (buildInput?.value ?? 'normal') as Build;
         const heightCm = parsePositiveNumber(heightInput?.value);
         const weightKg = parsePositiveNumber(weightInput?.value);
 
@@ -384,7 +388,7 @@ import Layout from '../layouts/Layout.astro';
         // Build is a judgement call, not a BMI bucket — but leaving it on "normal" for someone
         // who is plainly obese inflates Gilcher and makes the spread below look like formula
         // disagreement when it is really a mis-set input. Nudge, don't override.
-        const hint = document.querySelector('#gilcher-hint');
+        const hint = document.querySelector<HTMLElement>('#gilcher-hint')!;
         let hintText = '';
         if (bmi >= 30 && build !== 'obese') {
             hintText = `BMI ${bmiFormatter.format(bmi)} — try the obese rung (${GILCHER[sex].obese} mL/kg).`;
@@ -417,7 +421,7 @@ import Layout from '../layouts/Layout.astro';
     }
 
     function updateChild() {
-        const group = PAEDIATRIC[ageGroupInput?.value] ?? PAEDIATRIC.infant;
+        const group = PAEDIATRIC[ageGroupInput?.value as keyof typeof PAEDIATRIC] ?? PAEDIATRIC.infant;
         const weightKg = parsePositiveNumber(childWeightInput?.value);
 
         const outputEl = document.querySelector('#child-output');
@@ -441,7 +445,7 @@ import Layout from '../layouts/Layout.astro';
     }
 
     function currentMode() {
-        const checked = form?.querySelector('input[name="mode"]:checked');
+        const checked = form?.querySelector<HTMLInputElement>('input[name="mode"]:checked');
         return checked?.value === 'child' ? 'child' : 'adult';
     }
 

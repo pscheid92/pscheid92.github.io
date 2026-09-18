@@ -68,10 +68,10 @@ import Layout from '../layouts/Layout.astro';
 
 <script>
     const form = document.querySelector('#severance-form');
-    const salaryInput = document.querySelector('#gross-salary');
-    const factorInput = document.querySelector('#factor');
-    const startDateInput = document.querySelector('#start-date');
-    const endDateInput = document.querySelector('#end-date');
+    const salaryInput = document.querySelector<HTMLInputElement>('#gross-salary');
+    const factorInput = document.querySelector<HTMLInputElement>('#factor');
+    const startDateInput = document.querySelector<HTMLInputElement>('#start-date');
+    const endDateInput = document.querySelector<HTMLInputElement>('#end-date');
     const tenureOutput = document.querySelector('#tenure-output');
     const tenureNote = document.querySelector('#tenure-note');
     const severanceOutput = document.querySelector('#severance-output');
@@ -92,7 +92,7 @@ import Layout from '../layouts/Layout.astro';
         maximumFractionDigits: 2,
     });
 
-    function parseDate(value) {
+    function parseDate(value: string | undefined) {
         if (!value) {
             return null;
         }
@@ -101,18 +101,18 @@ import Layout from '../layouts/Layout.astro';
         return new Date(Date.UTC(year, month - 1, day));
     }
 
-    function calculateTenureYears(startDate, endDate) {
+    function calculateTenureYears(startDate: Date, endDate: Date) {
         const millisecondsPerDay = 24 * 60 * 60 * 1000;
         const days = (endDate.getTime() - startDate.getTime()) / millisecondsPerDay;
         return days / 365.2425;
     }
 
-    function parsePositiveNumber(value) {
+    function parsePositiveNumber(value: string | undefined) {
         const number = Number(value || 0);
         return Number.isFinite(number) && number > 0 ? number : 0;
     }
 
-    function setOutput(element, value) {
+    function setOutput(element: Element | null, value: string) {
         if (element) {
             element.textContent = value;
         }

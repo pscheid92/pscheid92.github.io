@@ -87,31 +87,31 @@ import Layout from '../layouts/Layout.astro';
     const BREATH_MS = 5000;       // 2 rescue breaths
     const TEST_MS = 120000;       // 2-minute test
 
-    const $ = (id) => document.getElementById(id);
+    const $ = (id: string) => document.getElementById(id)!;
     const bpmEl = $('bpm'), deltaEl = $('delta'), stateEl = $('state'), readout = $('readout'), timerEl = $('timer');
     const needle = $('needle'), pad = $('pad'), countEl = $('count'), cycleEl = $('cycle'), hintEl = $('hint');
     const zoneEl = $('zonepct'), avgEl = $('avg'), jitEl = $('jit'), tapsEl = $('taps'), statsEl = $('stats');
-    const primaryBtn = $('primary'), breathBtn = $('breath'), resetBtn = $('reset');
+    const primaryBtn = $('primary'), breathBtn = $('breath'), resetBtn = $('reset') as HTMLButtonElement;
     const report = $('report'), verdictEl = $('verdict'), rcells = $('rcells');
     const chart = $('chart'), tip = $('tip');
     const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     const colors = {slow: 'var(--slow)', zone: 'var(--good)', fast: 'var(--fast)', none: 'var(--color-text-muted)'};
-    const stateFor = (bpm) => (bpm < ZLO ? 'slow' : bpm <= ZHI ? 'zone' : 'fast');
-    const avg = (a) => a.reduce((x, y) => x + y, 0) / a.length;
-    const fmtT = (ms) => {
+    const stateFor = (bpm: number) => (bpm < ZLO ? 'slow' : bpm <= ZHI ? 'zone' : 'fast');
+    const avg = (a: number[]) => a.reduce((x, y) => x + y, 0) / a.length;
+    const fmtT = (ms: number) => {
         const s = Math.round(ms / 1000);
         return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
     };
-    const signed = (n) => (n >= 0 ? '+' : '−') + Math.abs(Math.round(n));
+    const signed = (n: number) => (n >= 0 ? '+' : '−') + Math.abs(Math.round(n));
 
     /* ================= state ================= */
-    const shell = document.querySelector('.trainer-shell');
+    const shell = document.querySelector<HTMLElement>('.trainer-shell')!;
     let mode = 'listen';    // listen | free | twomin
     let phase = 'idle';     // listen/free: idle|run|breath — twomin: idle|armed|run|breath|report
     let breathOn = false;
 
-    let times = [];             // tap timestamps of the current run
+    let times: number[] = [];   // tap timestamps of the current run
     let segBreak = new Set();   // indices i where interval (i-1 → i) is invalid (pause/gap)
     let pendingBreak = false;   // next tap opens a new segment
     let totalTaps = 0;
@@ -128,12 +128,12 @@ import Layout from '../layouts/Layout.astro';
     }
 
     /* ================= audio ================= */
-    let ac = null, master = null, metroOn = false, nextBeat = 0, schedTimer = 0;
+    let ac: AudioContext | null = null, master: GainNode | null = null, metroOn = false, nextBeat = 0, schedTimer = 0;
     const PERIOD = 60 / TARGET;
     let lsSegStart = 0, lsSegBeats = 0, lsBeatsBefore = 0, lsStartedAt = 0; // listen mode
 
     function ensureAudio() {
-        ac = ac || new (window.AudioContext || window.webkitAudioContext)();
+        ac = ac || new (window.AudioContext || (window as any).webkitAudioContext)();
         if (!master) {
             master = ac.createGain();
             master.connect(ac.destination);
@@ -144,26 +144,26 @@ import Layout from '../layouts/Layout.astro';
     }
     function silence() {
         if (!ac) return;
-        master.gain.cancelScheduledValues(0);
-        master.gain.setValueAtTime(0, ac.currentTime);
+        master!.gain.cancelScheduledValues(0);
+        master!.gain.setValueAtTime(0, ac.currentTime);
     }
-    function tone(t, f, dur, vol) {
-        const o = ac.createOscillator(), g = ac.createGain();
+    function tone(t: number, f: number, dur: number, vol: number) {
+        const o = ac!.createOscillator(), g = ac!.createGain();
         o.type = 'square';
         o.frequency.value = f;
         g.gain.setValueAtTime(vol, t);
         g.gain.exponentialRampToValueAtTime(0.001, t + dur);
-        o.connect(g).connect(master);
+        o.connect(g).connect(master!);
         o.start(t);
         o.stop(t + dur + 0.01);
     }
-    function click(t) {
+    function click(t: number) {
         tone(t, 1000, 0.05, 0.35);
         if (!reducedMotion && !document.hidden) {
             setTimeout(() => {
                 pad.classList.add('beat');
                 setTimeout(() => pad.classList.remove('beat'), 110);
-            }, Math.max(0, (t - ac.currentTime) * 1000));
+            }, Math.max(0, (t - ac!.currentTime) * 1000));
         }
     }
     function cueTone() {
@@ -179,7 +179,7 @@ import Layout from '../layouts/Layout.astro';
     function schedule() {
         // hidden tabs clamp timers to 1s, so schedule further ahead there
         const ahead = document.hidden ? 1.3 : 0.15;
-        while (nextBeat < ac.currentTime + ahead) {
+        while (nextBeat < ac!.currentTime + ahead) {
             // listen mode with breaths: stop queueing at the end of a 30-beat cycle
             if (mode === 'listen' && breathOn && lsSegBeats > 0 && (lsBeatsBefore + lsSegBeats) % 30 === 0) break;
             click(nextBeat);
@@ -189,7 +189,7 @@ import Layout from '../layouts/Layout.astro';
     }
     function startMetro() {
         ensureAudio();
-        nextBeat = ac.currentTime + 0.1;
+        nextBeat = ac!.currentTime + 0.1;
         schedTimer = window.setInterval(schedule, 25);
         metroOn = true;
         keepAwake(true);
@@ -206,8 +206,8 @@ import Layout from '../layouts/Layout.astro';
     }
 
     /* ================= screen wake lock ================= */
-    let wakeLock = null, wakePending = false;
-    async function keepAwake(on) {
+    let wakeLock: WakeLockSentinel | null = null, wakePending = false;
+    async function keepAwake(on: boolean) {
         if (!('wakeLock' in navigator)) return;
         try {
             if (on && !wakeLock && !wakePending) {
@@ -233,28 +233,28 @@ import Layout from '../layouts/Layout.astro';
         pad.classList.add('down');
         setTimeout(() => pad.classList.remove('down'), 90);
     }
-    function stateSet(txt, st) {
+    function stateSet(txt: string, st: keyof typeof colors) {
         stateEl.textContent = txt;
         stateEl.style.color = colors[st] || colors.none;
     }
-    function setNeedle(bpm) {
+    function setNeedle(bpm: number | null) {
         if (bpm == null) {
-            needle.style.opacity = 0;
+            needle.style.opacity = '0';
             return;
         }
         const pos = Math.min(1, Math.max(0, (bpm - GMIN) / (GMAX - GMIN)));
         needle.style.left = pos * 100 + '%';
         needle.style.background = colors[stateFor(bpm)];
-        needle.style.opacity = 1;
+        needle.style.opacity = '1';
     }
-    function setBpm(bpm) {
+    function setBpm(bpm: number | null) {
         if (bpm == null) {
             bpmEl.textContent = '—';
             bpmEl.style.color = '';
             deltaEl.textContent = '';
             return;
         }
-        bpmEl.textContent = Math.round(bpm);
+        bpmEl.textContent = String(Math.round(bpm));
         bpmEl.style.color = colors[stateFor(bpm)];
         deltaEl.textContent = signed(bpm - TARGET);
     }
@@ -275,14 +275,14 @@ import Layout from '../layouts/Layout.astro';
         zoneEl.textContent = '—';
         avgEl.textContent = '—';
         jitEl.textContent = '—';
-        tapsEl.textContent = totalTaps;
+        tapsEl.textContent = String(totalTaps);
         readout.classList.add('idle');
     }
     function hideReport() {
         report.hidden = true;
         statsEl.classList.remove('gone');
     }
-    function showReport(verdict, cells) {
+    function showReport(verdict: string, cells: {v: string | number; l: string; good?: boolean}[]) {
         verdictEl.textContent = verdict;
         rcells.innerHTML = cells
             .map((c) => '<div class="rcell"><div class="v' + (c.good ? ' good' : '') + '">' + c.v + '</div><div class="l">' + c.l + '</div></div>')
@@ -293,9 +293,9 @@ import Layout from '../layouts/Layout.astro';
     function renderLive() {
         readout.classList.remove('idle');
         const n = times.length;
-        countEl.textContent = ((n - 1) % 30) + 1;
+        countEl.textContent = String(((n - 1) % 30) + 1);
         cycleEl.textContent = 'of 30 · cycle ' + (Math.floor((n - 1) / 30) + 1);
-        tapsEl.textContent = totalTaps;
+        tapsEl.textContent = String(totalTaps);
         const ivs = validIntervals();
         if (!ivs.length) {
             setBpm(null);
@@ -307,7 +307,7 @@ import Layout from '../layouts/Layout.astro';
         setBpm(bpm);
         setNeedle(bpm);
         stateSet(st === 'slow' ? 'Too slow' : st === 'zone' ? 'In the zone' : 'Too fast', st);
-        avgEl.textContent = Math.round(60000 / avg(ivs));
+        avgEl.textContent = String(Math.round(60000 / avg(ivs)));
         zoneEl.textContent = zonePct(ivs) + '%';
         if (ivs.length >= 3) {
             const m = avg(ivs);
@@ -315,7 +315,7 @@ import Layout from '../layouts/Layout.astro';
             jitEl.textContent = '±' + Math.round(sd) + ' ms';
         } else jitEl.textContent = '—';
     }
-    function zonePct(ivs) {
+    function zonePct(ivs: number[]) {
         if (!ivs.length) return 0;
         return Math.round(
             (100 * ivs.filter((v) => {
@@ -326,18 +326,18 @@ import Layout from '../layouts/Layout.astro';
     }
 
     /* ================= breath pause (all modes) ================= */
-    function startBreath(onEnd) {
+    function startBreath(onEnd?: () => void) {
         const back = phase;
         phase = 'breath';
         clearTimeout(idleTimer);
         stateSet('2 rescue breaths', 'none');
         cycleEl.textContent = 'rescue breaths';
         const end = performance.now() + BREATH_MS;
-        countEl.textContent = Math.ceil(BREATH_MS / 1000);
+        countEl.textContent = String(Math.ceil(BREATH_MS / 1000));
         breathTimer = window.setInterval(() => {
             const r = end - performance.now();
             if (r > 0) {
-                countEl.textContent = Math.ceil(r / 1000);
+                countEl.textContent = String(Math.ceil(r / 1000));
                 return;
             }
             clearInterval(breathTimer);
@@ -356,8 +356,8 @@ import Layout from '../layouts/Layout.astro';
     }
 
     /* ================= listen & follow ================= */
-    function listenReadout(active) {
-        bpmEl.textContent = TARGET;
+    function listenReadout(active: boolean) {
+        bpmEl.textContent = String(TARGET);
         bpmEl.style.color = active ? colors.zone : '';
         deltaEl.textContent = '';
         setNeedle(active ? TARGET : null);
@@ -365,7 +365,7 @@ import Layout from '../layouts/Layout.astro';
     }
     function listenSegment() {
         ensureAudio();
-        lsSegStart = nextBeat = ac.currentTime + 0.1;
+        lsSegStart = nextBeat = ac!.currentTime + 0.1;
         lsSegBeats = 0;
         schedTimer = window.setInterval(schedule, 25);
         clearInterval(ticker);
@@ -376,10 +376,10 @@ import Layout from '../layouts/Layout.astro';
         timerEl.textContent = fmtT(performance.now() - lsStartedAt) + ' elapsed';
         if (phase !== 'run') return; // the breath countdown owns the pad meanwhile
         // derived from the audio clock, so a throttled background tab can't drift the count
-        const played = Math.min(lsSegBeats, Math.floor((ac.currentTime - lsSegStart) / PERIOD) + 1);
+        const played = Math.min(lsSegBeats, Math.floor((ac!.currentTime - lsSegStart) / PERIOD) + 1);
         if (played < 1) return;
         const n = lsBeatsBefore + played;
-        countEl.textContent = ((n - 1) % 30) + 1;
+        countEl.textContent = String(((n - 1) % 30) + 1);
         cycleEl.textContent = 'of 30 · cycle ' + (Math.floor((n - 1) / 30) + 1);
         if (breathOn && n % 30 === 0) {
             clearInterval(schedTimer);
@@ -427,7 +427,7 @@ import Layout from '../layouts/Layout.astro';
             setNeedle(null);
         }, GAP);
     }
-    function freeTap(t) {
+    function freeTap(t: number) {
         if (phase === 'breath') return;
         phase = 'run';
         if (times.length) {
@@ -465,7 +465,7 @@ import Layout from '../layouts/Layout.astro';
         timerEl.hidden = false;
         timerEl.textContent = '2:00 left';
     }
-    function cancelTwoMin(msg) {
+    function cancelTwoMin(msg?: string) {
         clearTimers();
         keepAwake(false);
         phase = 'idle';
@@ -473,7 +473,7 @@ import Layout from '../layouts/Layout.astro';
         resetRun();
         stateSet(msg || 'Test cancelled', 'none');
     }
-    function twoTap(t) {
+    function twoTap(t: number) {
         if (phase === 'armed') {
             tStart = t;
             phase = 'run';
@@ -543,12 +543,12 @@ import Layout from '../layouts/Layout.astro';
 
     /* ================= tempo curve (SVG) ================= */
     const CW = 520, CH = 170, CL = 36, CR = 10, CT = 14, CB = 26;
-    const cx = (s) => CL + ((CW - CL - CR) * Math.min(120, Math.max(0, s))) / 120;
-    const cy = (b) => {
+    const cx = (s: number) => CL + ((CW - CL - CR) * Math.min(120, Math.max(0, s))) / 120;
+    const cy = (b: number) => {
         const c = Math.min(140, Math.max(80, b));
         return CT + ((CH - CT - CB) * (140 - c)) / 60;
     };
-    let curvePts = [];
+    let curvePts: {t: number; bpm: number}[] = [];
     function buildCurve() {
         // smoothed bpm point at each tap (3-interval window, reset at segment breaks)
         curvePts = [];
@@ -581,7 +581,7 @@ import Layout from '../layouts/Layout.astro';
             '<line class="tt-dash" x1="' + CL + '" x2="' + (CW - CR) + '" y1="' + cy(110) + '" y2="' + cy(110) + '" stroke-dasharray="4 4"/>' +
             '<text class="tt-zlabel" x="' + (CW - CR - 4) + '" y="' + (cy(120) + 11) + '" text-anchor="end">zone 100–120</text>' +
             [80, 110, 140].map((b) => '<text class="tt-tick" x="' + (CL - 6) + '" y="' + (cy(b) + 3) + '" text-anchor="end">' + b + '</text>').join('') +
-            [[0, '0:00'], [60, '1:00'], [120, '2:00']].map(([s, lab]) => '<text class="tt-tick" x="' + cx(s) + '" y="' + (CH - 8) + '" text-anchor="middle">' + lab + '</text>').join('') +
+            ([[0, '0:00'], [60, '1:00'], [120, '2:00']] as const).map(([s, lab]) => '<text class="tt-tick" x="' + cx(s) + '" y="' + (CH - 8) + '" text-anchor="middle">' + lab + '</text>').join('') +
             lines +
             '<circle class="tt-mark" id="mark" r="4" visibility="hidden"/>';
     }
@@ -594,9 +594,9 @@ import Layout from '../layouts/Layout.astro';
             if (Math.abs(p.t - sec) < Math.abs(best.t - sec)) best = p;
         }
         const px = cx(best.t), py = cy(best.bpm);
-        const mark = chart.querySelector('#mark');
-        mark.setAttribute('cx', px);
-        mark.setAttribute('cy', py);
+        const mark = chart.querySelector('#mark')!;
+        mark.setAttribute('cx', String(px));
+        mark.setAttribute('cy', String(py));
         mark.setAttribute('visibility', 'visible');
         tip.style.display = 'block';
         tip.style.left = (px / CW) * r.width + 'px';
@@ -615,7 +615,7 @@ import Layout from '../layouts/Layout.astro';
         free: 'Click the pad, tap your trackpad, or press <kbd>space</kbd>. Count out loud to 30.',
         twomin: 'Two minutes, the real switch-rescuer interval. Count out loud in 30s and don’t stop.',
     };
-    function setMode(m) {
+    function setMode(m: keyof typeof HINTS) {
         if (metroOn) stopMetro();
         clearTimers();
         silence();
@@ -627,7 +627,7 @@ import Layout from '../layouts/Layout.astro';
         resetRun();
         hideReport();
         statsEl.classList.toggle('gone', m === 'listen'); // nothing to measure while only listening
-        document.querySelectorAll('.modes .mode').forEach((b) => b.classList.toggle('active', b.dataset.mode === m));
+        document.querySelectorAll<HTMLElement>('.modes .mode').forEach((b) => b.classList.toggle('active', b.dataset.mode === m));
         hintEl.innerHTML = HINTS[m];
         resetBtn.disabled = m === 'twomin'; // keep it in place — hiding it would shift the row
         primaryBtn.classList.remove('on');
@@ -635,8 +635,8 @@ import Layout from '../layouts/Layout.astro';
         if (m === 'listen') listenReadout(false);
         stateSet(m === 'twomin' ? 'Press start when ready' : 'Tap to start', 'none');
     }
-    document.querySelectorAll('.modes .mode').forEach((b) => {
-        b.addEventListener('click', () => setMode(b.dataset.mode));
+    document.querySelectorAll<HTMLElement>('.modes .mode').forEach((b) => {
+        b.addEventListener('click', () => setMode(b.dataset.mode as keyof typeof HINTS));
     });
 
     primaryBtn.addEventListener('click', () => {
@@ -667,12 +667,12 @@ import Layout from '../layouts/Layout.astro';
         stateSet('Tap to start', 'none');
     });
     // a mouse click leaves buttons focused, which would steal the next spacebar tap
-    document.querySelectorAll('.controls button, .modes .mode').forEach((b) => {
+    document.querySelectorAll<HTMLElement>('.controls button, .modes .mode').forEach((b) => {
         b.addEventListener('pointerup', () => b.blur());
     });
 
     /* ================= input ================= */
-    function tap(t) {
+    function tap(t: number) {
         if (mode === 'listen') {
             press();
             metroOn ? listenStop() : listenStart();
@@ -696,7 +696,7 @@ import Layout from '../layouts/Layout.astro';
 
     if (import.meta.env.DEV) {
         // debug hook for driving the page in tests
-        window.__cpr = {
+        (window as any).__cpr = {
             state: () => ({mode, phase, taps: times.length}),
             forceEnd() {
                 if (mode === 'twomin' && (phase === 'run' || phase === 'breath')) tStart = performance.now() - TEST_MS;
