@@ -284,13 +284,27 @@ import Layout from '../layouts/Layout.astro';
         recognition.stop();
     }
 
+    const SPEECH_ERRORS: Record<string, string> = {
+        'not-allowed': 'Microphone access was denied — allow the microphone for this site and try again.',
+        'service-not-allowed': 'The speech service is not available — in Safari, enable Siri or Dictation in the system settings first.',
+        'audio-capture': 'No microphone was found.',
+        'no-speech': 'Didn’t hear anything — press the mic again and speak the code words clearly.',
+        network: 'The speech service could not be reached — check your connection.',
+    };
+
     function startListening() {
+        if (recognition) return;
         recognition = new SpeechRecognitionCtor();
         recognition.lang = mode === 'nato' ? 'en-US' : 'de-DE';
         recognition.continuous = true;
         recognition.interimResults = true;
         baseText = input.value.trim();
         suppressFinalCheck = false;
+        recognition.onstart = () => {
+            listening = true;
+            updateMicUi();
+            hint.textContent = 'Listening — say the code words…';
+        };
         recognition.onresult = (event: any) => {
             let finalText = '';
             let interimText = '';
@@ -310,17 +324,25 @@ import Layout from '../layouts/Layout.astro';
             listening = false;
             recognition = null;
             updateMicUi();
-            if (!suppressFinalCheck) runCheck();
-        };
-        recognition.onerror = (event: any) => {
-            if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
-                suppressFinalCheck = true;
-                hint.textContent = 'Microphone access was denied — you can keep typing instead.';
+            if (suppressFinalCheck) return;
+            if (tokenize(input.value).length > 0) {
+                runCheck();
+            } else {
+                hint.textContent = DEFAULT_HINT;
             }
         };
-        listening = true;
-        updateMicUi();
-        recognition.start();
+        recognition.onerror = (event: any) => {
+            if (event.error === 'aborted') return;
+            // Keep the error visible instead of letting the final check overwrite it.
+            suppressFinalCheck = true;
+            hint.textContent = SPEECH_ERRORS[event.error] ?? `Speech input failed (${event.error}) — you can keep typing instead.`;
+        };
+        try {
+            recognition.start();
+        } catch {
+            recognition = null;
+            hint.textContent = 'Speech input could not start — try reloading the page.';
+        }
     }
 
     if (!SpeechRecognitionCtor) {
