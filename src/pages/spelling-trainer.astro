@@ -1,0 +1,722 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout
+    title="Spelling Alphabet Trainer - Patrick Scheid"
+    description="Practise the NATO alphabet, the German Buchstabiertafel and the BOS Inland-Alphabet: spell random words by keyboard or voice and get per-letter feedback."
+    pageClass="page-spelling-trainer"
+>
+    <section class="trainer-shell" aria-labelledby="trainer-title">
+        <div class="page-header">
+            <p class="eyebrow">Training tool</p>
+            <h1 id="trainer-title">Spelling Alphabet Trainer</h1>
+            <p class="tagline">Alfa, Bravo, Charlie — or Anton, Berta, Cäsar. Spell the word, letter by letter.</p>
+        </div>
+
+        <fieldset class="modes" id="modes">
+            <legend class="sr-only">Spelling alphabet</legend>
+            <label><input type="radio" name="mode" value="nato" checked /><span>NATO</span></label>
+            <label><input type="radio" name="mode" value="de" /><span>Buchstabiertafel</span></label>
+            <label><input type="radio" name="mode" value="bos" /><span>BOS</span></label>
+        </fieldset>
+
+        <div class="stats">
+            <span class="stat">Solved <strong id="solved">0</strong></span>
+            <span class="stat">Streak <strong id="streak">0</strong></span>
+        </div>
+
+        <div class="board" id="board" aria-live="polite"></div>
+
+        <form class="entry" id="spell-form">
+            <input
+                id="spell-input"
+                type="text"
+                autocomplete="off"
+                autocapitalize="off"
+                spellcheck="false"
+                placeholder="Type code words…"
+                aria-label="Code words"
+            />
+            <div class="controls">
+                <span class="mic-wrap" id="mic-wrap">
+                    <button type="button" id="mic" aria-pressed="false" aria-label="Speech input">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+                            <rect x="9" y="3" width="6" height="11" rx="3" />
+                            <path d="M5 11a7 7 0 0 0 14 0" />
+                            <line x1="12" y1="18" x2="12" y2="21" />
+                        </svg>
+                    </button>
+                </span>
+                <button type="submit" id="check-btn">Check</button>
+                <button type="button" id="new-word">New word</button>
+                <button type="button" id="show-answer">Show answer</button>
+            </div>
+        </form>
+
+        <p class="hint" id="hint"></p>
+
+        <details class="reference">
+            <summary id="ref-title">Reference table</summary>
+            <div id="ref-body"></div>
+        </details>
+
+    </section>
+</Layout>
+
+<script>
+    import {buildIndex, check, decode, isComplete, liveDecode, normalize, primaryAliases, tokenize} from '../lib/spelling';
+    import type {AliasIndex, Row} from '../lib/spelling';
+    import {modeTables} from '../data/spelling-alphabets';
+    import type {Mode} from '../data/spelling-alphabets';
+    import {englishWords, germanWords} from '../data/spelling-words';
+
+    const board = document.getElementById('board') as HTMLDivElement;
+    const form = document.getElementById('spell-form') as HTMLFormElement;
+    const input = document.getElementById('spell-input') as HTMLInputElement;
+    const micButton = document.getElementById('mic') as HTMLButtonElement;
+    const micWrap = document.getElementById('mic-wrap') as HTMLSpanElement;
+    const newWordButton = document.getElementById('new-word') as HTMLButtonElement;
+    const showAnswerButton = document.getElementById('show-answer') as HTMLButtonElement;
+    const solvedOutput = document.getElementById('solved') as HTMLElement;
+    const streakOutput = document.getElementById('streak') as HTMLElement;
+    const hint = document.getElementById('hint') as HTMLParagraphElement;
+    const refTitle = document.getElementById('ref-title') as HTMLElement;
+    const refBody = document.getElementById('ref-body') as HTMLDivElement;
+    const modeInputs = Array.from(document.querySelectorAll<HTMLInputElement>('#modes input[name="mode"]'));
+
+    const MODE_LABELS: Record<Mode, string> = {
+        nato: 'NATO alphabet',
+        de: 'Buchstabiertafel (DIN 5009)',
+        bos: 'BOS Inland-Alphabet (DV 810)',
+    };
+    const DEFAULT_HINT = 'Spell the word with code words, separated by spaces. Enter checks; a full green board advances.';
+
+    const storage = {
+        get(key: string): string | null {
+            try {
+                return localStorage.getItem(`spelling-trainer.${key}`);
+            } catch {
+                return null;
+            }
+        },
+        set(key: string, value: string) {
+            try {
+                localStorage.setItem(`spelling-trainer.${key}`, value);
+            } catch {
+                /* private mode etc. — stats just won't persist */
+            }
+        },
+    };
+
+    let mode: Mode = 'nato';
+    const storedMode = storage.get('mode');
+    if (storedMode === 'nato' || storedMode === 'de' || storedMode === 'bos') {
+        mode = storedMode;
+    } else if (storedMode === 'din2022') {
+        mode = 'de'; // migrate values stored by the earlier DIN-based modes
+    } else if (storedMode === 'din1996' || storedMode === 'lenient') {
+        mode = 'bos';
+    }
+
+    let index: AliasIndex = buildIndex(modeTables[mode]);
+    let answers = primaryAliases(modeTables[mode]);
+    let currentWord = '';
+    let previousWord = '';
+    let solved = Number(storage.get('solved') ?? '0') || 0;
+    let streak = Number(storage.get('streak') ?? '0') || 0;
+    let answerShown = false;
+    let wordSolved = false;
+
+    function wordList(): string[] {
+        return mode === 'nato' ? englishWords : germanWords;
+    }
+
+    function updateStats() {
+        solvedOutput.textContent = String(solved);
+        streakOutput.textContent = String(streak);
+        storage.set('solved', String(solved));
+        storage.set('streak', String(streak));
+    }
+
+    function resetStreak() {
+        if (streak !== 0) {
+            streak = 0;
+            updateStats();
+        }
+    }
+
+    function displayLetter(letters: string): string {
+        return letters === 'ß' ? 'ß' : letters.charAt(0).toUpperCase() + letters.slice(1);
+    }
+
+    function makeTile(letter: string, cls: string, sub: string): HTMLDivElement {
+        const cell = document.createElement('div');
+        cell.className = `cell ${cls}`.trim();
+        const box = document.createElement('div');
+        box.className = 'tile';
+        const letterEl = document.createElement('span');
+        letterEl.className = 'tile-letter';
+        letterEl.textContent = letter;
+        box.append(letterEl);
+        const subEl = document.createElement('span');
+        subEl.className = 'tile-sub';
+        subEl.textContent = sub;
+        cell.append(box, subEl);
+        return cell;
+    }
+
+    function render(rows: Row[], saidCount = 0) {
+        board.replaceChildren();
+        const graphemes = Array.from(currentWord);
+        graphemes.forEach((grapheme, i) => {
+            const row: Row | undefined = rows[i];
+            let cls = '';
+            let sub = '';
+            if (row && row.ok) {
+                cls = 'ok';
+            } else if (row && row.said !== null) {
+                cls = 'bad';
+                sub = `${row.said} ≠ ${row.letter}`;
+            } else if (row && i < saidCount) {
+                // A token was given for this position but not recognized.
+                cls = 'bad';
+                sub = '?';
+            }
+            if (answerShown && cls !== 'bad') {
+                sub = answers.get(normalize(grapheme)) ?? '';
+            }
+            board.append(makeTile(grapheme, cls, sub));
+        });
+        for (const row of rows.filter((r) => r.extra)) {
+            board.append(makeTile('+', 'bad extra', row.said ?? '?'));
+        }
+    }
+
+    function pickWord(): string {
+        const list = wordList();
+        let word = list[Math.floor(Math.random() * list.length)];
+        while (list.length > 1 && word === previousWord) {
+            word = list[Math.floor(Math.random() * list.length)];
+        }
+        return word;
+    }
+
+    function loadWord() {
+        previousWord = currentWord;
+        currentWord = pickWord();
+        answerShown = false;
+        wordSolved = false;
+        input.value = '';
+        hint.textContent = DEFAULT_HINT;
+        render([]);
+    }
+
+    function onLiveInput() {
+        const decoded = liveDecode(input.value, index);
+        render(check(currentWord, decoded), decoded.length);
+    }
+
+    function runCheck() {
+        const tokens = tokenize(input.value);
+        if (tokens.length === 0) return;
+        const decoded = decode(tokens, index);
+        const rows = check(currentWord, decoded);
+        if (isComplete(rows)) {
+            wordSolved = true;
+            solved += 1;
+            streak += 1;
+            updateStats();
+            loadWord();
+            hint.textContent = 'Solved! Here is the next word.';
+        } else {
+            resetStreak();
+            render(rows, decoded.length);
+            hint.textContent = 'Not quite — fix the red tiles, or show the answer.';
+        }
+    }
+
+    // --- reference table ---
+
+    function buildReference() {
+        refTitle.textContent = `Reference — ${MODE_LABELS[mode]}`;
+        const table = document.createElement('table');
+        const addRow = (cells: string[], header = false) => {
+            const tr = document.createElement('tr');
+            for (const text of cells) {
+                const cell = document.createElement(header ? 'th' : 'td');
+                cell.textContent = text;
+                tr.append(cell);
+            }
+            table.append(tr);
+        };
+        addRow(['Letter', 'Code word'], true);
+        for (const [letters, aliases] of Object.entries(modeTables[mode][0])) {
+            addRow([displayLetter(letters), aliases.join(' / ')]);
+        }
+        refBody.replaceChildren(table);
+        if (mode === 'de') {
+            const note = document.createElement('p');
+            note.className = 'ref-note';
+            note.textContent = 'ch and sch have no code words in this table — they are spelled letter by letter.';
+            refBody.append(note);
+        }
+    }
+
+    // --- speech input ---
+
+    const SpeechRecognitionCtor =
+        (window as any).SpeechRecognition ?? (window as any).webkitSpeechRecognition;
+    let recognition: any = null;
+    let listening = false;
+    let suppressFinalCheck = false;
+    let baseText = '';
+
+    function updateMicUi() {
+        micButton.classList.toggle('listening', listening);
+        micButton.setAttribute('aria-pressed', String(listening));
+        micButton.setAttribute('aria-label', listening ? 'Stop speech input' : 'Speech input');
+    }
+
+    function stopListening(runFinalCheck: boolean) {
+        if (!recognition) return;
+        suppressFinalCheck = !runFinalCheck;
+        recognition.stop();
+    }
+
+    function startListening() {
+        recognition = new SpeechRecognitionCtor();
+        recognition.lang = mode === 'nato' ? 'en-US' : 'de-DE';
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        baseText = input.value.trim();
+        suppressFinalCheck = false;
+        recognition.onresult = (event: any) => {
+            let finalText = '';
+            let interimText = '';
+            for (let i = 0; i < event.results.length; i++) {
+                const result = event.results[i];
+                const transcript = String(result[0].transcript).trim();
+                if (result.isFinal) {
+                    finalText += `${transcript} `;
+                } else {
+                    interimText += `${transcript} `;
+                }
+            }
+            input.value = [baseText, finalText.trim(), interimText.trim()].filter(Boolean).join(' ');
+            onLiveInput();
+        };
+        recognition.onend = () => {
+            listening = false;
+            recognition = null;
+            updateMicUi();
+            if (!suppressFinalCheck) runCheck();
+        };
+        recognition.onerror = (event: any) => {
+            if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+                suppressFinalCheck = true;
+                hint.textContent = 'Microphone access was denied — you can keep typing instead.';
+            }
+        };
+        listening = true;
+        updateMicUi();
+        recognition.start();
+    }
+
+    if (!SpeechRecognitionCtor) {
+        micButton.disabled = true;
+        micWrap.title = 'Speech input is not supported in this browser — try Chrome, Edge or Safari.';
+    } else {
+        micButton.addEventListener('click', () => {
+            if (listening) {
+                stopListening(true);
+            } else {
+                startListening();
+            }
+        });
+    }
+
+    // --- wiring ---
+
+    function applyMode(next: Mode) {
+        mode = next;
+        storage.set('mode', mode);
+        index = buildIndex(modeTables[mode]);
+        answers = primaryAliases(modeTables[mode]);
+        if (listening) stopListening(false);
+        buildReference();
+        previousWord = '';
+        loadWord();
+    }
+
+    for (const radio of modeInputs) {
+        radio.checked = radio.value === mode;
+        radio.addEventListener('change', () => {
+            if (radio.checked) applyMode(radio.value as Mode);
+        });
+    }
+
+    function submitCheck() {
+        if (listening) stopListening(false);
+        runCheck();
+    }
+
+    form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        submitCheck();
+    });
+
+    input.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            submitCheck();
+        }
+    });
+
+    input.addEventListener('input', onLiveInput);
+
+    newWordButton.addEventListener('click', () => {
+        if (listening) stopListening(false);
+        if (!wordSolved) resetStreak();
+        loadWord();
+        input.focus();
+    });
+
+    showAnswerButton.addEventListener('click', () => {
+        answerShown = true;
+        resetStreak();
+        onLiveInput();
+    });
+
+    updateStats();
+    buildReference();
+    loadWord();
+</script>
+
+<style>
+    :global(body.page-spelling-trainer main) {
+        width: 100%;
+        max-width: 58rem;
+    }
+
+    .trainer-shell {
+        --good: #27ae60;
+        --bad: #eb5757;
+        display: grid;
+        justify-items: center;
+        gap: 1.4rem;
+        max-width: 56rem;
+        margin: 0 auto;
+    }
+
+    .page-header {
+        padding-top: 1rem;
+        text-align: center;
+    }
+
+    .eyebrow {
+        margin: 0 0 0.35rem;
+        color: var(--color-accent);
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+    }
+
+    .page-header h1 {
+        margin-bottom: 0.4rem;
+    }
+
+    .tagline {
+        margin: 0;
+        color: var(--color-text-muted);
+        font-size: 1.1rem;
+    }
+
+    /* ---- mode tabs ---- */
+    .modes {
+        width: 100%;
+        max-width: 38rem;
+        display: flex;
+        border: 1px solid var(--color-border);
+        border-radius: 9px;
+        overflow: hidden;
+        margin: 0.4rem 0 0;
+        padding: 0;
+        background: none;
+    }
+
+    .modes label {
+        position: relative;
+        flex: 1;
+        text-align: center;
+        color: var(--color-text-muted);
+        font: 600 0.85rem/1.3 'Atkinson', sans-serif;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        padding: 0.7rem 0.25rem;
+        cursor: pointer;
+    }
+
+    .modes label + label {
+        border-left: 1px solid var(--color-border);
+    }
+
+    /* Visually hidden but kept in the accessibility tree and focusable. */
+    .modes input {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+    }
+
+    .modes label:has(input:checked) {
+        background: var(--color-surface);
+        color: var(--color-text-heading);
+        box-shadow: inset 0 -3px 0 var(--color-accent);
+    }
+
+    .modes label:has(input:focus-visible) {
+        outline: 2px solid var(--color-accent);
+        outline-offset: -2px;
+    }
+
+    /* ---- stats ---- */
+    .stats {
+        display: flex;
+        gap: 2.2rem;
+        color: var(--color-text-muted);
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+    }
+
+    .stat strong {
+        color: var(--color-text-heading);
+        font-variant-numeric: tabular-nums;
+    }
+
+    /* ---- tile board ---- */
+    .board {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: flex-start;
+        gap: 0.5rem;
+        min-height: 4.6rem;
+        width: 100%;
+    }
+
+    /* Tiles are created from JS, so they need :global under the page class.
+       Each cell is a square letter box with the feedback caption below it. */
+    :global(.page-spelling-trainer .cell) {
+        display: grid;
+        justify-items: center;
+        align-content: start;
+        gap: 0.25rem;
+    }
+
+    :global(.page-spelling-trainer .tile) {
+        display: grid;
+        place-items: center;
+        width: 3.2rem;
+        height: 3.2rem;
+        border: 1px solid var(--color-border);
+        border-radius: 8px;
+        background: var(--color-surface);
+    }
+
+    :global(.page-spelling-trainer .tile-letter) {
+        font-size: 1.55rem;
+        font-weight: 700;
+        line-height: 1;
+        color: var(--color-text-heading);
+    }
+
+    :global(.page-spelling-trainer .tile-sub) {
+        min-height: 1.1em;
+        font-size: 0.68rem;
+        line-height: 1.1;
+        color: var(--color-text-muted);
+        text-align: center;
+        max-width: 5.5rem;
+    }
+
+    :global(.page-spelling-trainer .cell.ok .tile) {
+        border-color: color-mix(in srgb, #27ae60 45%, var(--color-border));
+        background: color-mix(in srgb, #27ae60 14%, var(--color-bg));
+    }
+
+    :global(.page-spelling-trainer .cell.bad .tile) {
+        border-color: color-mix(in srgb, #eb5757 45%, var(--color-border));
+        background: color-mix(in srgb, #eb5757 12%, var(--color-bg));
+    }
+
+    :global(.page-spelling-trainer .cell.bad .tile-sub) {
+        color: #c0392b;
+        font-weight: 700;
+    }
+
+    :global(.page-spelling-trainer .cell.extra .tile) {
+        border-style: dashed;
+    }
+
+    :global([data-theme='dark'] .page-spelling-trainer .cell.bad .tile-sub) {
+        color: #ff9b8f;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+        :global(.page-spelling-trainer .tile) {
+            transition: background-color 0.15s ease, border-color 0.15s ease;
+        }
+    }
+
+    /* ---- input row ---- */
+    .entry {
+        display: grid;
+        justify-items: center;
+        gap: 0.9rem;
+        width: 100%;
+        max-width: 44rem;
+    }
+
+    .entry input {
+        width: 100%;
+        flex: 1;
+        min-width: 0;
+        min-height: 3rem;
+        border: 1px solid var(--color-border);
+        border-radius: 8px;
+        padding: 0.6rem 0.9rem;
+        background: var(--color-bg);
+        color: var(--color-text);
+        font: 400 1.05rem/1.2 'Atkinson', sans-serif;
+    }
+
+    .entry input:focus {
+        border-color: var(--color-accent);
+        outline: none;
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 18%, transparent);
+    }
+
+    .controls button {
+        font: 600 0.85rem/1.3 'Atkinson', sans-serif;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--color-text-heading);
+        background: var(--color-surface);
+        border: 1px solid var(--color-border);
+        border-radius: 8px;
+        padding: 0.65rem 1.3rem;
+        cursor: pointer;
+    }
+
+    .controls button:hover:not(:disabled) {
+        border-color: var(--color-text-muted);
+    }
+
+    .controls button:disabled {
+        opacity: 0.45;
+        cursor: default;
+    }
+
+    #mic {
+        display: grid;
+        place-items: center;
+        padding: 0.65rem 0.9rem;
+    }
+
+    #mic.listening {
+        border-color: var(--bad);
+        color: var(--bad);
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+        #mic.listening svg {
+            animation: mic-pulse 1.2s ease-in-out infinite;
+        }
+
+        @keyframes mic-pulse {
+            50% {
+                opacity: 0.4;
+            }
+        }
+    }
+
+    /* ---- controls / hint ---- */
+    .controls {
+        display: flex;
+        gap: 0.8rem;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .hint {
+        max-width: 26rem;
+        margin: 0;
+        font-size: 0.85rem;
+        line-height: 1.5;
+        min-height: 3em; /* two lines — hint swaps must not reflow the reference below */
+        color: var(--color-text-muted);
+        text-align: center;
+    }
+
+    /* ---- reference ---- */
+    .reference {
+        width: 100%;
+        max-width: 44rem;
+        border: 1px solid var(--color-border);
+        border-radius: 10px;
+        background: var(--color-surface);
+        padding: 0.75rem 1rem;
+    }
+
+    .reference summary {
+        cursor: pointer;
+        font-weight: 700;
+        font-size: 0.9rem;
+        color: var(--color-text-heading);
+    }
+
+    .reference summary:focus-visible {
+        outline: 2px solid var(--color-accent);
+        outline-offset: 2px;
+    }
+
+    :global(.page-spelling-trainer .reference table) {
+        margin: 1em 0 0.5em;
+        font-size: 0.9rem;
+    }
+
+    :global(.page-spelling-trainer .ref-note) {
+        margin: 0;
+        font-size: 0.82rem;
+        color: var(--color-text-muted);
+    }
+
+    @media (max-width: 480px) {
+        .modes label {
+            font-size: 0.72rem;
+            letter-spacing: 0.03em;
+            padding: 0.5rem 0.15rem;
+        }
+
+        :global(.page-spelling-trainer .tile) {
+            width: 2.4rem;
+            height: 2.4rem;
+        }
+
+        :global(.page-spelling-trainer .tile-letter) {
+            font-size: 1.2rem;
+        }
+
+        .controls button {
+            flex: 1 1 auto;
+        }
+    }
+</style>
