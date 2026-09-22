@@ -13,7 +13,7 @@ const languageColors: Record<string, string> = {
     'YAML': '#cb171e',
 };
 
-const {title, description, language, secondaryLanguage, github, liveUrl, kind, topics = [], headings = []} = Astro.props;
+const {title, description, language, secondaryLanguage, github, liveUrl, kind, topics = []} = Astro.props;
 ---
 
 <Layout title={`${title} - Patrick Scheid`} description={description} pageClass="page-project">

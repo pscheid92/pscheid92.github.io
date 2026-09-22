@@ -1,5 +1,6 @@
-import {defineCollection, z} from 'astro:content';
+import {defineCollection} from 'astro:content';
 import {glob} from 'astro/loaders';
+import {z} from 'astro/zod';
 
 const blog = defineCollection({
     // Load Markdown and MDX files in the `src/content/blog/` directory.
@@ -27,7 +28,7 @@ const projects = defineCollection({
             description: z.string(),
             language: z.string(),
             secondaryLanguage: z.string().optional(),
-            github: z.string().url().optional(),
+            github: z.url().optional(),
             liveUrl: z.string().optional(),
             kind: z.enum(['Live', 'CLI', 'Library', 'Infrastructure']),
             topics: z.array(z.string()).default([]),
