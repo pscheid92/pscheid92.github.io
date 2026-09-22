@@ -289,13 +289,70 @@ import Layout from '../layouts/Layout.astro';
         'service-not-allowed': 'The speech service is not available — in Safari, enable Siri or Dictation in the system settings first.',
         'audio-capture': 'No microphone was found.',
         'no-speech': 'Didn’t hear anything — press the mic again and speak the code words clearly.',
-        network: 'The speech service could not be reached — check your connection.',
+        network: 'The browser’s speech service could not be reached — check your connection, or try Chrome, Edge or Safari.',
     };
 
-    function startListening() {
-        if (recognition) return;
+    // Brave exposes the speech API but has no cloud speech service behind it, so
+    // it can only work with an on-device model.
+    const isBrave = typeof (navigator as any).brave?.isBrave === 'function';
+    const BRAVE_UNSUPPORTED = 'Brave has no speech service, so voice input can’t work here — use Chrome, Edge or Safari, or type the code words.';
+    const BRAVE_NO_MODEL = 'Brave couldn’t download its on-device speech model — use Chrome, Edge or Safari for voice input, or type the code words.';
+    // Brave can report a model as "downloading" indefinitely, so don't wait forever.
+    const INSTALL_TIMEOUT_MS = 15000;
+    let starting = false;
+
+    function speechLang(): string {
+        return mode === 'nato' ? 'en-US' : 'de-DE';
+    }
+
+    async function onDeviceStatus(lang: string): Promise<string> {
+        if (typeof SpeechRecognitionCtor?.available !== 'function') return 'unavailable';
+        try {
+            return await SpeechRecognitionCtor.available({langs: [lang], processLocally: true});
+        } catch {
+            return 'unavailable';
+        }
+    }
+
+    function setMicAvailable(available: boolean, reason = '') {
+        micButton.disabled = !available;
+        micWrap.title = available ? '' : reason;
+    }
+
+    async function refreshSpeechSupport() {
+        if (!SpeechRecognitionCtor || !isBrave) return;
+        const status = await onDeviceStatus(speechLang());
+        setMicAvailable(status !== 'unavailable', BRAVE_UNSUPPORTED);
+    }
+
+    async function startListening() {
+        if (recognition || starting) return;
+        const lang = speechLang();
+        let processLocally = false;
+        if (isBrave) {
+            starting = true;
+            const initial = await onDeviceStatus(lang);
+            let status = initial;
+            if (status === 'downloadable' || status === 'downloading') {
+                hint.textContent = 'Downloading the on-device speech model…';
+                const installed = await Promise.race([
+                    SpeechRecognitionCtor.install({langs: [lang], processLocally: true}).catch(() => false),
+                    new Promise<boolean>((resolve) => setTimeout(() => resolve(false), INSTALL_TIMEOUT_MS)),
+                ]);
+                status = installed ? 'available' : 'unavailable';
+            }
+            starting = false;
+            if (status !== 'available') {
+                const reason = initial === 'unavailable' ? BRAVE_UNSUPPORTED : BRAVE_NO_MODEL;
+                setMicAvailable(false, reason);
+                hint.textContent = reason;
+                return;
+            }
+            processLocally = true;
+        }
         recognition = new SpeechRecognitionCtor();
-        recognition.lang = mode === 'nato' ? 'en-US' : 'de-DE';
+        recognition.lang = lang;
+        if (processLocally) recognition.processLocally = true;
         recognition.continuous = true;
         recognition.interimResults = true;
         baseText = input.value.trim();
@@ -346,14 +403,14 @@ import Layout from '../layouts/Layout.astro';
     }
 
     if (!SpeechRecognitionCtor) {
-        micButton.disabled = true;
-        micWrap.title = 'Speech input is not supported in this browser — try Chrome, Edge or Safari.';
+        setMicAvailable(false, 'Speech input is not supported in this browser — try Chrome, Edge or Safari.');
     } else {
+        void refreshSpeechSupport();
         micButton.addEventListener('click', () => {
             if (listening) {
                 stopListening(true);
             } else {
-                startListening();
+                void startListening();
             }
         });
     }
@@ -366,6 +423,7 @@ import Layout from '../layouts/Layout.astro';
         index = buildIndex(modeTables[mode]);
         answers = primaryAliases(modeTables[mode]);
         if (listening) stopListening(false);
+        void refreshSpeechSupport();
         buildReference();
         previousWord = '';
         loadWord();
