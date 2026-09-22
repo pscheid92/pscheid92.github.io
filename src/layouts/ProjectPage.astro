@@ -2,9 +2,7 @@
 import type {CollectionEntry} from 'astro:content';
 import Layout from './Layout.astro';
 
-type Props = CollectionEntry<'projects'>['data'] & {
-    headings?: { depth: number; slug: string; text: string }[];
-};
+type Props = CollectionEntry<'projects'>['data'];
 
 const languageColors: Record<string, string> = {
     'TypeScript': '#3178c6',
