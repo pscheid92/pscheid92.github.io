@@ -1,5 +1,4 @@
 ---
-import {Image} from 'astro:assets';
 import type {CollectionEntry} from 'astro:content';
 import FormattedDate from '../components/FormattedDate.astro';
 import ReadingProgress from '../components/ReadingProgress.astro';
@@ -12,9 +11,12 @@ type Props = CollectionEntry<'blog'>['data'] & {
 };
 
 const {title, description, pubDate, updatedDate, heroImage, tags = [], headings = [], readTime} = Astro.props;
+
+// Top-level sections only: long posts have 20+ headings, which overflow a sticky sidebar
+const sections = headings.filter((h) => h.depth === 2);
 ---
 
-<Layout title={title} description={description} pageClass="page-blog-post">
+<Layout title={title} description={description} image={heroImage} ogType="article" pageClass="page-blog-post">
     <ReadingProgress />
     <article>
         <header class="article-header">
@@ -22,7 +24,7 @@ const {title, description, pubDate, updatedDate, heroImage, tags = [], headings 
                 {tags.length > 0 && (
                     <span class="article-tags">
                         {tags.map((tag) => (
-                            <a href="/blog/" class="article-tag">{tag}</a>
+                            <span class="article-tag">{tag}</span>
                         ))}
                     </span>
                 )}
@@ -51,17 +53,11 @@ const {title, description, pubDate, updatedDate, heroImage, tags = [], headings 
             )}
         </header>
 
-        {heroImage && (
-            <div class="hero-image">
-                <Image width={1020} height={510} src={heroImage} alt="" />
-            </div>
-        )}
-
         <div class="article-body">
-            {headings.length > 0 && (
+            {sections.length > 0 && (
                 <aside class="article-sidebar">
                     <div class="sidebar-sticky">
-                        <TableOfContents headings={headings} />
+                        <TableOfContents headings={sections} />
                     </div>
                 </aside>
             )}
@@ -83,7 +79,7 @@ const {title, description, pubDate, updatedDate, heroImage, tags = [], headings 
 
     /* Article header */
     .article-header {
-        max-width: 54rem;
+        max-width: 40rem;
         margin: 0 auto 2rem;
         text-align: center;
     }
@@ -107,16 +103,9 @@ const {title, description, pubDate, updatedDate, heroImage, tags = [], headings 
         text-transform: uppercase;
         letter-spacing: 0.08em;
         color: var(--color-accent);
-        text-decoration: none;
         padding: 0.2em 0.7em;
         border: 1px solid var(--color-accent);
         border-radius: 999px;
-        transition: all 0.2s ease;
-    }
-
-    .article-tag:hover {
-        background: var(--color-accent);
-        color: #fff;
     }
 
     .article-date-info {
@@ -151,23 +140,11 @@ const {title, description, pubDate, updatedDate, heroImage, tags = [], headings 
         margin: 0;
     }
 
-    /* Hero image */
-    .hero-image {
-        margin: 0 auto 2.5rem;
-        max-width: 56rem;
-    }
-
-    .hero-image img {
-        display: block;
-        width: 100%;
-        border-radius: 12px;
-        box-shadow: var(--box-shadow);
-    }
 
     /* Article body with sidebar */
     .article-body {
         display: grid;
-        grid-template-columns: 1fr minmax(0, 54rem) 1fr;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 40rem) minmax(0, 1fr);
         gap: 0;
         max-width: 76rem;
         margin: 0 auto;
@@ -182,6 +159,8 @@ const {title, description, pubDate, updatedDate, heroImage, tags = [], headings 
     .sidebar-sticky {
         position: sticky;
         top: 2rem;
+        max-height: calc(100vh - 4rem);
+        overflow-y: auto;
     }
 
     .prose {
@@ -196,9 +175,15 @@ const {title, description, pubDate, updatedDate, heroImage, tags = [], headings 
         padding: 1rem;
     }
 
+    /* Diagrams that bring their own dark background (*.dark.svg) need no white card */
+    .prose :global(img[src*=".dark."]) {
+        background: none;
+        padding: 0;
+    }
+
     /* Article footer */
     .article-footer {
-        max-width: 54rem;
+        max-width: 40rem;
         margin: 3rem auto 0;
         padding-top: 2rem;
         border-top: 1px solid var(--color-border);
@@ -220,7 +205,7 @@ const {title, description, pubDate, updatedDate, heroImage, tags = [], headings 
     @media (max-width: 1100px) {
         .article-body {
             display: block;
-            max-width: 54rem;
+            max-width: 40rem;
             margin: 0 auto;
         }
 

@@ -6,7 +6,6 @@ tags: ['Cryptography', 'Rust', 'Security']
 heroImage: '../../../../assets/2026/04/signing-files-for-a-post-quantum-world-hero.png'
 ---
 
-# Signing Files for a Post-Quantum World
 
 ## Post-Quantum Threats to Digital Signatures
 

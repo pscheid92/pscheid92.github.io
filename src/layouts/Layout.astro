@@ -9,15 +9,16 @@ interface Props {
     description: string;
     image?: ImageMetadata;
     pageClass?: string;
+    ogType?: 'website' | 'article';
 }
 
-const {title, description, image, pageClass} = Astro.props;
+const {title, description, image, pageClass, ogType} = Astro.props;
 ---
 
 <!doctype html>
 <html lang="en">
     <head>
-        <BaseHead title={title} description={description} image={image}/>
+        <BaseHead title={title} description={description} image={image} ogType={ogType}/>
     </head>
     <body class={pageClass}>
         <Header/>

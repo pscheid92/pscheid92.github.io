@@ -9,7 +9,7 @@ draft: true
 
 The Horizontal Pod Autoscaler (HPA) automatically adjusts the number of pod replicas in a deployment based on observed metrics. Every **sync period** (default: 15 seconds), it runs a four-stage pipeline to decide whether to scale up, scale down, or do nothing.
 
-![HPA 4-stage pipeline overview](../../../../assets/2026/03/hpa-pipeline-overview.svg)
+![HPA 4-stage pipeline overview](../../../../assets/2026/03/hpa-pipeline-overview.dark.svg)
 
 This article walks through each stage, building the full picture incrementally.
 
@@ -36,7 +36,7 @@ desired = ceil(12 × 1.25) = ceil(15) = 15 pods
 
 The metric is 25% over target, so we need 25% more pods. This works for scale-down too: if CPU drops to 1.5 vCPU, ratio = 0.75, desired = ceil(12 × 0.75) = 9 pods.
 
-![Formula ratio and tolerance band diagram](../../../../assets/2026/03/hpa-formula-ratio.svg)
+![Formula ratio and tolerance band diagram](../../../../assets/2026/03/hpa-formula-ratio.dark.svg)
 
 ### The ±10% Tolerance Band
 
@@ -78,7 +78,7 @@ There are **two separate windows**, one for each direction:
 
 The current desired value is included in the window — it's pushed into the history before the window is evaluated.
 
-![Stabilization window with data points](../../../../assets/2026/03/hpa-stabilization-window.svg)
+![Stabilization window with data points](../../../../assets/2026/03/hpa-stabilization-window.dark.svg)
 
 The shaded region is the stabilization window. Dots show raw desired values from Stage 1 at each sync point — some high, some low. The solid line at the top is the stabilized output: the **max** of all dots within the window (for scale-down). It won't drop until the high values expire from the window.
 
@@ -109,7 +109,7 @@ Each policy has three parts:
 
 **Example with Percent:** "Max +50% per 60 seconds" — if you started the period at 10 pods, you can scale up to at most 15 (10 × 1.5).
 
-![Rate limiting staircase diagram](../../../../assets/2026/03/hpa-rate-limiting.svg)
+![Rate limiting staircase diagram](../../../../assets/2026/03/hpa-rate-limiting.dark.svg)
 
 The staircase shows how rate limiting works in practice. The desired value sits at 10 (dashed line), but the actual replicas climb one step at a time. Each sync period, the rate limiter checks the budget — if the policy allows +1 pod per 60s, that's all you get per tick.
 
@@ -145,7 +145,7 @@ actual = max(minReplicas, min(maxReplicas, rateLimitedValue))
 
 If the pipeline computed 100 pods but `maxReplicas` is 50, the actual becomes 50. If it computed 0 but `minReplicas` is 2, the actual becomes 2.
 
-![Clamping number line with min/max bounds](../../../../assets/2026/03/hpa-clamping.svg)
+![Clamping number line with min/max bounds](../../../../assets/2026/03/hpa-clamping.dark.svg)
 
 ### Clamping Is Applied Last
 
@@ -159,7 +159,7 @@ The consequence: **the stabilization window still remembers that 100.** Since st
 
 Every sync period (default 15 seconds), the HPA runs all four stages in sequence. The only feedback loop: the final actual replica count becomes `currentReplicas` for the next sync.
 
-![Full HPA pipeline with feedback loop](../../../../assets/2026/03/hpa-full-pipeline.svg)
+![Full HPA pipeline with feedback loop](../../../../assets/2026/03/hpa-full-pipeline.dark.svg)
 
 ### Tracing a Single Sync Period
 

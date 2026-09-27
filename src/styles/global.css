@@ -23,12 +23,13 @@ html {
     --color-bg: #ffffff;
     --color-surface: #f7f8fa;
     --color-text: #222939;
-    --color-text-muted: #607399;
+    --color-text-muted: #5a6d93;
     --color-text-heading: #0f1219;
     --color-border: #e5e9f0;
     --color-code-bg: #f0f2f6;
     --color-accent: #2337ff;
     --color-accent-dark: #000d8a;
+    --color-on-accent: #ffffff;
     --color-shadow: rgba(96, 115, 159, 0.25);
     --color-overlay: rgba(255, 255, 255, 0.95);
     --box-shadow: 0 2px 6px var(--color-shadow), 0 8px 24px var(--color-shadow);
@@ -45,6 +46,7 @@ html {
     --color-code-bg: #1e2230;
     --color-accent: #6b7cff;
     --color-accent-dark: #8fa0ff;
+    --color-on-accent: #13161d;
     --color-shadow: rgba(0, 0, 0, 0.4);
     --color-overlay: rgba(19, 22, 29, 0.95);
     --box-shadow: 0 2px 6px var(--color-shadow), 0 8px 24px var(--color-shadow);
@@ -173,6 +175,12 @@ p {
 
 .prose p {
     margin-bottom: 1.5em;
+}
+
+/* A rule right before a heading is redundant — the heading is the break */
+.prose hr:has(+ h2),
+.prose hr:has(+ h3) {
+    display: none;
 }
 
 /* Prose headings — spacing for article flow */
