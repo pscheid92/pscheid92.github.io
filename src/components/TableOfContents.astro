@@ -1,50 +1,27 @@
 ---
 interface Props {
     headings: { depth: number; slug: string; text: string }[];
+    maxDepth?: 2 | 3;
 }
 
-const { headings } = Astro.props;
-const filteredHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
+const {headings, maxDepth = 3} = Astro.props;
+const items = headings.filter((h) => h.depth >= 2 && h.depth <= maxDepth);
 ---
 
-{filteredHeadings.length > 0 && (
-    <nav class="toc" aria-label="Table of contents">
-        <div class="toc-header">
-            <span class="toc-label">On this page</span>
-        </div>
-        <ul class="toc-list">
-            {filteredHeadings.map((heading) => (
-                <li class:list={[`toc-depth-${heading.depth}`]}>
-                    <a href={`#${heading.slug}`}>{heading.text}</a>
-                </li>
-            ))}
-        </ul>
-    </nav>
-)}
+<ol class="toc-list">
+    {items.map((h) => (
+        <li class:list={[`depth-${h.depth}`]}>
+            <a href={`#${h.slug}`}>{h.text}</a>
+        </li>
+    ))}
+</ol>
 
 <style>
-    .toc {
-        font-size: 0.85rem;
-        line-height: 1.5;
-    }
-
-    .toc-header {
-        margin-bottom: 0.75rem;
-    }
-
-    .toc-label {
-        font-weight: 700;
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        color: var(--color-text-muted);
-    }
-
     .toc-list {
         list-style: none;
         margin: 0;
         padding: 0;
-        border-left: 2px solid var(--color-border);
+        line-height: 1.4;
     }
 
     .toc-list li {
@@ -53,45 +30,21 @@ const filteredHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
 
     .toc-list a {
         display: block;
-        padding: 0.3em 0 0.3em 1em;
+        padding: 0.3rem 0;
         color: var(--color-text-muted);
-        text-decoration: none;
-        border-left: 2px solid transparent;
-        margin-left: -2px;
-        transition: color 0.2s ease, border-color 0.2s ease;
     }
 
-    .toc-list a:hover,
+    .toc-list a:hover {
+        color: var(--color-text-heading);
+    }
+
     .toc-list a.active {
-        color: var(--color-accent);
-        border-left-color: var(--color-accent);
+        color: var(--color-text-heading);
+        font-weight: 700;
     }
 
-    .toc-depth-3 a {
-        padding-left: 2em;
-        font-size: 0.8rem;
+    .depth-3 a {
+        padding-left: 1rem;
+        font-size: 0.92em;
     }
 </style>
-
-<script>
-    const tocLinks = document.querySelectorAll('.toc-list a');
-    const headings = Array.from(tocLinks).map((link) => {
-        const id = link.getAttribute('href')?.slice(1);
-        return id ? document.getElementById(id) : null;
-    }).filter(Boolean) as HTMLElement[];
-
-    function updateActiveLink() {
-        let current = 0;
-        for (let i = 0; i < headings.length; i++) {
-            if (headings[i].getBoundingClientRect().top <= 100) {
-                current = i;
-            }
-        }
-        tocLinks.forEach((link, i) => {
-            link.classList.toggle('active', i === current);
-        });
-    }
-
-    window.addEventListener('scroll', updateActiveLink, { passive: true });
-    updateActiveLink();
-</script>

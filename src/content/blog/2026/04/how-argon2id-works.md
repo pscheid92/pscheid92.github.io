@@ -3,6 +3,8 @@ title: 'How Argon2id Works'
 description: 'Inside Argon2id — the memory-hard password hashing function that makes brute-force attacks expensive by design, from the memory matrix to the hybrid mixing passes.'
 pubDate: 'Apr 01 2026'
 tags: ['Cryptography', 'Security']
+series: 'inside-pqsign'
+seriesPart: 5
 draft: true
 ---
 

@@ -17,6 +17,8 @@ const blog = defineCollection({
             heroImage: image().optional(),
             tags: z.array(z.string()).default([]),
             draft: z.boolean().default(false),
+            series: z.string().optional(),
+            seriesPart: z.number().optional(),
         }),
 });
 
@@ -31,6 +33,7 @@ const projects = defineCollection({
             github: z.url().optional(),
             liveUrl: z.string().optional(),
             kind: z.enum(['Live', 'CLI', 'Library', 'Infrastructure']),
+            summary: z.string().optional(),
             topics: z.array(z.string()).default([]),
         }),
 });

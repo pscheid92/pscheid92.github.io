@@ -1,23 +1,34 @@
 ---
-import { type CollectionEntry, getCollection, render } from 'astro:content';
+import { type CollectionEntry, render } from 'astro:content';
+import { series } from '../../data/series';
 import BlogPost from '../../layouts/BlogPost.astro';
+import { getPublishedPosts, readTime } from '../../lib/writing';
 
 export async function getStaticPaths() {
-	const posts = (await getCollection('blog')).filter((post) => import.meta.env.DEV || !post.data.draft);
-	return posts.map((post) => ({
-		params: { slug: post.id },
-		props: post,
-	}));
+	const posts = await getPublishedPosts();
+	return posts.map((post) => {
+		const id = post.data.series;
+		const parts = id
+			? posts
+					.filter((p) => p.data.series === id)
+					.sort((a, b) => (a.data.seriesPart ?? 0) - (b.data.seriesPart ?? 0))
+					.map((p) => ({ title: p.data.title, href: `/blog/${p.id}/`, part: p.data.seriesPart ?? 0 }))
+			: [];
+		// A series only shows up once at least two of its parts are published
+		const seriesInfo = id && parts.length >= 2 ? { title: series[id]?.title ?? id, anchor: `series-${id}`, parts } : undefined;
+		return { params: { slug: post.id }, props: { post, seriesInfo } };
+	});
 }
-type Props = CollectionEntry<'blog'>;
 
-const post = Astro.props;
+type Props = {
+	post: CollectionEntry<'blog'>;
+	seriesInfo?: { title: string; anchor: string; parts: { title: string; href: string; part: number }[] };
+};
+
+const { post, seriesInfo } = Astro.props;
 const { Content, headings } = await render(post);
-
-const words = (post.body || '').trim().split(/\s+/).length;
-const readTime = Math.max(1, Math.ceil(words / 230));
 ---
 
-<BlogPost {...post.data} headings={headings} readTime={readTime}>
+<BlogPost {...post.data} headings={headings} readTime={readTime(post)} seriesInfo={seriesInfo}>
 	<Content />
 </BlogPost>

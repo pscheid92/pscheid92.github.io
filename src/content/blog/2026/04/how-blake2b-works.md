@@ -3,6 +3,8 @@ title: 'How BLAKE2b Works'
 description: 'Inside BLAKE2b — the cryptographic hash function that processes data faster than SHA-512 while maintaining a strong security margin.'
 pubDate: 'Apr 01 2026'
 tags: ['Cryptography', 'Security']
+series: 'inside-pqsign'
+seriesPart: 4
 draft: true
 ---
 

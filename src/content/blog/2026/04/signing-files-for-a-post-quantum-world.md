@@ -3,6 +3,8 @@ title: 'Signing Files for a Post-Quantum World'
 description: 'A look at the cryptographic design behind pqsign — a hybrid signature tool that pairs Ed25519 with ML-DSA-65 so your signatures survive both classical and quantum attackers.'
 pubDate: 'Apr 03 2026'
 tags: ['Cryptography', 'Rust', 'Security']
+series: 'inside-pqsign'
+seriesPart: 1
 heroImage: '../../../../assets/2026/04/signing-files-for-a-post-quantum-world-hero.png'
 ---
 

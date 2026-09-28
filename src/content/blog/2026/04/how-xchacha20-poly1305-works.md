@@ -3,6 +3,8 @@ title: 'How XChaCha20-Poly1305 Works'
 description: 'A walkthrough of XChaCha20-Poly1305 — the authenticated encryption scheme that combines a stream cipher with a universal hash for confidentiality and integrity in one pass.'
 pubDate: 'Apr 01 2026'
 tags: ['Cryptography', 'Security']
+series: 'inside-pqsign'
+seriesPart: 6
 draft: true
 ---
 

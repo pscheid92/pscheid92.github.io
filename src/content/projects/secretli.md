@@ -6,6 +6,7 @@ secondaryLanguage: Go
 github: https://github.com/pscheid92/secretli
 liveUrl: https://secretli.k.patrickscheid.de/
 kind: Live
+summary: 'End-to-end encrypted secret sharing with self-destructing links.'
 topics: [encryption, zero-knowledge, react, golang, self-hosted]
 ---
 

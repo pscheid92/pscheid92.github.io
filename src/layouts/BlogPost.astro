@@ -1,243 +1,296 @@
 ---
+import {Image} from 'astro:assets';
 import type {CollectionEntry} from 'astro:content';
+import Avatar from '../assets/avatar.webp';
 import FormattedDate from '../components/FormattedDate.astro';
-import ReadingProgress from '../components/ReadingProgress.astro';
 import TableOfContents from '../components/TableOfContents.astro';
 import Layout from './Layout.astro';
+
+type SeriesPart = { title: string; href: string; part: number };
 
 type Props = CollectionEntry<'blog'>['data'] & {
     headings?: { depth: number; slug: string; text: string }[];
     readTime?: number;
+    seriesInfo?: { title: string; anchor: string; parts: SeriesPart[] };
 };
 
-const {title, description, pubDate, updatedDate, heroImage, tags = [], headings = [], readTime} = Astro.props;
+const {title, description, pubDate, updatedDate, heroImage, tags = [], headings = [], readTime, seriesInfo, seriesPart} = Astro.props;
 
-// Top-level sections only: long posts have 20+ headings, which overflow a sticky sidebar
 const sections = headings.filter((h) => h.depth === 2);
+const showContents = sections.length >= 3;
+const next = seriesInfo?.parts.find((p) => p.part === (seriesPart ?? 0) + 1);
 ---
 
-<Layout title={title} description={description} image={heroImage} ogType="article" pageClass="page-blog-post">
-    <ReadingProgress />
+<Layout title={title} description={description} image={heroImage} ogType="article" pageClass="site page-blog-post">
     <article>
-        <header class="article-header">
-            <div class="article-meta">
-                {tags.length > 0 && (
-                    <span class="article-tags">
-                        {tags.map((tag) => (
-                            <span class="article-tag">{tag}</span>
-                        ))}
-                    </span>
+        <header class="grid post-header">
+            <p class="index post-meta">
+                {pubDate && <span><FormattedDate date={pubDate}/></span>}
+                {readTime && <span>{readTime} min read</span>}
+                {tags.length > 0 && <span>{tags.join(', ')}</span>}
+                {updatedDate && <span>Updated <FormattedDate date={updatedDate}/></span>}
+            </p>
+            <div class="wide">
+                <h1 class="post-title">{title}</h1>
+                <p class="dek">{description}</p>
+                {seriesInfo && seriesPart && (
+                    <p class="series-line">
+                        Part {seriesPart} of {seriesInfo.parts.length} in <a href={`/blog/#${seriesInfo.anchor}`}>{seriesInfo.title}</a>
+                    </p>
                 )}
-                <div class="article-date-info">
-                    {pubDate && (
-                        <time>
-                            <FormattedDate date={pubDate} />
-                        </time>
-                    )}
-                    {updatedDate && (
-                        <span class="last-updated">
-                            (updated <FormattedDate date={updatedDate} />)
-                        </span>
-                    )}
-                    {readTime && (
-                        <>
-                            <span class="meta-dot">&middot;</span>
-                            <span>{readTime} min read</span>
-                        </>
-                    )}
-                </div>
             </div>
-            <h1 class="article-title">{title}</h1>
-            {description && (
-                <p class="article-description">{description}</p>
-            )}
         </header>
 
-        <div class="article-body">
-            {sections.length > 0 && (
-                <aside class="article-sidebar">
-                    <div class="sidebar-sticky">
-                        <TableOfContents headings={sections} />
-                    </div>
-                </aside>
+        <div class="grid post-body">
+            {showContents && (
+                <nav class="index toc-rail" aria-label="Contents">
+                    <p class="label">Contents</p>
+                    <TableOfContents headings={headings} maxDepth={2}/>
+                </nav>
             )}
             <div class="prose">
-                <slot />
+                {showContents && (
+                    <details class="toc-details">
+                        <summary>Contents <span class="toc-count">{sections.length} sections</span></summary>
+                        <TableOfContents headings={headings} maxDepth={3}/>
+                    </details>
+                )}
+                <slot/>
             </div>
         </div>
 
-        <footer class="article-footer">
-            <a href="/blog/" class="back-link">&larr; Back to all articles</a>
+        <footer class="post-footer">
+            {seriesInfo && (
+                <div class="grid footer-row">
+                    <p class="index label">{seriesInfo.title}</p>
+                    <div>
+                        <p class="series-intro">This post is part {seriesPart} of a {seriesInfo.parts.length}-part series.</p>
+                        <ol class="series-list">
+                            {seriesInfo.parts.map((p) => (
+                                <li>
+                                    {p.part === seriesPart
+                                        ? <span class="current" aria-current="page">{p.title}</span>
+                                        : <a href={p.href}>{p.title}</a>}
+                                </li>
+                            ))}
+                        </ol>
+                        {next && <a class="next-link" href={next.href}>Next: {next.title} &rarr;</a>}
+                    </div>
+                </div>
+            )}
+            <div class="grid footer-row">
+                <div class="index author-photo">
+                    <Image src={Avatar} alt="" width={112} height={112}/>
+                </div>
+                <p class="author">
+                    Written by <a href="/about/">Patrick Scheid</a>, senior software engineer at DeepL in Munich.
+                    More in <a href="/blog/">Writing</a>, or <a href="mailto:patrick@patrickscheid.de">send me a note</a>.
+                </p>
+            </div>
         </footer>
     </article>
 </Layout>
 
 <style>
-    article {
-        width: 100%;
+    .post-header {
+        margin-bottom: 2.5rem;
     }
 
-    /* Article header */
-    .article-header {
-        max-width: 40rem;
-        margin: 0 auto 2rem;
-        text-align: center;
+    .post-meta {
+        margin: 0;
+        font-size: 0.875rem;
+        line-height: 1.5;
+        color: var(--color-text-muted);
+        font-variant-numeric: tabular-nums;
     }
 
-    .article-meta {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 0.5rem;
-        margin-bottom: 1.25rem;
+    .post-title {
+        font-size: 2.5rem;
+        line-height: 1.12;
+        letter-spacing: -0.02em;
+        margin: 0 0 0.75rem;
+        max-width: 22ch;
+        text-wrap: balance;
     }
 
-    .article-tags {
-        display: flex;
-        gap: 0.5rem;
+    .dek {
+        font-family: var(--font-text);
+        font-size: 1.3rem;
+        line-height: 1.5;
+        color: var(--color-text-muted);
+        margin: 0;
+        max-width: var(--measure);
+        text-wrap: pretty;
     }
 
-    .article-tag {
-        font-size: 0.7rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        color: var(--color-accent);
-        padding: 0.2em 0.7em;
-        border: 1px solid var(--color-accent);
-        border-radius: 999px;
-    }
-
-    .article-date-info {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        font-size: 0.85rem;
+    .series-line {
+        margin: 1rem 0 0;
+        font-size: 0.9rem;
         color: var(--color-text-muted);
     }
 
-    .last-updated {
-        font-style: italic;
+    /* Contents: a rail in the index column on wide screens, a disclosure above the text otherwise */
+    .toc-rail {
+        align-self: start;
+        position: sticky;
+        top: 1.5rem;
+        max-height: calc(100vh - 3rem);
+        overflow-y: auto;
+        padding-right: 0.5rem;
+        font-size: 0.875rem;
     }
 
-    .meta-dot {
-        opacity: 0.4;
+    .toc-rail .label {
+        margin-bottom: 0.5rem;
     }
 
-    .article-title {
-        font-size: 2.5rem;
+    .toc-details {
+        font-family: var(--font-ui);
+        font-size: 0.95rem;
+        border-top: 1px solid var(--color-border);
+        border-bottom: 1px solid var(--color-border);
+        padding: 0.6rem 0;
+        margin: 0 0 2rem;
+    }
+
+    .toc-details summary {
+        cursor: pointer;
         font-weight: 700;
-        line-height: 1.15;
-        margin: 0 0 0.75rem;
-        letter-spacing: -0.025em;
         color: var(--color-text-heading);
     }
 
-    .article-description {
-        font-size: 1.15rem;
-        line-height: 1.6;
+    .toc-count {
+        font-weight: 400;
         color: var(--color-text-muted);
-        margin: 0;
+        margin-left: 0.4rem;
     }
 
-
-    /* Article body with sidebar */
-    .article-body {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) minmax(0, 40rem) minmax(0, 1fr);
-        gap: 0;
-        max-width: 76rem;
-        margin: 0 auto;
+    .toc-details[open] summary {
+        margin-bottom: 0.5rem;
     }
 
-    .article-sidebar {
-        grid-column: 3;
-        grid-row: 1;
-        padding-left: 2.5rem;
-    }
+    @media (min-width: 64rem) {
+        .toc-details {
+            display: none;
+        }
 
-    .sidebar-sticky {
-        position: sticky;
-        top: 2rem;
-        max-height: calc(100vh - 4rem);
-        overflow-y: auto;
-    }
-
-    .prose {
-        grid-column: 2;
-        color: var(--color-text);
-        min-width: 0;
-    }
-
-    .prose :global(img) {
-        border-radius: 10px;
-        background: white;
-        padding: 1rem;
-    }
-
-    /* Diagrams that bring their own dark background (*.dark.svg) need no white card */
-    .prose :global(img[src*=".dark."]) {
-        background: none;
-        padding: 0;
-    }
-
-    /* Article footer */
-    .article-footer {
-        max-width: 40rem;
-        margin: 3rem auto 0;
-        padding-top: 2rem;
-        border-top: 1px solid var(--color-border);
-    }
-
-    .back-link {
-        font-size: 0.9rem;
-        font-weight: 600;
-        color: var(--color-text-muted);
-        text-decoration: none;
-        transition: color 0.2s ease;
-    }
-
-    .back-link:hover {
-        color: var(--color-accent);
-    }
-
-    /* Responsive */
-    @media (max-width: 1100px) {
-        .article-body {
+        .post-meta span {
             display: block;
-            max-width: 40rem;
-            margin: 0 auto;
         }
 
-        .article-sidebar {
-            padding-left: 0;
-            margin-bottom: 2rem;
-            padding: 1.25rem;
-            background: var(--color-surface);
-            border-radius: 8px;
-            border: 1px solid var(--color-border);
+        .post-meta {
+            padding-top: 0.55rem;
+        }
+    }
+
+    @media (max-width: 63.99rem) {
+        .toc-rail {
+            display: none;
         }
 
-        .sidebar-sticky {
-            position: static;
+        .post-meta {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 0.75rem;
+        }
+
+        .post-meta span + span::before {
+            content: "·";
+            margin: 0 0.45em;
         }
     }
 
     @media (max-width: 720px) {
-        .article-title {
-            font-size: 1.85rem;
+        .post-title {
+            font-size: 2rem;
         }
 
-        .article-description {
-            font-size: 1.05rem;
+        .dek {
+            font-size: 1.15rem;
         }
+    }
 
-        .article-header {
-            text-align: left;
-        }
+    /* End of article */
+    .post-footer {
+        margin-top: 4rem;
+    }
 
-        .article-meta {
-            align-items: flex-start;
+    .footer-row {
+        border-top: 1px solid var(--color-border);
+        padding: 1.5rem 0;
+    }
+
+    .series-intro {
+        margin: 0 0 0.5rem;
+        color: var(--color-text-muted);
+        font-size: 0.95rem;
+    }
+
+    .series-list {
+        margin: 0 0 1rem;
+        padding-left: 1.4em;
+        font-size: 0.95rem;
+    }
+
+    .series-list li {
+        margin: 0.2rem 0;
+        padding-left: 0.2em;
+    }
+
+    .series-list li::marker {
+        color: var(--color-text-muted);
+        font-variant-numeric: tabular-nums;
+    }
+
+    .series-list .current {
+        font-weight: 700;
+        color: var(--color-text-heading);
+    }
+
+    .next-link {
+        font-weight: 700;
+    }
+
+    .author-photo img {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        display: block;
+    }
+
+    .author {
+        margin: 0;
+        font-family: var(--font-text);
+        font-size: 1.05rem;
+        color: var(--color-text-muted);
+        align-self: center;
+    }
+
+    @media (max-width: 63.99rem) {
+        .author-photo {
+            margin-bottom: 0.75rem;
         }
     }
 </style>
+
+<script>
+    // Highlight the section being read in the contents rail
+    const links = Array.from(document.querySelectorAll<HTMLAnchorElement>('.toc-rail a'));
+    const targets = links
+        .map((link) => document.getElementById(decodeURIComponent(link.hash.slice(1))))
+        .filter((el): el is HTMLElement => el !== null);
+
+    function update() {
+        const line = window.innerHeight * 0.3;
+        let current = -1;
+        targets.forEach((el, i) => {
+            if (el.getBoundingClientRect().top <= line) current = i;
+        });
+        links.forEach((link, i) => link.classList.toggle('active', i === current));
+    }
+
+    if (links.length) {
+        window.addEventListener('scroll', update, {passive: true});
+        update();
+    }
+</script>

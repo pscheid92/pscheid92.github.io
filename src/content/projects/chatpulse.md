@@ -5,6 +5,7 @@ language: Go
 github: https://github.com/pscheid92/chatpulse
 liveUrl: https://chatpulse.k.patrickscheid.de
 kind: Live
+summary: 'Live Twitch chat sentiment as an OBS overlay.'
 topics: [twitch, vote-counting, websocket, obs, docker, redis]
 ---
 

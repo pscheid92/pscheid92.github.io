@@ -3,6 +3,8 @@ title: 'How ML-DSA Works'
 description: 'A walkthrough of ML-DSA (FIPS 204), the NIST post-quantum signature standard — from the Module Learning With Errors problem to Fiat-Shamir signing.'
 pubDate: 'Apr 01 2026'
 tags: ['Cryptography', 'Security']
+series: 'inside-pqsign'
+seriesPart: 3
 draft: true
 ---
 

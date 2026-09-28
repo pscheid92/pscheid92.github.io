@@ -7,204 +7,144 @@ import Layout from '../layouts/Layout.astro';
 <Layout
         title="About Patrick Scheid - Senior Software Engineer"
         description="Senior Software Engineer at DeepL with 9+ years in backend engineering and 2+ years in engineering management. Background spanning AI products, data engineering, and product ownership."
-        pageClass="page-about"
+        pageClass="site page-about"
 >
-    <article class="prose">
-        <div class="about-header">
-            <Image src={Avatar} alt="Patrick Scheid" class="avatar" width={200} height={200}/>
-            <h1>About Me</h1>
+    <section class="grid intro">
+        <div class="index">
+            <Image src={Avatar} alt="Portrait of Patrick Scheid" class="avatar" width={192} height={192}/>
         </div>
-
-        <p>
-            Hi, I'm Patrick Scheid, a Senior Software Engineer at DeepL. With 9+ years building and scaling
-            backend systems and 2+ years leading engineering teams, I bridge deep hands-on engineering in C#, Kotlin,
-            and Go with a strong understanding of team dynamics, system design trade-offs, and cross-functional alignment.
-        </p>
-
-        <h2>What I Do</h2>
-        <p>
-            At DeepL, I contribute to AI-powered writing and translation products with a focus on backend architecture,
-            system reliability, and cross-team technical leadership. Previously, as Engineering Manager, I led teams
-            of up to 8 engineers integrating LLM research into editing tools serving 500k+ daily users, and scaled
-            document translation to 150k+ documents per day.
-        </p>
-
-        <h2>Career</h2>
-
-        <div class="timeline">
-            <div class="timeline-item">
-                <div class="timeline-dot"></div>
-                <div class="timeline-content">
-                    <h3>Senior Software Engineer <span class="timeline-company">@ DeepL</span></h3>
-                    <span class="timeline-date">Jan 2026 &ndash; Present</span>
-                    <p>Returned to an IC role to deepen technical impact. Contributing to AI-powered writing and translation products with a focus on backend architecture, system reliability, and cross-team technical leadership.</p>
-                </div>
-            </div>
-            <div class="timeline-item">
-                <div class="timeline-dot"></div>
-                <div class="timeline-content">
-                    <h3>Engineering Manager <span class="timeline-company">@ DeepL</span></h3>
-                    <span class="timeline-date">Dec 2023 &ndash; Jan 2026</span>
-                    <p>Editor Team: Led 8 engineers bridging AI research and production editing tools serving 500k+ daily users. Drove integration of LLM-based prototypes into product. Document Translation Team: Led 6 engineers scaling document translation to 150k+ docs/day, defined custom quality metrics, and led a focused initiative on PDF layout preservation.</p>
-                </div>
-            </div>
-            <div class="timeline-item">
-                <div class="timeline-dot"></div>
-                <div class="timeline-content">
-                    <h3>Senior Software Engineer <span class="timeline-company">@ DeepL</span></h3>
-                    <span class="timeline-date">Aug &ndash; Dec 2023</span>
-                    <p>Designed scalable C# backend services for document translation. Improved processing reliability for complex formats (PPTX, DOCX, PDF) and contributed to architectural decisions that reduced end-to-end translation latency.</p>
-                </div>
-            </div>
-            <div class="timeline-item">
-                <div class="timeline-dot"></div>
-                <div class="timeline-content">
-                    <h3>Product Owner & Scala Developer <span class="timeline-company">@ Ryte</span></h3>
-                    <span class="timeline-date">Feb 2022 &ndash; Jun 2023</span>
-                    <p>Evolved the platform API into an API-as-a-Product: developer experience vision, DX conversion funnel, and monetisation strategy. Led development of authentication, CRM integration, and transactional email services in Scala.</p>
-                </div>
-            </div>
-            <div class="timeline-item">
-                <div class="timeline-dot"></div>
-                <div class="timeline-content">
-                    <h3>Backend Developer & Scrum Master <span class="timeline-company">@ Exaring (waipu.tv)</span></h3>
-                    <span class="timeline-date">Jul 2019 &ndash; Jan 2022</span>
-                    <p>Developed and operated ~60 microservices powering waipu.tv's IPTV platform in Kotlin and Spring Boot. Managed infrastructure on Kubernetes/AWS with Terraform. Part-time Scrum Master for the Business Systems team.</p>
-                </div>
-            </div>
-            <div class="timeline-item">
-                <div class="timeline-dot"></div>
-                <div class="timeline-content">
-                    <h3>Lead Software Engineer <span class="timeline-company">@ FreshDetect</span></h3>
-                    <span class="timeline-date">Nov 2018 &ndash; Jun 2019</span>
-                    <p>Led technical direction for a food-safety startup: evaluated ML approaches for spectroscopy-based freshness detection, prototyped solutions, and provided in-house consulting on architecture and processes.</p>
-                </div>
-            </div>
-            <div class="timeline-item">
-                <div class="timeline-dot"></div>
-                <div class="timeline-content">
-                    <h3>Data & Software Engineer <span class="timeline-company">@ FreshDetect</span></h3>
-                    <span class="timeline-date">Mar 2016 &ndash; Nov 2018</span>
-                    <p>Built internal data analysis tools, data access libraries, and automated validation pipelines. Introduced software development processes. Administered Linux servers and PostgreSQL databases.</p>
-                </div>
-            </div>
+        <div>
+            <h1>About</h1>
+            <p class="lede">Hi, I'm Patrick Scheid, a Senior Software Engineer at DeepL. With 9+ years building and scaling backend systems and 2+ years leading engineering teams, I bridge deep hands-on engineering in C#, Kotlin, and Go with a strong understanding of team dynamics, system design trade-offs, and cross-functional alignment.</p>
         </div>
+    </section>
 
-        <h2>Education</h2>
-        <div class="timeline">
-            <div class="timeline-item">
-                <div class="timeline-dot"></div>
-                <div class="timeline-content">
-                    <h3>M.Sc. Applied Computer Science <span class="timeline-company">@ Hochschule Trier</span></h3>
-                    <span class="timeline-date">2015 &ndash; 2018</span>
-                    <p>Environmental and Business Informatics.</p>
-                </div>
-            </div>
-            <div class="timeline-item">
-                <div class="timeline-dot"></div>
-                <div class="timeline-content">
-                    <h3>B.Sc. Applied Computer Science <span class="timeline-company">@ Hochschule Trier</span></h3>
-                    <span class="timeline-date">2011 &ndash; 2016</span>
-                    <p>Engineering focus. Including roles as research assistant, software developer, and tutor.</p>
-                </div>
-            </div>
+    <section class="grid section">
+        <h2 class="index label">What I do</h2>
+        <p class="body-text">At DeepL, I contribute to AI-powered writing and translation products with a focus on backend architecture, system reliability, and cross-team technical leadership. Previously, as Engineering Manager, I led teams of up to 8 engineers integrating LLM research into editing tools serving 500k+ daily users, and scaled document translation to 150k+ documents per day.</p>
+    </section>
+
+    <section class="grid section">
+        <h2 class="index label">Career</h2>
+        <ul class="ledger">
+            <li>
+                <span class="ledger-title">Senior Software Engineer</span>
+                <p class="ledger-meta">DeepL &middot; Jan 2026 &ndash; Present</p>
+                <p class="ledger-text">Returned to an IC role to deepen technical impact. Contributing to AI-powered writing and translation products with a focus on backend architecture, system reliability, and cross-team technical leadership.</p>
+            </li>
+            <li>
+                <span class="ledger-title">Engineering Manager</span>
+                <p class="ledger-meta">DeepL &middot; Dec 2023 &ndash; Jan 2026</p>
+                <p class="ledger-text">Editor Team: Led 8 engineers bridging AI research and production editing tools serving 500k+ daily users. Drove integration of LLM-based prototypes into product. Document Translation Team: Led 6 engineers scaling document translation to 150k+ docs/day, defined custom quality metrics, and led a focused initiative on PDF layout preservation.</p>
+            </li>
+            <li>
+                <span class="ledger-title">Senior Software Engineer</span>
+                <p class="ledger-meta">DeepL &middot; Aug &ndash; Dec 2023</p>
+                <p class="ledger-text">Designed scalable C# backend services for document translation. Improved processing reliability for complex formats (PPTX, DOCX, PDF) and contributed to architectural decisions that reduced end-to-end translation latency.</p>
+            </li>
+            <li>
+                <span class="ledger-title">Product Owner & Scala Developer</span>
+                <p class="ledger-meta">Ryte &middot; Feb 2022 &ndash; Jun 2023</p>
+                <p class="ledger-text">Evolved the platform API into an API-as-a-Product: developer experience vision, DX conversion funnel, and monetisation strategy. Led development of authentication, CRM integration, and transactional email services in Scala.</p>
+            </li>
+            <li>
+                <span class="ledger-title">Backend Developer & Scrum Master</span>
+                <p class="ledger-meta">Exaring (waipu.tv) &middot; Jul 2019 &ndash; Jan 2022</p>
+                <p class="ledger-text">Developed and operated ~60 microservices powering waipu.tv's IPTV platform in Kotlin and Spring Boot. Managed infrastructure on Kubernetes/AWS with Terraform. Part-time Scrum Master for the Business Systems team.</p>
+            </li>
+            <li>
+                <span class="ledger-title">Lead Software Engineer</span>
+                <p class="ledger-meta">FreshDetect &middot; Nov 2018 &ndash; Jun 2019</p>
+                <p class="ledger-text">Led technical direction for a food-safety startup: evaluated ML approaches for spectroscopy-based freshness detection, prototyped solutions, and provided in-house consulting on architecture and processes.</p>
+            </li>
+            <li>
+                <span class="ledger-title">Data & Software Engineer</span>
+                <p class="ledger-meta">FreshDetect &middot; Mar 2016 &ndash; Nov 2018</p>
+                <p class="ledger-text">Built internal data analysis tools, data access libraries, and automated validation pipelines. Introduced software development processes. Administered Linux servers and PostgreSQL databases.</p>
+            </li>
+        </ul>
+    </section>
+
+    <section class="grid section">
+        <h2 class="index label">Education</h2>
+        <ul class="ledger">
+            <li>
+                <span class="ledger-title">M.Sc. Applied Computer Science</span>
+                <p class="ledger-meta">Hochschule Trier &middot; 2015 &ndash; 2018</p>
+                <p class="ledger-text">Environmental and Business Informatics.</p>
+            </li>
+            <li>
+                <span class="ledger-title">B.Sc. Applied Computer Science</span>
+                <p class="ledger-meta">Hochschule Trier &middot; 2011 &ndash; 2016</p>
+                <p class="ledger-text">Engineering focus. Including roles as research assistant, software developer, and tutor.</p>
+            </li>
+        </ul>
+    </section>
+
+    <section class="grid section">
+        <h2 class="index label">How I work</h2>
+        <p class="body-text">I believe the best solutions emerge when teams understand the "why" behind what they build. I combine technical depth with a strong emphasis on collaboration, clear communication, and pragmatic problem-solving. I care about getting the right things done well — not just shipping fast.</p>
+    </section>
+
+    <section class="grid section">
+        <h2 class="index label">Contact</h2>
+        <div>
+            <p class="body-text">I'm always open to conversations about technology, product development, and team leadership — whether that's exchanging ideas, exploring collaborations, or discussing new opportunities. Feel free to reach out!</p>
+            <p class="contact"><a href="mailto:patrick@patrickscheid.de">patrick@patrickscheid.de</a> &middot; <a href="https://www.linkedin.com/in/pscheid92/">LinkedIn</a> &middot; <a href="https://github.com/pscheid92">GitHub</a></p>
         </div>
-
-        <h2>How I Work</h2>
-        <p>
-            I believe the best solutions emerge when teams understand the "why" behind what they build. I combine
-            technical depth with a strong emphasis on collaboration, clear communication, and pragmatic
-            problem-solving. I care about getting the right things done well — not just shipping fast.
-        </p>
-
-        <h2>Let's Connect</h2>
-        <p>
-            I'm always open to conversations about technology, product development, and team leadership —
-            whether that's exchanging ideas, exploring collaborations, or discussing new opportunities.
-            Feel free to reach out!
-        </p>
-    </article>
+    </section>
 </Layout>
 
 <style>
-    .about-header {
-        text-align: center;
-        margin: 2em 0;
-    }
-
     .avatar {
-        width: 200px;
-        height: 200px;
+        width: 96px;
+        height: 96px;
         border-radius: 50%;
-        margin: 0 auto 1em;
         display: block;
-        box-shadow: var(--box-shadow);
     }
 
-    .prose {
-        margin: auto;
-        padding: 1em;
-        color: var(--color-text);
+    h1 {
+        font-size: 2.5rem;
+        letter-spacing: -0.02em;
+        margin: 0 0 1rem;
     }
 
-    .timeline {
-        position: relative;
-        padding-left: 2.5rem;
-        margin: 1.5em 0 2em;
-    }
-
-    .timeline::before {
-        content: '';
-        position: absolute;
-        left: 0.55rem;
-        top: 0.25rem;
-        bottom: 0.25rem;
-        width: 2px;
-        background: var(--color-border);
-    }
-
-    .timeline-item {
-        position: relative;
-        padding-bottom: 1.5em;
-    }
-
-    .timeline-item:last-child {
-        padding-bottom: 0;
-    }
-
-    .timeline-dot {
-        position: absolute;
-        left: -2.25rem;
-        top: 0.35rem;
-        width: 14px;
-        height: 14px;
-        border-radius: 50%;
-        background: var(--color-accent);
-        box-shadow: 0 0 0 4px var(--color-bg);
-        transition: background-color 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    .timeline-content h3 {
-        margin: 0 0 0.15em;
-        font-size: 1.1em;
-    }
-
-    .timeline-company {
-        font-weight: 400;
-        color: var(--color-text-muted);
-    }
-
-    .timeline-date {
-        display: block;
-        font-size: 0.85rem;
-        color: var(--color-text-muted);
-        margin-bottom: 0.35em;
-    }
-
-    .timeline-content p {
+    .lede {
+        font-family: var(--font-text);
+        font-size: 1.3rem;
+        line-height: 1.55;
         margin: 0;
-        color: var(--color-text-muted);
-        font-size: 0.95rem;
-        line-height: 1.5;
+    }
+
+    .body-text {
+        font-family: var(--font-text);
+        font-size: 1.1rem;
+        line-height: 1.6;
+        margin: 0;
+    }
+
+    .ledger .ledger-meta {
+        margin: 0.1rem 0 0.35rem;
+    }
+
+    .contact {
+        margin: 1rem 0 0;
+        font-weight: 700;
+    }
+
+    @media (max-width: 63.99rem) {
+        .avatar {
+            width: 72px;
+            height: 72px;
+            margin-bottom: 1.25rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+        }
+
+        .lede {
+            font-size: 1.15rem;
+        }
     }
 </style>

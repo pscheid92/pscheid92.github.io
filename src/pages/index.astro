@@ -1,155 +1,144 @@
 ---
 import {Image} from 'astro:assets';
+import {getCollection} from 'astro:content';
 import Avatar from '../assets/avatar.webp';
+import FormattedDate from '../components/FormattedDate.astro';
 import Layout from '../layouts/Layout.astro';
+import {getPublishedPosts, toEntries} from '../lib/writing';
+
+const entries = toEntries(await getPublishedPosts()).slice(0, 4);
+
+const allProjects = await getCollection('projects');
+const projects = ['secretli', 'pqsign', 'agesharp', 'chatpulse']
+    .map((id) => allProjects.find((p) => p.id === id)!)
+    .filter(Boolean);
+
+const focus = [
+    ['AI / ML', 'Integrating LLM research into production editing tools serving 500k+ daily users at DeepL.'],
+    ['Backend engineering', 'Scalable systems in C#, Kotlin, and Go; operated ~60 microservices on Kubernetes/AWS.'],
+    ['Data engineering', 'End-to-end data pipelines, ETL design, and validation pipelines for ML systems.'],
+    ['Product ownership', 'Turned a platform API into an API-as-a-Product at Ryte.'],
+    ['Engineering management', 'Led teams of up to 8 engineers at DeepL: hiring, mentoring, reorgs.'],
+];
 ---
 
 <Layout
     title="Patrick Scheid - Senior Software Engineer"
     description="Senior Software Engineer at DeepL in Munich. Combining software engineering, data science, product management, and engineering leadership to build AI-powered products."
-    pageClass="page-home"
+    pageClass="site page-home"
 >
-    <section class="hero">
-        <Image src={Avatar} alt="Patrick Scheid" class="hero-avatar" width={360} height={360} loading="eager" fetchpriority="high" decoding="async"/>
-        <h1>Hi, I'm Patrick!</h1>
-
-        <p class="position">Senior Software Engineer @ DeepL</p>
-
-        <p class="introduction">
-            Senior software engineer with 9+ years of experience building and scaling backend systems, combined
-            with 2+ years of engineering management. I bridge deep hands-on engineering in C#, Kotlin, and Go
-            with a strong understanding of team dynamics, system design trade-offs, and cross-functional alignment.
-        </p>
+    <section class="grid intro">
+        <div class="index">
+            <Image src={Avatar} alt="Portrait of Patrick Scheid" class="avatar" width={192} height={192} loading="eager" fetchpriority="high"/>
+        </div>
+        <div>
+            <h1>Hi, I'm Patrick.</h1>
+            <p class="lede">
+                Senior software engineer with 9+ years of experience building and scaling backend systems, combined
+                with 2+ years of engineering management. I bridge deep hands-on engineering in C#, Kotlin, and Go
+                with a strong understanding of team dynamics, system design trade-offs, and cross-functional alignment.
+            </p>
+            <p class="role">Senior Software Engineer at DeepL &middot; Munich &middot; <a href="/about/">More about me</a></p>
+        </div>
     </section>
 
-    <section class="highlights">
-        <h2>What I Bring</h2>
-        <div class="highlights-grid">
-            <div class="highlight-card">
-                <span class="highlight-icon" aria-hidden="true">🤖</span>
-                <h3>AI / ML</h3>
-                <p>Integrating LLM research into production editing tools serving 500k+ daily users at DeepL. Custom quality metrics, model evaluation, and end-to-end productionisation.</p>
-            </div>
-            <div class="highlight-card">
-                <span class="highlight-icon" aria-hidden="true">⚙️</span>
-                <h3>Backend Engineering</h3>
-                <p>Building scalable systems in C#, Kotlin, and Go. Operated ~60 microservices on Kubernetes/AWS with Kafka, gRPC, and PostgreSQL.</p>
-            </div>
-            <div class="highlight-card">
-                <span class="highlight-icon" aria-hidden="true">📊</span>
-                <h3>Data Engineering</h3>
-                <p>End-to-end data pipelines, ETL design, and feature engineering. Built data analysis tools and validation pipelines for spectroscopy-based ML systems.</p>
-            </div>
-            <div class="highlight-card">
-                <span class="highlight-icon" aria-hidden="true">📦</span>
-                <h3>Product Ownership</h3>
-                <p>Evolved a platform API into an API-as-a-Product with developer experience strategy, DX conversion funnel, and monetisation at Ryte.</p>
-            </div>
-            <div class="highlight-card">
-                <span class="highlight-icon" aria-hidden="true">🧭</span>
-                <h3>Engineering Management</h3>
-                <p>Led teams of up to 8 engineers at DeepL. Hiring, mentoring, performance development, and guiding teams through reorgs and strategic shifts.</p>
-            </div>
+    <section class="grid section">
+        <h2 class="index label">Writing</h2>
+        <div>
+            <ul class="ledger compact">
+                {entries.map((entry) => entry.kind === 'series' ? (
+                    <li>
+                        <a class="ledger-title" href={`/blog/#series-${entry.id}`}>{entry.title}</a>
+                        <span class="ledger-meta">Series &middot; {entry.parts.length} parts</span>
+                        <p class="ledger-text">{entry.description}</p>
+                    </li>
+                ) : (
+                    <li>
+                        <a class="ledger-title" href={`/blog/${entry.post.id}/`}>{entry.post.data.title}</a>
+                        <span class="ledger-meta"><FormattedDate date={entry.date}/></span>
+                    </li>
+                ))}
+            </ul>
+            <a class="more-link" href="/blog/">All writing &rarr;</a>
         </div>
+    </section>
+
+    <section class="grid section">
+        <h2 class="index label">Projects</h2>
+        <div>
+            <ul class="ledger compact">
+                {projects.map((project) => (
+                    <li>
+                        <a class="ledger-title" href={`/projects/${project.id}/`}>{project.data.title}</a>
+                        <span class="ledger-meta">{[project.data.kind, project.data.language, project.data.secondaryLanguage].filter(Boolean).join(' · ')}</span>
+                        <p class="ledger-text">{project.data.summary}</p>
+                    </li>
+                ))}
+            </ul>
+            <a class="more-link" href="/projects/">All projects &rarr;</a>
+        </div>
+    </section>
+
+    <section class="grid section">
+        <h2 class="index label">What I bring</h2>
+        <ul class="ledger compact">
+            {focus.map(([term, text]) => (
+                <li>
+                    <span class="ledger-title">{term}</span>
+                    <p class="ledger-text">{text}</p>
+                </li>
+            ))}
+        </ul>
     </section>
 </Layout>
 
 <style>
-    .hero {
-        text-align: center;
-        padding: 2em 0 3em;
+    .intro {
+        align-items: start;
     }
 
-    .hero-avatar {
+    .avatar {
+        width: 96px;
+        height: 96px;
         border-radius: 50%;
-        margin: 0 auto 1.5em;
         display: block;
-        box-shadow: var(--box-shadow);
     }
 
-    .hero h1 {
+    h1 {
         font-size: 2.5rem;
-        margin-bottom: 0.5em;
-        line-height: 1.2;
+        line-height: 1.1;
+        margin: 0 0 1rem;
+        letter-spacing: -0.02em;
     }
 
-    .hero p {
-        margin: 0 auto;
-    }
-
-    .hero .position {
+    .lede {
+        font-family: var(--font-text);
         font-size: 1.3rem;
-        margin: 1em auto;
+        line-height: 1.55;
+        margin: 0 0 1rem;
+        text-wrap: pretty;
     }
 
-    .hero .introduction {
-        font-size: 1.25rem;
-        line-height: 1.6;
-        text-align: center;
-        max-width: 38rem;
-    }
-
-    .highlights {
-        padding: 1em 0 3em;
-    }
-
-    .highlights h2 {
-        text-align: center;
-        margin-bottom: 1.5em;
-    }
-
-    .highlights-grid {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 1.5rem;
-        justify-content: center;
-    }
-
-    .highlight-card {
-        flex: 0 1 calc(33.333% - 1rem);
-        background: var(--color-surface);
-        border: 1px solid var(--color-border);
-        border-radius: 12px;
-        padding: 1.5em;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    .highlight-card:hover {
-        transform: translateY(-3px);
-        box-shadow: var(--box-shadow);
-    }
-
-    .highlight-icon {
-        font-size: 2rem;
-        display: block;
-        margin-bottom: 0.5em;
-    }
-
-    .highlight-card h3 {
-        margin-bottom: 0.5em;
-    }
-
-    .highlight-card p {
-        color: var(--color-text-muted);
-        font-size: 0.95rem;
-        line-height: 1.5;
+    .role {
         margin: 0;
+        font-size: 0.95rem;
+        color: var(--color-text-muted);
     }
 
-    @media (max-width: 720px) {
-        .hero-avatar {
-            width: 200px;
-            height: 200px;
+
+    @media (max-width: 63.99rem) {
+        .avatar {
+            width: 72px;
+            height: 72px;
+            margin-bottom: 1.25rem;
         }
 
-        .highlight-card {
-            flex: 0 1 calc(50% - 0.75rem);
+        h1 {
+            font-size: 2rem;
         }
-    }
 
-    @media (max-width: 480px) {
-        .highlight-card {
-            flex: 0 1 100%;
+        .lede {
+            font-size: 1.15rem;
         }
     }
 </style>

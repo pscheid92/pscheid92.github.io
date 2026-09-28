@@ -3,6 +3,8 @@ title: 'How Ed25519 Works'
 description: 'A ground-up explanation of Ed25519 — the elliptic curve signature scheme built on Curve25519, from finite fields to Schnorr-style signing.'
 pubDate: 'Apr 01 2026'
 tags: ['Cryptography', 'Security']
+series: 'inside-pqsign'
+seriesPart: 2
 draft: true
 ---
 

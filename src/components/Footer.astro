@@ -1,41 +1,52 @@
 ---
-import Socials from "./Socials.astro";
-
 const today = new Date();
 ---
 
-<footer>
-    <div class="footer-divider"></div>
-    <div class="footer-content">
-        <span class="footer-copy">&copy; {today.getFullYear()} Patrick Scheid</span>
-        <Socials/>
+<footer class="site-footer">
+    <div class="grid">
+        <p class="index copy">&copy; {today.getFullYear()} Patrick Scheid</p>
+        <p class="links">
+            <a href="/rss.xml">RSS</a>
+            <a href="https://github.com/pscheid92" rel="me">GitHub</a>
+            <a href="https://www.linkedin.com/in/pscheid92/" rel="me">LinkedIn</a>
+            <a href="mailto:patrick@patrickscheid.de">patrick@patrickscheid.de</a>
+        </p>
     </div>
 </footer>
 
 <style>
-    footer {
-        padding: 0 1em 2em;
-        background-color: var(--color-bg);
+    .site-footer {
+        padding: 2rem var(--page-pad) 3rem;
+        font-size: 0.9rem;
         color: var(--color-text-muted);
-        text-align: center;
-        transition: background-color 0.3s ease, color 0.3s ease;
     }
 
-    .footer-divider {
-        max-width: 60rem;
-        margin: 0 auto 2rem;
-        height: 1px;
-        background: linear-gradient(90deg, transparent, var(--color-border), transparent);
+    .site-footer .grid {
+        border-top: 1px solid var(--color-border);
+        padding-top: 1.25rem;
     }
 
-    .footer-content {
+    p {
+        margin: 0;
+    }
+
+    .links {
         display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 0.75rem;
+        flex-wrap: wrap;
+        gap: 0.4rem 1.25rem;
     }
 
-    .footer-copy {
-        font-size: 0.85rem;
+    .links a {
+        color: var(--color-text-muted);
+    }
+
+    .links a:hover {
+        color: var(--color-accent);
+    }
+
+    @media (max-width: 63.99rem) {
+        .copy {
+            margin-bottom: 0.5rem;
+        }
     }
 </style>

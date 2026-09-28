@@ -1,84 +1,70 @@
 ---
-import Socials from "./Socials.astro";
-import logo from "../assets/logo.png";
-import Brand from "./Brand.astro";
-import HeaderLinks from "./HeaderLinks.astro";
+import HeaderLink from "./HeaderLink.astro";
 import ThemeToggle from "./ThemeToggle.astro";
 ---
 
-<header>
-    <div class="nav-content">
-        <Brand title="Patrick Scheid" image={logo}/>
-        <HeaderLinks/>
-        <div class="nav-actions">
-            <Socials/>
-            <span class="nav-divider"></span>
+<header class="site-header">
+    <div class="grid header-grid">
+        <a class="wordmark index" href="/">Patrick Scheid</a>
+        <nav class="nav" aria-label="Main">
+            <HeaderLink href="/blog">Writing</HeaderLink>
+            <HeaderLink href="/projects">Projects</HeaderLink>
+            <HeaderLink href="/about">About</HeaderLink>
+        </nav>
+        <div class="actions">
             <ThemeToggle/>
         </div>
     </div>
 </header>
 
 <style>
-    header {
-        margin: 0;
-        padding: 0 1em;
-        background: var(--color-bg);
-        box-shadow: 0 2px 8px var(--color-shadow);
+    .site-header {
+        padding: 1.5rem var(--page-pad) 0;
+    }
+
+    .header-grid {
+        align-items: baseline;
+        row-gap: 0.35rem;
+    }
+
+    .wordmark {
+        font-weight: 700;
+        font-size: 1.05rem;
+        color: var(--color-text-heading);
+        white-space: nowrap;
+        letter-spacing: -0.005em;
+    }
+
+    .wordmark:hover {
+        color: var(--color-accent);
+    }
+
+    .nav {
         display: flex;
-        justify-content: center;
-        transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        gap: 1.5rem;
+        font-size: 1rem;
     }
 
-    .nav-content {
-        width: 100%;
-        max-width: 60rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .nav-content > :global(:first-child) {
-        flex: 1;
-    }
-
-    .nav-content > :global(.header-links-wrapper) {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .nav-actions {
-        flex: 1;
+    .actions {
         display: flex;
         justify-content: flex-end;
-        align-items: center;
-        gap: 0.75em;
+        align-self: center;
     }
 
-    .nav-actions > :global(.social-links) {
-        margin-top: 0;
+    /* Desktop: wordmark in the index column, nav on the reading column, toggle at the far edge */
+    @media (min-width: 64rem) {
+        .header-grid > .nav { grid-column: text; }
+        .header-grid > .actions { grid-column: text-end / wide-end; grid-row: 1; }
     }
 
-    .nav-divider {
-        width: 1px;
-        height: 1.5em;
-        background: var(--color-border);
-    }
-
-    @media (min-width: 600px) {
-        .nav-content {
-            width: 90%;
-        }
-    }
-
-    @media (max-width: 900px) {
-        .nav-actions > :global(.social-links),
-        .nav-divider {
-            display: none;
+    /* Narrow: name and toggle on the first row, nav below — no hamburger needed */
+    @media (max-width: 63.99rem) {
+        .header-grid {
+            grid-template-columns: minmax(0, 1fr) auto;
         }
 
-        .nav-content > :global(.header-links-wrapper) {
-            justify-content: flex-end;
-        }
+        .header-grid > .wordmark { grid-column: 1; grid-row: 1; }
+        .header-grid > .actions { grid-column: 2; grid-row: 1; }
+        .header-grid > .nav { grid-column: 1 / -1; grid-row: 2; }
     }
 </style>

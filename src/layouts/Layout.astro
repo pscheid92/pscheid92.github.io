@@ -21,9 +21,10 @@ const {title, description, image, pageClass, ogType} = Astro.props;
         <BaseHead title={title} description={description} image={image} ogType={ogType}/>
     </head>
     <body class={pageClass}>
+        <a class="skip-link" href="#content">Skip to content</a>
         <Header/>
 
-        <main>
+        <main id="content">
             <slot/>
         </main>
 
@@ -40,5 +41,19 @@ const {title, description, image, pageClass, ogType} = Astro.props;
 
     main {
         flex: 1;
+    }
+
+    .skip-link {
+        position: absolute;
+        left: 1rem;
+        top: -3rem;
+        padding: 0.5rem 0.75rem;
+        background: var(--color-bg);
+        border: 1px solid var(--color-border);
+        z-index: 10;
+    }
+
+    .skip-link:focus {
+        top: 1rem;
     }
 </style>
