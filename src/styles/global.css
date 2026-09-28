@@ -23,25 +23,42 @@ html {
     }
 }
 
+/* Subsets built by scripts/build-fonts.py. "Atkinson" is Atkinson Hyperlegible Next; the tool pages use that name too. */
 @font-face {
     font-family: "Atkinson";
-    src: url("/fonts/atkinson-regular.woff") format("woff");
-    font-weight: 400;
+    src: url("/fonts/atkinson-next.woff2") format("woff2");
+    font-weight: 400 700;
     font-style: normal;
     font-display: swap;
 }
 
 @font-face {
     font-family: "Atkinson";
-    src: url("/fonts/atkinson-bold.woff") format("woff");
-    font-weight: 700;
+    src: url("/fonts/atkinson-next-italic.woff2") format("woff2");
+    font-weight: 400 700;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Source Serif";
+    src: url("/fonts/source-serif-4.woff2") format("woff2");
+    font-weight: 400 700;
     font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Source Serif";
+    src: url("/fonts/source-serif-4-italic.woff2") format("woff2");
+    font-weight: 400 700;
+    font-style: italic;
     font-display: swap;
 }
 
 :root {
     --font-ui: "Atkinson", system-ui, -apple-system, "Segoe UI", sans-serif;
-    --font-text: var(--font-ui);
+    --font-text: "Source Serif", "Iowan Old Style", Charter, Georgia, serif;
     --font-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
 
     /* One grid for every page: index column | reading column | bleed for wide code and figures */
@@ -51,47 +68,44 @@ html {
     --bleed: 8rem;
     --page-pad: 1.25rem;
 
-    --color-bg: #ffffff;
-    --color-surface: #f7f8fa;
-    --color-text: #222939;
-    --color-text-muted: #5a6d93;
-    --color-text-heading: #0f1219;
-    --color-border: #e5e9f0;
-    --color-code-bg: #f0f2f6;
-    --color-accent: #2337ff;
-    --color-accent-dark: #000d8a;
+    /* Contrast on --color-bg: text 15.8:1, muted 6.1:1, accent 7.5:1 (dark: 12.6, 6.8, 8.0) */
+    --color-bg: #fcfcfa;
+    --color-surface: #f3f2ed;
+    --color-text: #1f2024;
+    --color-text-muted: #5d6068;
+    --color-text-heading: #111214;
+    --color-border: #e2e1db;
+    --color-code-bg: #f3f2ed;
+    --color-accent: #2749b8;
+    --color-accent-dark: #1a3690;
     --color-on-accent: #ffffff;
-    --color-shadow: rgba(96, 115, 159, 0.25);
-    --color-overlay: rgba(255, 255, 255, 0.95);
-    --box-shadow: 0 2px 6px var(--color-shadow), 0 8px 24px var(--color-shadow);
-    --gray-gradient: rgba(229, 233, 240, 0.5), #fff;
+    --color-shadow: rgba(17, 18, 20, 0.12);
+    --color-overlay: rgba(252, 252, 250, 0.96);
+    --box-shadow: 0 1px 2px var(--color-shadow), 0 4px 12px var(--color-shadow);
     --accent: var(--color-accent);
     --accent-dark: var(--color-accent-dark);
 }
 
 [data-theme="dark"] {
-    --color-bg: #13161d;
-    --color-surface: #1a1e27;
-    --color-text: #c9cdd5;
-    --color-text-muted: #8892a4;
-    --color-text-heading: #e2e6ed;
-    --color-border: #2a303d;
-    --color-code-bg: #1e2230;
-    --color-accent: #6b7cff;
-    --color-accent-dark: #8fa0ff;
-    --color-on-accent: #13161d;
+    --color-bg: #141518;
+    --color-surface: #1c1d21;
+    --color-text: #d5d6d9;
+    --color-text-muted: #9b9ea6;
+    --color-text-heading: #f1f1ef;
+    --color-border: #2c2e33;
+    --color-code-bg: #1c1d21;
+    --color-accent: #91a8ff;
+    --color-accent-dark: #b4c3ff;
+    --color-on-accent: #141518;
     --color-shadow: rgba(0, 0, 0, 0.4);
-    --color-overlay: rgba(19, 22, 29, 0.95);
-    --gray-gradient: rgba(26, 30, 39, 0.5), #13161d;
+    --color-overlay: rgba(20, 21, 24, 0.96);
 }
 
 body {
     font-family: var(--font-ui);
     margin: 0;
     padding: 0;
-    background: linear-gradient(var(--gray-gradient)) no-repeat;
     background-color: var(--color-bg);
-    background-size: 100% 600px;
     color: var(--color-text);
     font-size: 18px;
     line-height: 1.6;
@@ -341,7 +355,7 @@ a:hover > .ledger-title {
 
 .prose {
     font-family: var(--font-text);
-    font-size: 1.125rem;
+    font-size: 1.1875rem;
     line-height: 1.65;
     color: var(--color-text);
     min-width: 0;
@@ -403,7 +417,7 @@ a:hover > .ledger-title {
 }
 
 .prose strong {
-    font-weight: 700;
+    font-weight: 650;
     color: var(--color-text-heading);
 }
 
@@ -470,6 +484,21 @@ a:hover > .ledger-title {
     font-size: inherit;
 }
 
+/* Shiki dual themes follow the site toggle, not only the OS setting */
+.astro-code,
+.astro-code span {
+    color: var(--shiki-light);
+}
+
+.astro-code {
+    background-color: var(--color-code-bg) !important;
+}
+
+[data-theme="dark"] .astro-code,
+[data-theme="dark"] .astro-code span {
+    color: var(--shiki-dark);
+}
+
 .prose table {
     display: block;
     overflow-x: auto;
@@ -503,11 +532,10 @@ a:hover > .ledger-title {
     border-radius: 8px;
 }
 
-/* Light line-art (transparent Excalidraw exports) sits on a white card in dark mode.
+/* Light line-art (transparent Excalidraw exports) is inverted in dark mode.
    Diagrams that bring their own dark background are named *.dark.svg and left alone. */
 [data-theme="dark"] .prose img:not([src*=".dark."]) {
-    background: white;
-    padding: 1rem;
+    filter: invert(0.88) hue-rotate(180deg);
 }
 
 @media (min-width: 64rem) {
