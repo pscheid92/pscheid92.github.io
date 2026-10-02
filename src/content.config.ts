@@ -33,7 +33,6 @@ const projects = defineCollection({
             github: z.url().optional(),
             liveUrl: z.string().optional(),
             kind: z.enum(['Live', 'CLI', 'Library', 'Infrastructure']),
-            summary: z.string().optional(),
             topics: z.array(z.string()).default([]),
         }),
 });

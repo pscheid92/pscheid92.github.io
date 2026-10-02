@@ -4,7 +4,6 @@ description: "A C# implementation of the age file encryption format. Fully inter
 language: "C#"
 github: https://github.com/pscheid92/AgeSharp
 kind: Library
-summary: 'The age file encryption format for C#, on NuGet.'
 topics: [cryptography, age-encryption, nuget, x25519, post-quantum, dotnet]
 ---
 

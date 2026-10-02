@@ -1,25 +1,11 @@
 ---
 import {Image} from 'astro:assets';
-import {getCollection} from 'astro:content';
 import Avatar from '../assets/avatar.webp';
-import FormattedDate from '../components/FormattedDate.astro';
 import Layout from '../layouts/Layout.astro';
 import {getPublishedPosts, toEntries} from '../lib/writing';
 
-const entries = toEntries(await getPublishedPosts()).slice(0, 4);
-
-const allProjects = await getCollection('projects');
-const projects = ['secretli', 'pqsign', 'agesharp', 'chatpulse']
-    .map((id) => allProjects.find((p) => p.id === id)!)
-    .filter(Boolean);
-
-const focus = [
-    ['AI / ML', 'Integrating LLM research into production editing tools serving 500k+ daily users at DeepL.'],
-    ['Backend engineering', 'Scalable systems in C#, Kotlin, and Go; operated ~60 microservices on Kubernetes/AWS.'],
-    ['Data engineering', 'End-to-end data pipelines, ETL design, and validation pipelines for ML systems.'],
-    ['Product ownership', 'Turned a platform API into an API-as-a-Product at Ryte.'],
-    ['Engineering management', 'Led teams of up to 8 engineers at DeepL: hiring, mentoring, reorgs.'],
-];
+// One pointer to the newest writing keeps the page current without turning it into an index
+const [latest] = toEntries(await getPublishedPosts());
 ---
 
 <Layout
@@ -27,85 +13,52 @@ const focus = [
     description="Senior Software Engineer at DeepL in Munich. Combining software engineering, data science, product management, and engineering leadership to build AI-powered products."
     pageClass="site page-home"
 >
-    <section class="grid intro">
-        <div class="index">
-            <Image src={Avatar} alt="Portrait of Patrick Scheid" class="avatar" width={192} height={192} loading="eager" fetchpriority="high"/>
-        </div>
-        <div>
-            <h1>Hi, I'm Patrick.</h1>
-            <p class="lede">
-                Senior software engineer with 9+ years of experience building and scaling backend systems, combined
-                with 2+ years of engineering management. I bridge deep hands-on engineering in C#, Kotlin, and Go
-                with a strong understanding of team dynamics, system design trade-offs, and cross-functional alignment.
-            </p>
-            <p class="role">Senior Software Engineer at DeepL &middot; Munich &middot; <a href="/about/">More about me</a></p>
-        </div>
-    </section>
-
-    <section class="grid section">
-        <h2 class="index label">Writing</h2>
-        <div>
-            <ul class="ledger compact">
-                {entries.map((entry) => entry.kind === 'series' ? (
-                    <li>
-                        <a class="ledger-title" href={`/blog/#series-${entry.id}`}>{entry.title}</a>
-                        <span class="ledger-meta">Series &middot; {entry.parts.length} parts</span>
-                        <p class="ledger-text">{entry.description}</p>
-                    </li>
+    <section class="intro">
+        <Image src={Avatar} alt="Portrait of Patrick Scheid" class="avatar" width={224} height={224} loading="eager" fetchpriority="high"/>
+        <h1>Hi, I'm Patrick.</h1>
+        <p class="lede">
+            Senior software engineer at DeepL in Munich, with 9+ years of building and scaling backend systems
+            and 2+ years of engineering management.
+        </p>
+        {latest && (
+            <p class="latest">
+                <span class="label">Latest writing</span>
+                {latest.kind === 'series' ? (
+                    <a href={`/blog/#series-${latest.id}`}>{latest.title}, a {latest.parts.length}-part series&nbsp;&rarr;</a>
                 ) : (
-                    <li>
-                        <a class="ledger-title" href={`/blog/${entry.post.id}/`}>{entry.post.data.title}</a>
-                        <span class="ledger-meta"><FormattedDate date={entry.date}/></span>
-                    </li>
-                ))}
-            </ul>
-            <a class="more-link" href="/blog/">All writing &rarr;</a>
-        </div>
-    </section>
-
-    <section class="grid section">
-        <h2 class="index label">Projects</h2>
-        <div>
-            <ul class="ledger compact">
-                {projects.map((project) => (
-                    <li>
-                        <a class="ledger-title" href={`/projects/${project.id}/`}>{project.data.title}</a>
-                        <span class="ledger-meta">{[project.data.kind, project.data.language, project.data.secondaryLanguage].filter(Boolean).join(' · ')}</span>
-                        <p class="ledger-text">{project.data.summary}</p>
-                    </li>
-                ))}
-            </ul>
-            <a class="more-link" href="/projects/">All projects &rarr;</a>
-        </div>
-    </section>
-
-    <section class="grid section">
-        <h2 class="index label">What I bring</h2>
-        <ul class="ledger compact">
-            {focus.map(([term, text]) => (
-                <li>
-                    <span class="ledger-title">{term}</span>
-                    <p class="ledger-text">{text}</p>
-                </li>
-            ))}
-        </ul>
+                    <a href={`/blog/${latest.post.id}/`}>{latest.post.data.title}&nbsp;&rarr;</a>
+                )}
+            </p>
+        )}
+        <p class="more"><a href="/about/">More about me&nbsp;&rarr;</a></p>
     </section>
 </Layout>
 
 <style>
+    /* The landing page is a single centred block; there is too little on it for the page grid to read as intended */
+    :global(body.page-home main) {
+        display: grid;
+        align-content: center;
+    }
+
     .intro {
-        align-items: start;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        max-width: 36rem;
+        margin-inline: auto;
+        text-align: center;
     }
 
     .avatar {
-        width: 96px;
-        height: 96px;
+        width: 112px;
+        height: 112px;
         border-radius: 50%;
-        display: block;
+        margin-bottom: 1.75rem;
     }
 
     h1 {
-        font-size: 2.5rem;
+        font-size: 2.75rem;
         line-height: 1.1;
         margin: 0 0 1rem;
         letter-spacing: -0.02em;
@@ -113,32 +66,50 @@ const focus = [
 
     .lede {
         font-family: var(--font-text);
-        font-size: 1.3rem;
-        line-height: 1.55;
-        margin: 0 0 1rem;
-        text-wrap: pretty;
-    }
-
-    .role {
+        font-size: 1.35rem;
+        line-height: 1.5;
         margin: 0;
-        font-size: 0.95rem;
-        color: var(--color-text-muted);
+        text-wrap: balance;
     }
 
+    .latest {
+        margin: 2.5rem 0 0;
+    }
+
+    .latest .label {
+        display: block;
+        margin-bottom: 0.15rem;
+    }
+
+    .latest a {
+        font-weight: 700;
+        font-size: 1.05rem;
+        color: var(--color-text-heading);
+    }
+
+    .latest a:hover {
+        color: var(--color-accent);
+    }
+
+    .more {
+        margin: 1.5rem 0 0;
+        font-weight: 700;
+        font-size: 0.95rem;
+    }
 
     @media (max-width: 63.99rem) {
         .avatar {
-            width: 72px;
-            height: 72px;
+            width: 88px;
+            height: 88px;
             margin-bottom: 1.25rem;
         }
 
         h1 {
-            font-size: 2rem;
+            font-size: 2.1rem;
         }
 
         .lede {
-            font-size: 1.15rem;
+            font-size: 1.2rem;
         }
     }
 </style>

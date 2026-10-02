@@ -7,10 +7,18 @@ export type WritingEntry =
     | { kind: 'post'; date: Date; post: Post }
     | { kind: 'series'; date: Date; id: string; title: string; description: string; parts: Post[] };
 
+/** Published posts only, newest first — never drafts, not even on the dev server. */
 export async function getPublishedPosts(): Promise<Post[]> {
-    return (await getCollection('blog'))
-        .filter((post) => import.meta.env.DEV || !post.data.draft)
-        .sort((a, b) => (b.data.pubDate?.valueOf() ?? 0) - (a.data.pubDate?.valueOf() ?? 0));
+    return sortNewestFirst((await getCollection('blog')).filter((post) => !post.data.draft));
+}
+
+/** Published posts, plus drafts while running the dev server so they can be previewed. */
+export async function getVisiblePosts(): Promise<Post[]> {
+    return sortNewestFirst((await getCollection('blog')).filter((post) => import.meta.env.DEV || !post.data.draft));
+}
+
+function sortNewestFirst(posts: Post[]): Post[] {
+    return posts.sort((a, b) => (b.data.pubDate?.valueOf() ?? 0) - (a.data.pubDate?.valueOf() ?? 0));
 }
 
 /**

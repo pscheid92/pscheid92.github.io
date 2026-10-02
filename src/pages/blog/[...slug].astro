@@ -2,10 +2,10 @@
 import { type CollectionEntry, render } from 'astro:content';
 import { series } from '../../data/series';
 import BlogPost from '../../layouts/BlogPost.astro';
-import { getPublishedPosts, readTime } from '../../lib/writing';
+import { getVisiblePosts, readTime } from '../../lib/writing';
 
 export async function getStaticPaths() {
-	const posts = await getPublishedPosts();
+	const posts = await getVisiblePosts();
 	return posts.map((post) => {
 		const id = post.data.series;
 		const parts = id

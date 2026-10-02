@@ -4,7 +4,6 @@ description: "Hybrid post-quantum file signing tool. Combines Ed25519 and ML-DSA
 language: Rust
 github: https://github.com/pscheid92/pqsign
 kind: CLI
-summary: 'Hybrid post-quantum file signing: Ed25519 plus ML-DSA-65.'
 topics: [post-quantum, cryptography, ml-dsa, ed25519, fips204, hybrid-signing]
 ---
 

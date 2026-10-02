@@ -1,10 +1,10 @@
 ---
 import FormattedDate from '../../components/FormattedDate.astro';
 import Layout from '../../layouts/Layout.astro';
-import {getPublishedPosts, readTime, toEntries} from '../../lib/writing';
+import {getVisiblePosts, readTime, toEntries} from '../../lib/writing';
 
-const entries = toEntries(await getPublishedPosts());
-const years = [...new Set(entries.map((e) => e.date.getFullYear()))];
+// One list with each date in the margin: reads as a whole with three posts and still scales to fifty
+const entries = toEntries(await getVisiblePosts());
 ---
 
 <Layout title="Writing - Patrick Scheid" description="Articles and insights on engineering management, software development, team leadership, and AI product development by Patrick Scheid." pageClass="site page-blog">
@@ -13,34 +13,35 @@ const years = [...new Set(entries.map((e) => e.date.getFullYear()))];
         <p class="page-dek">Thoughts on engineering, infrastructure, AI, and leadership.</p>
     </header>
 
-    {years.map((year) => (
-        <section class="grid section">
-            <h2 class="index label">{year}</h2>
-            <ul class="ledger">
-                {entries.filter((e) => e.date.getFullYear() === year).map((entry) => entry.kind === 'series' ? (
-                    <li class="series" id={`series-${entry.id}`}>
-                        <span class="ledger-title">{entry.title}</span>
-                        <span class="series-tag">Series &middot; {entry.parts.length} parts</span>
-                        <p class="ledger-text">{entry.description}</p>
-                        <ol class="series-parts">
-                            {entry.parts.map((p) => (
-                                <li><a href={`/blog/${p.id}/`}>{p.data.title}</a> <span class="ledger-meta">{readTime(p)} min</span></li>
-                            ))}
-                        </ol>
-                    </li>
-                ) : (
-                    <li>
-                        <a class="ledger-title" href={`/blog/${entry.post.id}/`}>{entry.post.data.title}</a>
-                        <p class="ledger-text">{entry.post.data.description}</p>
-                        <p class="ledger-meta">
-                            <FormattedDate date={entry.date}/> &middot; {readTime(entry.post)} min read
-                            {entry.post.data.tags.length > 0 && <>&middot; {entry.post.data.tags.join(', ')}</>}
-                        </p>
-                    </li>
-                ))}
-            </ul>
-        </section>
-    ))}
+    <ul class="writing-list">
+        {entries.map((entry) => entry.kind === 'series' ? (
+            <li class="grid row" id={`series-${entry.id}`}>
+                <p class="index row-date"><FormattedDate date={entry.date}/></p>
+                <div>
+                    <span class="ledger-title">{entry.title}</span>
+                    <span class="series-tag">Series &middot; {entry.parts.length} parts</span>
+                    <p class="ledger-text">{entry.description}</p>
+                    <ol class="series-parts">
+                        {entry.parts.map((p) => (
+                            <li><a href={`/blog/${p.id}/`}>{p.data.title}</a> <span class="ledger-meta">{readTime(p)} min</span></li>
+                        ))}
+                    </ol>
+                </div>
+            </li>
+        ) : (
+            <li class="grid row">
+                <p class="index row-date"><FormattedDate date={entry.date}/></p>
+                <div>
+                    <a class="ledger-title" href={`/blog/${entry.post.id}/`}>{entry.post.data.title}</a>
+                    <p class="ledger-text">{entry.post.data.description}</p>
+                    <p class="ledger-meta">
+                        {readTime(entry.post)} min read
+                        {entry.post.data.tags.length > 0 && <>&middot; {entry.post.data.tags.join(', ')}</>}
+                    </p>
+                </div>
+            </li>
+        ))}
+    </ul>
 </Layout>
 
 <style>
@@ -55,6 +56,25 @@ const years = [...new Set(entries.map((e) => e.date.getFullYear()))];
         font-size: 1.2rem;
         color: var(--color-text-muted);
         margin: 0;
+    }
+
+    .writing-list {
+        list-style: none;
+        margin: 2.5rem 0 0;
+        padding: 0;
+    }
+
+    .row {
+        padding: 1.25rem 0;
+        border-top: 1px solid var(--color-border);
+    }
+
+    .row-date {
+        margin: 0;
+        padding-top: 0.1rem;
+        font-size: 0.875rem;
+        color: var(--color-text-muted);
+        font-variant-numeric: tabular-nums;
     }
 
     .series-tag {
@@ -81,6 +101,12 @@ const years = [...new Set(entries.map((e) => e.date.getFullYear()))];
     .series-parts .ledger-meta {
         margin-left: 0.35rem;
         font-size: 0.8rem;
+    }
+
+    @media (max-width: 63.99rem) {
+        .row-date {
+            margin-bottom: 0.3rem;
+        }
     }
 
     @media (max-width: 720px) {

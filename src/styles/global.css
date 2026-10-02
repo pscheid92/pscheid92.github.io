@@ -15,6 +15,8 @@
 
 html {
     overflow-x: clip;
+    /* Reserve the scrollbar's space on short pages too, so the layout doesn't shift sideways between pages */
+    scrollbar-gutter: stable;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -392,18 +394,19 @@ a:hover > .ledger-title {
     scroll-margin-top: 1.5rem;
 }
 
+/* Heading sizes follow the text size, so every level stays larger than the text on any screen */
 .prose h2 {
-    font-size: 1.45rem;
-    margin: 2.4em 0 0.6em;
+    font-size: 1.3em;
+    margin: 2.2em 0 0.6em;
 }
 
 .prose h3 {
-    font-size: 1.15rem;
-    margin: 2em 0 0.5em;
+    font-size: 1.1em;
+    margin: 1.9em 0 0.5em;
 }
 
 .prose h4 {
-    font-size: 1rem;
+    font-size: 1em;
     margin: 1.6em 0 0.4em;
 }
 
@@ -470,8 +473,9 @@ a:hover > .ledger-title {
     overflow-wrap: anywhere;
 }
 
+/* Code blocks and inline code share one size, relative to the text */
 .prose pre {
-    font-size: 0.8rem;
+    font-size: 0.82em;
     line-height: 1.55;
     padding: 1rem 1.2rem;
     margin: 1.5em 0 1.75em;
@@ -538,16 +542,25 @@ a:hover > .ledger-title {
     filter: invert(0.88) hue-rotate(180deg);
 }
 
+/* Code, tables and figures all use the extra width, so consecutive blocks line up */
 @media (min-width: 64rem) {
     .prose pre,
     .prose table,
     .prose p:has(> img:only-child) {
         margin-right: calc(var(--bleed) * -1);
     }
+}
 
-    .prose pre {
-        width: fit-content;
-        min-width: 100%;
-        max-width: calc(100% + var(--bleed));
+/* On phones, diagrams keep a readable size and scroll sideways instead of shrinking their labels to a few pixels */
+@media (max-width: 720px) {
+    .prose p:has(> img[src*=".svg"]:only-child) {
+        overflow-x: auto;
+        margin-inline: calc(var(--page-pad) * -1);
+        padding-inline: var(--page-pad);
+    }
+
+    .prose p:has(> img[src*=".svg"]:only-child) > img {
+        width: 720px;
+        max-width: none;
     }
 }
