@@ -9,16 +9,16 @@ const [latest] = toEntries(await getPublishedPosts());
 ---
 
 <Layout
-    title="Patrick Scheid - Senior Software Engineer"
-    description="Senior Software Engineer at DeepL in Munich. Combining software engineering, data science, product management, and engineering leadership to build AI-powered products."
+    title="Patrick Scheid - Engineering Manager"
+    description="Engineering Manager at STACKIT, leading the Identity and Access Management team. Writing about cryptography, Kubernetes, and engineering leadership."
     pageClass="site page-home"
 >
     <section class="intro">
         <Image src={Avatar} alt="Portrait of Patrick Scheid" class="avatar" width={224} height={224} loading="eager" fetchpriority="high"/>
         <h1>Hi, I'm Patrick.</h1>
         <p class="lede">
-            Senior software engineer at DeepL in Munich, with 9+ years of building and scaling backend systems
-            and 2+ years of engineering management.
+            Engineering manager at STACKIT in Bad Friedrichshall, leading the Identity and Access Management team,
+            with 10+ years of building and scaling backend systems.
         </p>
         {latest && (
             <p class="latest">

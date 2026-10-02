@@ -4,8 +4,8 @@ import rss from '@astrojs/rss';
 export async function GET(context) {
 	const posts = (await getCollection('blog')).filter((post) => import.meta.env.DEV || !post.data.draft);
 	return rss({
-		title: 'Patrick Scheid - Senior Software Engineer',
-		description: 'Senior Software Engineer at DeepL in Munich. Combining software engineering, data science, product management, and engineering leadership to build AI-powered products.',
+		title: 'Patrick Scheid - Engineering Manager',
+		description: 'Engineering Manager at STACKIT, leading the Identity and Access Management team. Writing about cryptography, Kubernetes, and engineering leadership.',
 		site: context.site,
 		items: posts.map((post) => ({
 			...post.data,
