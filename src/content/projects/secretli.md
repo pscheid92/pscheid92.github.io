@@ -3,7 +3,7 @@ title: Secretli
 description: "Zero-knowledge, end-to-end encrypted secret sharing. Share passwords and sensitive data with a self-destructing link — the server never sees the plaintext."
 language: TypeScript
 secondaryLanguage: Go
-github: https://github.com/pscheid92/secretli
+github: https://github.com/secretli
 liveUrl: https://secretli.k.patrickscheid.de/
 kind: Live
 topics: [encryption, zero-knowledge, react, golang, self-hosted]

@@ -2,7 +2,7 @@
 import {getCollection} from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 
-const order = ['secretli', 'chatpulse', 'agesharp', 'pqsign', 'uuid', 'k8s-cluster'];
+const order = ['secretli', 'agesharp', 'pqsign', 'uuid', 'k8s-cluster'];
 const allProjects = await getCollection('projects');
 const projects = order.map((id) => allProjects.find((p) => p.id === id)!).filter(Boolean);
 
