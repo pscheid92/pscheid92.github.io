@@ -56,7 +56,7 @@ It works between the web app and the command line in either direction.
 
 The project lives in its own [GitHub organization](https://github.com/secretli), with one repository per part: the **format** (specification, Go and TypeScript libraries, test vectors), the **server** (the API), the **web** app, the **cli**, and **e2e**, which tests them all together.
 
-**Storage** is split by purpose: PostgreSQL holds metadata (public ID, token hashes, the encrypted metadata, expiry) while encrypted bundles go to S3-compatible storage (SeaweedFS). Uploads arrive in parts, each with its SHA-256; downloads are byte ranges within a short-lived retrieval session that the blob token opens.
+**Storage** is split by purpose: PostgreSQL holds metadata (public ID, token hashes, the encrypted metadata, expiry) while encrypted bundles go to S3-compatible storage (Hetzner Object Storage). Uploads arrive in parts, each with its SHA-256; downloads are byte ranges within a short-lived retrieval session that the blob token opens.
 
 **Cleanup** runs as a background worker every minute. It selects expired and used-up secrets with `FOR UPDATE SKIP LOCKED` to avoid contention, deletes the bundle first, then the row. For a week afterwards a tombstone remains — no content, just what happened and when — so the owner link can still tell the story.
 
@@ -75,7 +75,7 @@ Secretli runs on my self-hosted [k3s cluster](/projects/k8s-cluster/) on Hetzner
 ## Tech Stack
 
 - **Format:** Go and TypeScript; golang.org/x/crypto and ristretto255 in Go, @noble/ciphers, @noble/hashes and @noble/curves in TypeScript
-- **Backend:** Go, Echo, PostgreSQL (pgx), S3-compatible storage (SeaweedFS), Prometheus metrics
+- **Backend:** Go, Echo, PostgreSQL (pgx), S3-compatible storage (Hetzner Object Storage), Prometheus metrics
 - **Frontend:** React, TypeScript, Vite, Tailwind CSS, served by nginx
 - **Command line:** Go, cobra
 - **Infrastructure:** k3s, FluxCD, CloudNativePG, Envoy Gateway, cert-manager, Grafana Alloy

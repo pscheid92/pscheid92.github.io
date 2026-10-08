@@ -1,9 +1,9 @@
 ---
 title: k8s Cluster
-description: "Production Kubernetes cluster on Hetzner running k3s, fully managed through GitOps with FluxCD. Hosts all my live projects with automatic TLS, database operators, object storage, and observability."
+description: "Production Kubernetes cluster on Hetzner running k3s, fully managed through GitOps with FluxCD. Hosts all my live projects with automatic TLS, database operators with point-in-time backups, and observability."
 language: YAML
 kind: Infrastructure
-topics: [kubernetes, k3s, fluxcd, gitops, envoy-gateway, cert-manager, cloudnativepg, seaweedfs]
+topics: [kubernetes, k3s, fluxcd, gitops, envoy-gateway, cert-manager, cloudnativepg, object-storage]
 ---
 
 ## Why I Built This
@@ -25,7 +25,8 @@ New releases roll out the same way: FluxCD watches GitHub Container Registry for
 - **Gateway API over Ingress** — the newer, more expressive routing standard. Envoy Gateway implements it natively and terminates TLS.
 - **Operators over manual management** — CloudNativePG handles the lifecycle of PostgreSQL, including automated failover, so I don't manage stateful workloads by hand.
 - **Per-app databases** — each app gets its own PostgreSQL cluster with dedicated credentials and storage instead of sharing one database server.
-- **SeaweedFS over MinIO** — MinIO community edition entered maintenance mode. SeaweedFS is a mature distributed storage system with S3 API, built-in IAM, and declarative bucket provisioning via Helm values.
+- **Managed object storage over self-hosted** — the cluster used to run SeaweedFS for S3. For one small bucket that meant ten pods to operate, and it kept each object on a single node. Hetzner Object Storage now holds the app files, outside the cluster.
+- **Point-in-time recovery for databases** — CloudNativePG's Barman Cloud plugin streams PostgreSQL's WAL to object storage in a second Hetzner location and takes a nightly base backup, so any moment of the last 30 days can be restored. Restores are drilled, not assumed.
 - **SOPS over external secret stores** — secrets live in the same Git repo as everything else, encrypted with age keys. Simple, auditable, no extra infrastructure.
 - **DNS-01 over HTTP-01** — cert-manager provisions Let's Encrypt certificates via Cloudflare DNS-01 challenges, enabling wildcard certificates (`*.k.patrickscheid.de`) without exposing HTTP challenge endpoints.
 - **Date-based image tags** — images are tagged `YYYYMMDD-HHMMSS-<sha>` instead of `latest` or semver. Alphabetical ordering means FluxCD can auto-detect the newest image without complex version parsing.
@@ -36,6 +37,6 @@ New releases roll out the same way: FluxCD watches GitHub Container Registry for
 - **Platform:** k3s on Hetzner
 - **GitOps:** FluxCD
 - **Networking:** Envoy Gateway, cert-manager (Let's Encrypt + Cloudflare)
-- **Data:** CloudNativePG, SeaweedFS
+- **Data:** CloudNativePG with Barman Cloud backups, Hetzner Object Storage
 - **Observability:** Grafana Alloy → Grafana Cloud
 - **Secrets:** SOPS with age encryption
