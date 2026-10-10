@@ -30,7 +30,7 @@ The **deletion token** is 32 random bytes, derived from nothing. It is the one t
 
 **Sharing** works through the URL fragment. The link looks like `/s#<share secret>`, and the owner's link adds `!<deletion token>`. Browsers never send the `#` fragment to the server — this is the security boundary the whole model relies on. The recipient's browser re-derives the keys from the fragment, fetches and decrypts locally.
 
-The server only ever sees the public ID, the tokens (and stores only their SHA-256 hashes) and ciphertext. It cannot decrypt anything, even if compromised. The whole format is written down as a [specification](https://github.com/secretli/format/blob/main/FORMAT.md), with test vectors that both the Go and the TypeScript implementation must reproduce.
+The server only ever sees the public ID, the tokens (and stores only their SHA-256 hashes) and ciphertext. It cannot decrypt anything, even if compromised. The whole format is written down as a [specification](https://github.com/secretli/format/blob/main/spec/FORMAT.md), with test vectors that both the Go and the TypeScript implementation must reproduce.
 
 ## Handing a Link Over With a Code
 
