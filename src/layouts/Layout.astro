@@ -19,6 +19,7 @@ const {title, description, image, pageClass, ogType} = Astro.props;
 <html lang="en">
     <head>
         <BaseHead title={title} description={description} image={image} ogType={ogType}/>
+        <slot name="head"/>
     </head>
     <body class={pageClass}>
         <a class="skip-link" href="#content">Skip to content</a>

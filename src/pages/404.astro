@@ -7,6 +7,13 @@ import Layout from '../layouts/Layout.astro';
     description="This page doesn't exist, or it has been removed."
     pageClass="site page-404"
 >
+    <Fragment slot="head">
+        <script is:inline>
+            // GitHub Pages serves this page for /cw/2027/42; hand the rest of the path to the week page
+            const cw = location.pathname.match(/^\/cw\/(.+?)\/?$/);
+            if (cw) location.replace('/cw/?' + cw[1]);
+        </script>
+    </Fragment>
     <section class="grid">
         <p class="index label">404</p>
         <div>

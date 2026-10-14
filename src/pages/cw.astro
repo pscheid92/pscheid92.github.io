@@ -1,0 +1,381 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout
+    title="Calendar Week - Patrick Scheid"
+    description="Monday to Sunday of any ISO 8601 calendar week. Add year and week to the address, as in /cw/this/42 or /cw/2027/42."
+    pageClass="page-cw"
+>
+    <section class="cw-shell" aria-labelledby="cw-title">
+        <div class="cw-header">
+            <p class="eyebrow">Calendar</p>
+            <h1 id="cw-title">Calendar Week</h1>
+            <p class="tagline">
+                ISO 8601 weeks, Monday to Sunday. Add year and week to the address:
+                <a href="/cw/this/42"><code>/cw/this/42</code></a> or <a href="/cw/2027/42"><code>/cw/2027/42</code></a>.
+            </p>
+        </div>
+
+        <form class="controls" id="cw-form" autocomplete="off">
+            <button type="button" class="icon-button" id="prev-week" title="Previous week" aria-label="Previous week">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="m15 18-6-6 6-6"/>
+                </svg>
+            </button>
+
+            <label class="week-field" for="week">
+                <span class="sr-only">Year and week, or just the week</span>
+                <input id="week" name="week" type="text" inputmode="numeric" placeholder="2026/42 or this/42" spellcheck="false"/>
+            </label>
+
+            <button type="button" class="icon-button" id="next-week" title="Next week" aria-label="Next week">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="m9 18 6-6-6-6"/>
+                </svg>
+            </button>
+
+            <button type="button" class="text-button" id="this-week">This week</button>
+        </form>
+
+        <p class="error-message" id="cw-error" role="alert"></p>
+
+        <div class="week-card" id="week-card" aria-live="polite">
+            <p class="week-heading">
+                <strong id="week-label">Week –</strong>
+                <span class="week-range" id="week-range"></span>
+            </p>
+            <ol class="day-list" id="day-list"></ol>
+        </div>
+    </section>
+</Layout>
+
+<script>
+    import {daysOf, isoWeekOf, parseWeekInput, shiftWeek, todayUtc, type IsoWeek} from '../lib/isoweek';
+
+    const form = document.querySelector<HTMLFormElement>('#cw-form');
+    const input = document.querySelector<HTMLInputElement>('#week');
+    const errorOutput = document.querySelector('#cw-error');
+    const card = document.querySelector<HTMLElement>('#week-card');
+    const weekLabel = document.querySelector('#week-label');
+    const weekRange = document.querySelector('#week-range');
+    const dayList = document.querySelector('#day-list');
+
+    const rangeFormatter = new Intl.DateTimeFormat('en-GB', {day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC'});
+    const weekdayFormatter = new Intl.DateTimeFormat('en-GB', {weekday: 'long', timeZone: 'UTC'});
+    const dateFormatter = new Intl.DateTimeFormat('en-GB', {day: 'numeric', month: 'long', timeZone: 'UTC'});
+
+    function safeDecode(text: string) {
+        try {
+            return decodeURIComponent(text);
+        } catch {
+            return text;
+        }
+    }
+
+    let current: IsoWeek = isoWeekOf(todayUtc());
+
+    function show(week: IsoWeek, updateUrl: boolean) {
+        current = week;
+        const days = daysOf(week.year, week.week);
+        const today = todayUtc().getTime();
+
+        if (weekLabel) {
+            weekLabel.textContent = `Week ${week.week}, ${week.year}`;
+        }
+        if (weekRange) {
+            weekRange.textContent = rangeFormatter.formatRange(days[0], days[6]);
+        }
+        dayList?.replaceChildren(...days.map((day) => {
+            const item = document.createElement('li');
+            item.className = 'day-row';
+            if (day.getUTCDay() === 0 || day.getUTCDay() === 6) {
+                item.classList.add('weekend');
+            }
+            if (day.getTime() === today) {
+                item.classList.add('today');
+                item.setAttribute('aria-current', 'date');
+            }
+
+            const weekday = document.createElement('span');
+            weekday.className = 'day-name';
+            weekday.textContent = weekdayFormatter.format(day);
+            const date = document.createElement('span');
+            date.className = 'day-date';
+            date.textContent = dateFormatter.format(day);
+            const isoDate = document.createElement('time');
+            isoDate.className = 'day-iso';
+            isoDate.dateTime = day.toISOString().slice(0, 10);
+            isoDate.textContent = isoDate.dateTime;
+
+            item.append(weekday, date, isoDate);
+            return item;
+        }));
+
+        card?.removeAttribute('hidden');
+        if (errorOutput) {
+            errorOutput.textContent = '';
+        }
+        document.title = `Week ${week.week}, ${week.year} - Patrick Scheid`;
+        if (updateUrl) {
+            history.replaceState(null, '', `/cw/${week.year}/${week.week}`);
+        }
+    }
+
+    function showError(message: string) {
+        if (errorOutput) {
+            errorOutput.textContent = message;
+        }
+        card?.setAttribute('hidden', '');
+    }
+
+    function apply(raw: string, updateUrl: boolean) {
+        const result = parseWeekInput(raw, isoWeekOf(todayUtc()).year);
+        if (result.ok) {
+            show(result, updateUrl);
+        } else {
+            showError(result.error);
+        }
+    }
+
+    function step(week: IsoWeek) {
+        if (input) {
+            input.value = `${week.year}/${week.week}`;
+        }
+        show(week, true);
+    }
+
+    form?.addEventListener('input', () => apply(input?.value ?? '', true));
+    form?.addEventListener('submit', (event) => event.preventDefault());
+    document.querySelector('#prev-week')?.addEventListener('click', () => step(shiftWeek(current, -1)));
+    document.querySelector('#next-week')?.addEventListener('click', () => step(shiftWeek(current, 1)));
+    document.querySelector('#this-week')?.addEventListener('click', () => step(isoWeekOf(todayUtc())));
+
+    // /cw/2027/42 reaches this page as /cw/?2027/42 through the 404 page; /cw/#2027/42 works too
+    const fromUrl = location.search.slice(1) || location.hash.slice(1);
+    if (fromUrl) {
+        const typed = safeDecode(fromUrl).replace(/\/+$/, '');
+        if (input) {
+            input.value = typed;
+        }
+        apply(typed, false);
+        // show the address as typed, so a bookmarked /cw/this/42 keeps following the year
+        history.replaceState(null, '', `/cw/${encodeURI(typed)}`);
+    } else {
+        show(current, false);
+    }
+</script>
+
+<style>
+    :global(body.page-cw main) {
+        width: 100%;
+        max-width: 48rem;
+    }
+
+    .cw-shell {
+        display: grid;
+        gap: 1.75rem;
+        max-width: 48rem;
+        margin: 0 auto;
+    }
+
+    .cw-header {
+        padding-top: 1rem;
+    }
+
+    .eyebrow {
+        margin: 0 0 0.35rem;
+        color: var(--color-accent);
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+    }
+
+    .cw-header h1 {
+        margin-bottom: 0.4rem;
+    }
+
+    .tagline {
+        margin: 0;
+        color: var(--color-text-muted);
+        font-size: 1.1rem;
+    }
+
+    .controls {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto auto;
+        gap: 0.6rem;
+        background: var(--color-surface);
+        border: 1px solid var(--color-border);
+        border-radius: 8px;
+        padding: 1.25rem;
+    }
+
+    .week-field input {
+        width: 100%;
+        min-height: 2.75rem;
+        border: 1px solid var(--color-border);
+        border-radius: 6px;
+        padding: 0.6rem 0.7rem;
+        background: var(--color-bg);
+        color: var(--color-text);
+        font: 400 1rem/1.2 "Atkinson", sans-serif;
+        text-align: center;
+    }
+
+    .week-field input:focus {
+        border-color: var(--color-accent);
+        outline: none;
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 18%, transparent);
+    }
+
+    .icon-button,
+    .text-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 2.75rem;
+        border: 1px solid var(--color-border);
+        border-radius: 6px;
+        background: var(--color-bg);
+        color: var(--color-text-muted);
+        font: 600 0.95rem/1 "Atkinson", sans-serif;
+        cursor: pointer;
+        transition: border-color 0.2s ease, color 0.2s ease;
+    }
+
+    .icon-button {
+        width: 2.75rem;
+        padding: 0;
+    }
+
+    .icon-button svg {
+        width: 1.15rem;
+        height: 1.15rem;
+    }
+
+    .text-button {
+        padding: 0 1rem;
+    }
+
+    .icon-button:hover,
+    .text-button:hover {
+        border-color: var(--color-accent);
+        color: var(--color-accent);
+    }
+
+    .error-message {
+        min-height: 1.5rem;
+        margin: 0 0 -1.25rem;
+        color: #b42318;
+        font-weight: 600;
+    }
+
+    :global([data-theme="dark"]) .error-message {
+        color: #ff9b8f;
+    }
+
+    .week-card {
+        border: 1px solid var(--color-border);
+        border-radius: 8px;
+        padding: 1.1rem 1.25rem 0.6rem;
+        background: var(--color-bg);
+        box-shadow: 0 2px 8px color-mix(in srgb, var(--color-shadow) 35%, transparent);
+    }
+
+    .week-card[hidden] {
+        display: none;
+    }
+
+    .week-heading {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: 0.25rem 1rem;
+        margin: 0 0 0.75rem;
+    }
+
+    .week-heading strong {
+        color: var(--color-text-heading);
+        font-size: clamp(1.9rem, 1.5rem + 1.6vw, 2.6rem);
+        line-height: 1.1;
+    }
+
+    .week-range {
+        color: var(--color-text-muted);
+        font-size: 1.05rem;
+    }
+
+    .day-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .day-list :global(.day-row) {
+        display: grid;
+        grid-template-columns: 7.5rem minmax(0, 1fr) auto;
+        gap: 1rem;
+        align-items: baseline;
+        margin: 0 -0.6rem;
+        padding: 0.55rem 0.6rem;
+        border-top: 1px solid var(--color-border);
+        border-radius: 6px;
+    }
+
+    .day-list :global(.day-row:first-child) {
+        border-top-color: transparent;
+    }
+
+    .day-list :global(.day-name) {
+        color: var(--color-text-heading);
+        font-weight: 600;
+    }
+
+    .day-list :global(.day-iso) {
+        color: var(--color-text-muted);
+        font-family: var(--font-mono);
+        font-size: 0.88rem;
+    }
+
+    .day-list :global(.weekend .day-name),
+    .day-list :global(.weekend .day-date) {
+        color: var(--color-text-muted);
+        font-weight: 400;
+    }
+
+    .day-list :global(.today) {
+        background: color-mix(in srgb, var(--color-accent) 10%, var(--color-bg));
+        border-top-color: transparent;
+    }
+
+    .day-list :global(.today + .day-row) {
+        border-top-color: transparent;
+    }
+
+    .day-list :global(.today .day-name),
+    .day-list :global(.today .day-date) {
+        color: var(--color-accent);
+        font-weight: 600;
+    }
+
+    @media (max-width: 620px) {
+        .controls {
+            grid-template-columns: auto minmax(0, 1fr) auto;
+        }
+
+        .text-button {
+            grid-column: 1 / -1;
+        }
+
+        .day-list :global(.day-row) {
+            grid-template-columns: 6.5rem minmax(0, 1fr);
+            gap: 0.6rem;
+        }
+
+        .day-list :global(.day-iso) {
+            display: none;
+        }
+    }
+</style>
