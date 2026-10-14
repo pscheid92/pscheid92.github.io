@@ -11,10 +11,6 @@ import Layout from '../layouts/Layout.astro';
         <div class="cw-header">
             <p class="eyebrow">Calendar</p>
             <h1 id="cw-title">Calendar Week</h1>
-            <p class="tagline">
-                ISO 8601 weeks, Monday to Sunday. Add year and week to the address:
-                <a href="/cw/this/42"><code>/cw/this/42</code></a> or <a href="/cw/2027/42"><code>/cw/2027/42</code></a>.
-            </p>
         </div>
 
         <form class="controls" id="cw-form" autocomplete="off">
@@ -201,14 +197,9 @@ import Layout from '../layouts/Layout.astro';
     }
 
     .cw-header h1 {
-        margin-bottom: 0.4rem;
+        margin-bottom: 0;
     }
 
-    .tagline {
-        margin: 0;
-        color: var(--color-text-muted);
-        font-size: 1.1rem;
-    }
 
     .controls {
         display: grid;
