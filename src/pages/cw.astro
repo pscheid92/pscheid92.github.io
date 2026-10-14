@@ -26,7 +26,7 @@ import Layout from '../layouts/Layout.astro';
 
             <label class="week-field" for="week">
                 <span class="sr-only">Year and week, or just the week</span>
-                <input id="week" name="week" type="text" inputmode="numeric" placeholder="2026/42 or this/42" spellcheck="false"/>
+                <input id="week" name="week" type="text" inputmode="numeric" placeholder="2026/42" spellcheck="false"/>
             </label>
 
             <button type="button" class="icon-button" id="next-week" title="Next week" aria-label="Next week">
@@ -155,13 +155,21 @@ import Layout from '../layouts/Layout.astro';
     const fromUrl = location.search.slice(1) || location.hash.slice(1);
     if (fromUrl) {
         const typed = safeDecode(fromUrl).replace(/\/+$/, '');
+        const result = parseWeekInput(typed, isoWeekOf(todayUtc()).year);
         if (input) {
-            input.value = typed;
+            input.value = result.ok ? `${result.year}/${result.week}` : typed;
         }
-        apply(typed, false);
+        if (result.ok) {
+            show(result, false);
+        } else {
+            showError(result.error);
+        }
         // show the address as typed, so a bookmarked /cw/this/42 keeps following the year
         history.replaceState(null, '', `/cw/${encodeURI(typed)}`);
     } else {
+        if (input) {
+            input.value = `${current.year}/${current.week}`;
+        }
         show(current, false);
     }
 </script>
