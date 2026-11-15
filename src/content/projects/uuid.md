@@ -17,7 +17,7 @@ I've used ULIDs for years because they're great for PostgreSQL — ordered tuple
 - **Pool API** — amortizes `crypto/rand` reads across many UUIDs (~14x faster V4, ~2x faster V7)
 - **Batch API** — generates many UUIDs in one call (~25x faster bulk V4)
 - **V7 monotonicity built-in** — sub-millisecond ordering via RFC 9562 Method 3, with automatic counter fallback
-- **No global mutable state** — no `SetRand`, no global clock. V3/V4/V5/V8 are pure functions
+- **No global mutable state** — no `SetRand`, no global clock. V3/V5/V8 are pure functions
 - **Strict by default** — `Parse` accepts only the standard hyphenated form; `ParseLenient` for URN/braced/compact
 - **Simple value type** — `UUID` is `[16]byte`: comparable, copyable, safe as map key. Use `*UUID` for nullable fields.
 
@@ -44,7 +44,7 @@ Compared to google/uuid and gofrs/uuid on Apple M2:
 | NewV4Batch(100) | **1,025 ns** | 25,483 ns | 24,768 ns |
 | NewV7 | **106 ns** | 309 ns | 130 ns |
 | NewV7 (Pool) | **50 ns** | — | — |
-| Parse | **23 ns** | 21 ns | 27 ns |
+| Parse | 23 ns | **21 ns** | 27 ns |
 | MarshalText | **11 ns** | 18 ns | 27 ns |
 
 All entries for this library are zero-alloc; other libraries allocate at least once per operation.

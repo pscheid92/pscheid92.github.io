@@ -9,7 +9,7 @@ topics: [cryptography, age-encryption, nuget, x25519, post-quantum, dotnet]
 
 ## Why I Built This
 
-While setting up [SOPS](/projects/k8s-cluster/) for my Kubernetes cluster, I discovered [age](https://age-encryption.org) — a modern file encryption tool designed by Filippo Valsorda as a simpler replacement for PGP. I liked the simplicity and flexibility of the format and started thinking about applications at work. The problem: our main backend language at DeepL is C#, and there was no age implementation for .NET. So I built one.
+While setting up [SOPS](/projects/k8s-cluster/) for my Kubernetes cluster, I discovered [age](https://age-encryption.org) — a modern file encryption tool designed by Filippo Valsorda as a simpler replacement for PGP. I liked the simplicity and flexibility of the format and started thinking about applications at work. The problem: our main backend language at DeepL was C#, and there was no age implementation for .NET. So I built one.
 
 ## How It Works
 

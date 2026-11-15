@@ -2,7 +2,6 @@
 title: 'Using ngrok-go with gin-gonic'
 description: 'An article showing how to combine gin-gonic and ngrok-go to expose your local http server via ngrok to the public internet.'
 pubDate: 'May 20 2023'
-heroImage: '../../../../assets/blog-placeholder.jpg'
 tags: ['Go', 'Backend']
 ---
 
@@ -17,7 +16,7 @@ r.GET("/now", func(c *gin.Context) {
 })
 
 // We instruct ngrok to listen to our application.
-// The 'config.HttpEndpoint' allows us how ngrok exposes our application.
+// 'config.HTTPEndpoint' tells ngrok how to expose our application.
 // The result of `ngrok.Listen(...)` implements the net.Listener interface.
 ctx := context.Background()
 listener, err := ngrok.Listen(ctx, config.HTTPEndpoint())
@@ -35,28 +34,28 @@ if err := r.RunListener(listener); err != nil {
 }
 ```
 
-After booting up the server locally, follow these steps to access it via the ngrok address:
+Follow these steps to reach your local server via the ngrok address:
 
-1. Copy the address output by `listener.Addr()`. This is the ngrok address that you can use to access your local server from the internet.
-2. Run your local server using the command `go run .`. This initiates your gin server.
+1. Run your local server using the command `go run .`. This initiates your gin server.
+2. Copy the address output by `listener.Addr()`. This is the ngrok address that you can use to access your local server from the internet.
 3. You can now access your server by sending a request to the ngrok address. In the example below, we use the 'https' command to send a GET request to the '/now' endpoint of our server.
 
 ```shell
 $ GIN_MODE=release go run .
-2023/05/20 17:56:19 public address: fee6-2003-dc-d740-7394-7c9a-a007-80fa-b617.eu.ngrok.io
-[GIN] 2023/05/20 - 17:56:33 | 200 | 29.583µs | 2001:dc:e741:7394:7c9a:a018:80fa:b617 | GET "/now"
+2023/05/20 17:56:19 public address: fee6-2001-db8-1234-5678-9abc-def0-1234-5678.eu.ngrok.io
+[GIN] 2023/05/20 - 17:56:33 | 200 | 29.583µs | 2001:db8:1234:5678:9abc:def0:1234:5678 | GET "/now"
 ```
 
 When you send a request to your server, you should receive a JSON response similar to this:
 
 ```shell
-$ https fee6-2003-dc-d740-7394-7c9a-a007-80fa-b617.eu.ngrok.io/now
+$ https fee6-2001-db8-1234-5678-9abc-def0-1234-5678.eu.ngrok.io/now
 
 HTTP/1.1 200 OK
 Content-Length: 43
 Content-Type: application/json; charset=utf-8
 Date: Sat, 20 May 2023 15:56:33 GMT
-Ngrok-Agent-Ips: 2003:dc:d740:7394:7c9a:a007:80fa:b617
+Ngrok-Agent-Ips: 2001:db8:1234:5678:9abc:def0:1234:5678
 Ngrok-Trace-Id: f8919710b6a082c85e69836ee251a02a
 
 {

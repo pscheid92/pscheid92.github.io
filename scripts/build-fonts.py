@@ -1,13 +1,20 @@
 #!/usr/bin/env python3
+# /// script
+# requires-python = ">=3.10"
+# dependencies = ["fonttools", "brotli"]
+# ///
 """
 Build the self-hosted font subsets in public/fonts/.
 
 The pre-split files from Google Fonts and Fontsource drop the super- and subscripts,
 arrows and maths symbols the cryptography posts use, so this subsets the full fonts itself.
-Re-run it after writing a post with new special characters; it reports anything the fonts lack.
+Re-run it after writing a post with new special characters; it reports what no font covers.
 
-Requires: pip install fonttools brotli
-Usage:    python3 scripts/build-fonts.py
+The site is set in IBM Plex. Plex Serif has no Greek alphabet, so the reading text takes
+its Greek letters from Plex Sans, the next family in --font-text (src/styles/global.css).
+
+Usage:  uv run scripts/build-fonts.py
+        (without uv: pip install fonttools brotli, then python3 scripts/build-fonts.py)
 """
 
 import glob
@@ -38,34 +45,47 @@ TEXT = UI | {
     *range(0x2200, 0x2300), 0x2026, 0x2032, 0x2033, 0x2113,
 }
 
-FONTS = [
-    # (file in google/fonts, output file, axes to keep, characters)
-    ('atkinsonhyperlegiblenext/AtkinsonHyperlegibleNext[wght].ttf', 'atkinson-next.woff2', {'wght': (400, 700)}, UI),
-    ('atkinsonhyperlegiblenext/AtkinsonHyperlegibleNext-Italic[wght].ttf', 'atkinson-next-italic.woff2', {'wght': (400, 700)}, UI),
-    ('sourceserif4/SourceSerif4[opsz,wght].ttf', 'source-serif-4.woff2', {'wght': (400, 700), 'opsz': 20}, TEXT),
-    ('sourceserif4/SourceSerif4-Italic[opsz,wght].ttf', 'source-serif-4-italic.woff2', {'wght': (400, 700), 'opsz': 20}, TEXT),
-]
+GREEK = set(range(0x370, 0x400))
+BOX_DRAWING = set(range(0x2500, 0x2580))
+
+CODE_BLOCK = re.compile(r'```.*?```', re.S)
+INLINE_CODE = re.compile(r'`[^`\n]+`')
 
 
-def post_characters() -> set[int]:
-    """Every non-ASCII character in the posts' running text (code blocks use the system monospace font)."""
-    chars = set()
-    for path in glob.glob(str(ROOT / 'src/content/blog/**/*.md*'), recursive=True):
-        text = re.sub(r'```.*?```', '', Path(path).read_text(encoding='utf-8'), flags=re.S)
-        chars |= {ord(c) for c in text if ord(c) > 0x7F}
-    return chars
+def non_ascii(text: str) -> set[int]:
+    return {ord(c) for c in text if ord(c) > 0x7F}
 
 
-def build(source: str, output: str, axes: dict, unicodes: set[int]) -> set[int]:
+def content_characters() -> tuple[set[int], set[int]]:
+    """Non-ASCII characters in the posts and project pages, as (running text, code)."""
+    text, code = set(), set()
+    for path in glob.glob(str(ROOT / 'src/content/**/*.md*'), recursive=True):
+        raw = Path(path).read_text(encoding='utf-8')
+        without_blocks = CODE_BLOCK.sub('', raw)
+        code |= non_ascii(''.join(CODE_BLOCK.findall(raw) + INLINE_CODE.findall(without_blocks)))
+        text |= non_ascii(INLINE_CODE.sub('', without_blocks))
+    return text, code
+
+
+def page_characters() -> set[int]:
+    """Non-ASCII characters in pages, layouts and components: the tools use symbols such as Δ and ≥."""
+    paths = glob.glob(str(ROOT / 'src/**/*.astro'), recursive=True)
+    return non_ascii(''.join(Path(path).read_text(encoding='utf-8') for path in paths))
+
+
+def build(source: str, output: str, unicodes: set[int], axes: dict | None = None) -> set[int]:
+    """Subset one font to the given characters and return the characters it covers."""
     url = SOURCE + source.replace('[', '%5B').replace(']', '%5D')
     font = TTFont(io.BytesIO(urllib.request.urlopen(url).read()), lazy=False)
-    font = instancer.instantiateVariableFont(font, axes)
 
-    # Reload before subsetting: subsetting the instanced font in memory fails on its glyph variations
-    buffer = io.BytesIO()
-    font.save(buffer)
-    buffer.seek(0)
-    font = TTFont(buffer, lazy=False)
+    if axes:
+        font = instancer.instantiateVariableFont(font, axes)
+
+        # Reload before subsetting: subsetting the instanced font in memory fails on its glyph variations
+        buffer = io.BytesIO()
+        font.save(buffer)
+        buffer.seek(0)
+        font = TTFont(buffer, lazy=False)
 
     options = subset.Options()
     options.flavor = 'woff2'
@@ -73,24 +93,54 @@ def build(source: str, output: str, axes: dict, unicodes: set[int]) -> set[int]:
     options.hinting = False
     options.desubroutinize = True
     options.name_IDs = ['*']
+    # Plex carries a 'meta' table (its design languages) that the subsetter cannot cut down
+    options.drop_tables += ['meta']
     subsetter = subset.Subsetter(options=options)
     subsetter.populate(unicodes=unicodes)
     subsetter.subset(font)
 
     font.flavor = 'woff2'
     font.save(OUT / output)
+    print(f'{output:34s} {(OUT / output).stat().st_size // 1024:4d} KB')
     return set(font.getBestCmap())
 
 
+def listed(characters: set[int]) -> str:
+    return ' '.join(chr(c) for c in sorted(characters))
+
+
 def main() -> None:
-    needed = post_characters()
-    for source, output, axes, unicodes in FONTS:
-        is_text_font = unicodes is TEXT
-        covered = build(source, output, axes, unicodes | needed if is_text_font else unicodes)
-        print(f'{output:30s} {(OUT / output).stat().st_size // 1024:4d} KB')
-        missing = ''.join(sorted(chr(c) for c in needed - covered)) if is_text_font else ''
+    text, code = content_characters()
+    pages = page_characters()
+
+    # Headings, contents lists and the tools are set in the sans, and the reading text falls back to it,
+    # so it gets every character the site uses. It ships at weights 400 to 600 only: every bold on the
+    # site is Plex SemiBold.
+    sans = UI | pages | text
+    sans_axes = {'wght': (400, 600), 'wdth': 100}
+
+    # Plex Serif and Plex Mono contain one Greek letter, π. Leaving the whole alphabet out of both
+    # keeps the Greek in a formula in one typeface: Plex Sans.
+    serif = (TEXT | text) - GREEK
+    mono = (UI | BOX_DRAWING | code) - GREEK
+
+    sans_covers = build('ibmplexsans/IBMPlexSans[wdth,wght].ttf', 'plex-sans.woff2', sans, sans_axes)
+    build('ibmplexsans/IBMPlexSans-Italic[wdth,wght].ttf', 'plex-sans-italic.woff2', sans, sans_axes)
+    serif_covers = build('ibmplexserif/IBMPlexSerif-Regular.ttf', 'plex-serif.woff2', serif)
+    build('ibmplexserif/IBMPlexSerif-Italic.ttf', 'plex-serif-italic.woff2', serif)
+    build('ibmplexserif/IBMPlexSerif-SemiBold.ttf', 'plex-serif-semibold.woff2', serif)
+    build('ibmplexserif/IBMPlexSerif-SemiBoldItalic.ttf', 'plex-serif-semibold-italic.woff2', serif)
+    mono_covers = build('ibmplexmono/IBMPlexMono-Regular.ttf', 'plex-mono.woff2', mono)
+
+    print()
+    print(f'running text takes these from Plex Sans: {listed((text & sans_covers) - serif_covers) or "nothing"}')
+    for label, missing in [
+        ('running text', text - serif_covers - sans_covers),
+        ('code', code - mono_covers),
+        ('pages and tools', pages - sans_covers),
+    ]:
         if missing:
-            print(f'  not in this font, browsers fall back to a system font: {missing}')
+            print(f'{label}: in none of the fonts, browsers fall back to a system font: {listed(missing)}')
 
 
 if __name__ == '__main__':

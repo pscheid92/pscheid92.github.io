@@ -11,11 +11,11 @@ heroImage: '../../../../assets/2026/04/signing-files-for-a-post-quantum-world-he
 
 ## Post-Quantum Threats to Digital Signatures
 
-The good news is that quantum computers don’t break all cryptography. The bad news is that they break the parts we rely on most. All the famous asymmetric algorithms, like RSA, ECDSA, and Ed25519, depend on mathematical problems such as integer factorisation and discrete logarithm. These are all efficiently solved by a sufficiently powerful quantum computer via Shor’s algorithm. Symmetric cyphers and hash functions survive, as long as their key sizes are large enough, as Grover’s algorithm basically cuts the key size in half. For most people, this is a distant concern. But the “harvest now, decrypt later” threat is real. Adversaries just have to wait until the hardware catches up.
+The good news is that quantum computers don’t break all cryptography. The bad news is that they break the parts we rely on most. All the famous asymmetric algorithms, like RSA, ECDSA, and Ed25519, depend on mathematical problems such as integer factorisation and discrete logarithm. These are all efficiently solved by a sufficiently powerful quantum computer via Shor’s algorithm. Symmetric ciphers and hash functions survive, as long as their key sizes are large enough, as Grover’s algorithm basically cuts the key size in half. For most people, this is a distant concern. For encrypted data, the “harvest now, decrypt later” threat is already real. Signatures have their own version of it: whatever is signed today and must still be trusted in ten or twenty years needs a scheme that holds until then.
 
 Signal already updated its famous Double Ratchet algorithm to a quantum-resistant version in 2025. Google recently announced that it will ship hybrid quantum-resistant signatures in Android 17.
 
-The NIST (National Institute of Standards and Technology) anticipated this and spent eight years running public competitions to find replacement algorithms. In 2024, they finalised three post-quantum cryptography standards, and a fourth is on its way. Among them is FIPS 204 ML-DSA (formerly known as Dilithium), a digital signature algorithm based on modular lattice mathematics that resists classical and quantum-computer attacks.
+The NIST (National Institute of Standards and Technology) anticipated this and spent eight years running public competitions to find replacement algorithms. In 2024, they finalised three post-quantum cryptography standards, and a fourth is on its way. Among them is FIPS 204 ML-DSA (formerly known as Dilithium), a digital signature algorithm based on module-lattice mathematics that resists classical and quantum-computer attacks.
 
 With this in mind, I created pqsign to sign files in a post-quantum world.
 
@@ -57,9 +57,9 @@ That’s it. Under the hood, pqsign generates a hybrid keypair that combines Ed2
 
 ## Hybrid Signature Design
 
-Since modular lattice-based post-quantum cryptography is not yet battle-tested, the safest way to adopt it is not to abandon classical cryptography yet. This mixed approach, usually called the hybrid approach, pairs a classical algorithm with a post-quantum one. The file is only accepted when both signatures verify. If either algorithm remains secure, the overall signature is secure.
+Since module-lattice-based post-quantum cryptography is not yet battle-tested, the safest way to adopt it is not to abandon classical cryptography yet. This mixed approach, usually called the hybrid approach, pairs a classical algorithm with a post-quantum one. The file is only accepted when both signatures verify. If either algorithm remains secure, the overall signature is secure.
 
-In pqsign, Ed25519 is the classic algorithm. It’s widely used, has been studied for decades, and is known for being fast and compact. Public keys are 32 bytes, and signatures are 64 bytes. Its security is well understood.
+In pqsign, Ed25519 is the classic algorithm. It’s widely used, has been studied for well over a decade, and is known for being fast and compact. Public keys are 32 bytes, and signatures are 64 bytes. Its security is well understood.
 
 The post-quantum signature algorithm we use is ML-DSA-65, which is based on the Module Learning with Errors (MLWE) problem, a mathematical method studied since 2005 and believed to resist classical and quantum threats. The “65” in its name refers to the parameter set targeting NIST Security Level 3, roughly equivalent to AES-192. There is a stronger option, ML-DSA-87 (targeting Security Level 5), but it bumps the already lengthy signatures from 3,309 bytes to 4,627 bytes. That's a 40% increase in signature size for a security margin beyond what most threat models require.
 
@@ -67,7 +67,7 @@ The post-quantum signature algorithm we use is ML-DSA-65, which is based on the 
 
 We need both signatures to be inseparable. If one can be swapped out without invalidating the other, the hybrid guarantee falls apart. pqsign achieves this through nesting: the ML-DSA-65 signature covers both the file and the Ed25519 signature, creating an interdependency between the two layers.
 
-First, we create a file hash by using BLAKE2b-512, producing a fixed 64-byte digest regardless of file size. The file is streamed through BLAKE2b in chunks, so it never needs to be loaded into memory entirely. It’s also fast—about 106 ms for 100 MiB. The actual cryptographic signing after that takes under 0.5 ms. As for quantum-resistance of the hash, BLAKE2b-512 produces a 512-bit digest, which gives 256 bits of collision resistance classically. Grover’s algorithm halves that again to 128 bits in the quantum setting. Still firmly infeasible to brute-force.
+First, we create a file hash by using BLAKE2b-512, producing a fixed 64-byte digest regardless of file size. The file is streamed through BLAKE2b in chunks, so it never needs to be loaded into memory entirely. It’s also fast—about 106 ms for 100 MiB. The actual cryptographic signing after that takes under 0.5 ms. As for quantum-resistance of the hash, BLAKE2b-512 produces a 512-bit digest, which gives 256 bits of collision resistance classically. The best known quantum collision search only lowers that to roughly 170 bits. Still firmly infeasible to brute-force.
 
 Then Ed25519 signs this hash along with a trusted comment, a small metadata field that records the timestamp, filename, and optionally a user-provided text. Finally, ML-DSA-65 signs the file hash and the Ed25519 signature together.
 
@@ -103,7 +103,7 @@ A signature scheme is only as strong as its secret key storage. If someone can s
 
 A GPU can compute billions of SHA-256 hashes per second, but it can't run billions of 256 MiB allocations in parallel. An RTX 4090 with 24 GB of VRAM tops out at about 96 simultaneous Argon2id instances. That buys you time, but it doesn't fix weak passwords.
 
-**XChaCha20-Poly1305** handles the actual encryption of the secret key. It's an authenticated cypher, meaning any tampering with the ciphertext or a wrong password is detected automatically. No separate integrity check is needed.
+**XChaCha20-Poly1305** handles the actual encryption of the secret key. It's an authenticated cipher, meaning any tampering with the ciphertext or a wrong password is detected automatically. No separate integrity check is needed.
 
 Secret keys are zeroed in memory as soon as they go out of scope. This doesn't stop a determined attacker with direct memory access, but it shrinks the window during which secrets sit around in memory.
 
