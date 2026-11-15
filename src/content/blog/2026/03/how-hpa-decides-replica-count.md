@@ -77,7 +77,7 @@ The HPA starts from the current replica count. Below the scale-up minimum, it is
 
 ![Stabilization window with data points](../../../../assets/2026/03/hpa-stabilization-window.dark.svg)
 
-The shaded region is the stabilization window. Dots show raw desired values from Stage 1 at each sync point — some high, some low. The solid line at the top is the stabilized output: the **max** of all dots within the window (for scale-down). It won't drop until the high values expire from the window.
+The diagram jumps ahead in our example: the seven pods have grown to nine, and then the load has dropped. The shaded region is the 180-second scale-down window. Dots are the raw desired values from Stage 1 at each sync. The 10s from the scale-up have already expired, but four 9s are still inside. The solid line is their **maximum** — so the HPA stays at 9 pods although the newest proposals say 5 or 6. It won't drop until those 9s leave the window.
 
 ### What Stabilization Does NOT Do
 
