@@ -84,6 +84,64 @@ describe('decode — two-token aliases', () => {
     });
 });
 
+describe('decode — doubled letters', () => {
+    it('repeats the letter after a doubling prefix, in all spellings', () => {
+        const plain = ['e', 's', 's', 'e'];
+        expect(decode(['Emil', 'Samuel', 'Samuel', 'Emil'], bos)).toEqual(plain);
+        expect(decode(['Emil', 'Doppel-Samuel', 'Emil'], bos)).toEqual(plain);
+        expect(decode(['Emil', 'Doppelsamuel', 'Emil'], bos)).toEqual(plain);
+        expect(decode(['Emil', 'Doppel', 'Samuel', 'Emil'], bos)).toEqual(plain);
+        expect(decode(['Emil', 'doppelt', 'Samuel', 'Emil'], bos)).toEqual(plain);
+    });
+
+    it('accepts "double" in English', () => {
+        expect(decode(['Echo', 'double', 'Sierra', 'Echo'], nato)).toEqual(['e', 's', 's', 'e']);
+        expect(decode(['Double-Sierra'], nato)).toEqual(['s', 's']);
+    });
+
+    it('works with fuzzy matches and doubles unknown code words as two misses', () => {
+        expect(decode(['Doppel-Samul'], bos)).toEqual(['s', 's']);
+        expect(decode(['Doppel', 'qqq'], bos)).toEqual([null, null]);
+    });
+
+    it('ignores a trailing prefix with no code word after it', () => {
+        expect(decode(['Emil', 'Doppel'], bos)).toEqual(['e']);
+    });
+
+    it('solves a word with a double letter', () => {
+        expect(isComplete(check('Kissen', decode(tokenize('Kaufmann Ida Doppel-Siegfried Emil Nordpol'), bos)))).toBe(true);
+    });
+});
+
+describe('decode — fillers and corrections', () => {
+    it('skips filler words between code words', () => {
+        expect(decode(tokenize('Gustav Ludwig Übermut Cäsar und Kaufmann'), bos)).toEqual(['g', 'l', 'ü', 'c', 'k']);
+        expect(decode(tokenize('Gustav ähm Ludwig im Übermut'), bos)).toEqual(['g', 'l', 'ü']);
+        expect(decode(tokenize('Alfa uh Bravo and then Charlie'), nato)).toEqual(['a', 'b', 'c']);
+    });
+
+    it('takes back the code word before a correction', () => {
+        expect(decode(tokenize('Alfa Charlie no Bravo'), nato)).toEqual(['a', 'b']);
+        expect(decode(tokenize('Anton Cäsar, nein, Berta'), bos)).toEqual(['a', 'b']);
+        expect(decode(tokenize('Anton Cäsar ich meine Berta'), bos)).toEqual(['a', 'b']);
+        expect(decode(tokenize('Alfa Charlie I mean Bravo'), nato)).toEqual(['a', 'b']);
+    });
+
+    it('takes back a half-said word and whole multi-letter or doubled ones', () => {
+        expect(decode(tokenize('Alfa Char- no Bravo'), nato)).toEqual(['a', 'b']);
+        expect(decode(tokenize('Schule nein Samuel'), bos)).toEqual(['s']);
+        expect(decode(tokenize('Emil Doppel-Samuel nein Samuel'), bos)).toEqual(['e', 's']);
+    });
+
+    it('treats repeated correction words as one correction', () => {
+        expect(decode(tokenize('Alfa Charlie no no Bravo'), nato)).toEqual(['a', 'b']);
+    });
+
+    it('solves the screenshot case', () => {
+        expect(isComplete(check('Glück', decode(tokenize('Gustav Ludwig Übermut Cäsar und Kaufmann'), bos)))).toBe(true);
+    });
+});
+
 describe('decode — ch/sch expansion', () => {
     it('expands Charlotte and Schule in BOS', () => {
         expect(decode(['Charlotte'], bos)).toEqual(['c', 'h']);
