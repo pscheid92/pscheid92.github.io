@@ -464,9 +464,23 @@ import Layout from '../layouts/Layout.astro';
     }
     navigator.mediaDevices?.addEventListener?.('devicechange', () => void refreshMicChoice());
     void refreshMicChoice();
-    const CLOUD_NOTICE = 'This browser has no speech recognition of its own, so what you say is streamed to Google for transcription and not stored. Press the mic again to agree and start.';
     let stopLive: (() => void) | null = null;
     let cloudNoticeShown = false;
+
+    // Shown once before the first streamed recording; pressing the mic again is
+    // the consent. What it says has to match /datenschutz/.
+    function showCloudNotice() {
+        const link = document.createElement('a');
+        link.href = '/datenschutz/#spracheingabe';
+        link.target = '_blank';
+        link.rel = 'noopener';
+        link.textContent = 'privacy policy';
+        hint.replaceChildren(
+            'This browser has no speech recognition of its own. To use the mic, what you say is streamed to Google for transcription. This site stores nothing; Google may keep it for up to 55 days to detect abuse. Adults (18+) only. Details are in the ',
+            link,
+            ' (German). Press the mic again to agree and start.',
+        );
+    }
 
     // The row under the hint: an indeterminate bar while something loads or
     // transcribes, or the level meter and a timer while recording.
@@ -705,7 +719,7 @@ import Layout from '../layouts/Layout.astro';
         if (storage.get('cloud-speech') !== 'ok') {
             if (!cloudNoticeShown) {
                 cloudNoticeShown = true;
-                hint.textContent = CLOUD_NOTICE;
+                showCloudNotice();
                 return;
             }
             storage.set('cloud-speech', 'ok');

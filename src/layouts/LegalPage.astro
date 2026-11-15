@@ -1,0 +1,89 @@
+---
+// Impressum and Datenschutz: German legal texts on an otherwise English site.
+// Both carry a private address, so they are kept out of search engines:
+// noindex here, and a sitemap filter in astro.config.mjs.
+import Layout from './Layout.astro';
+
+interface Props {
+    title: string;
+    description: string;
+    heading: string;
+    /** Date the text last changed, written out in German. */
+    updated?: string;
+}
+
+const {title, description, heading, updated} = Astro.props;
+---
+
+<Layout title={`${title} - Patrick Scheid`} description={description} pageClass="site page-legal">
+    <meta slot="head" name="robots" content="noindex"/>
+    <div class="legal" lang="de">
+        <header class="grid page-head">
+            <h1>{heading}</h1>
+            {updated && <p class="page-dek">Stand: {updated}</p>}
+        </header>
+        <slot/>
+    </div>
+</Layout>
+
+<style>
+    .page-head h1 {
+        font-size: 2.5rem;
+        letter-spacing: -0.02em;
+        margin: 0 0 0.4rem;
+    }
+
+    .page-dek {
+        font-family: var(--font-text);
+        font-size: 1.2rem;
+        color: var(--color-text-muted);
+        margin: 0;
+    }
+
+    /* The pages' own markup is slotted in, so it is styled through :global. */
+    .legal :global(.text) {
+        font-family: var(--font-text);
+        font-size: 1.1rem;
+        line-height: 1.6;
+        min-width: 0;
+    }
+
+    .legal :global(.text p),
+    .legal :global(.text ul),
+    .legal :global(.text address) {
+        margin: 0 0 0.9em;
+    }
+
+    .legal :global(.text > :last-child) {
+        margin-bottom: 0;
+    }
+
+    .legal :global(.text ul) {
+        padding-left: 1.2em;
+    }
+
+    .legal :global(.text li) {
+        margin-bottom: 0.4em;
+    }
+
+    .legal :global(.text address) {
+        font-style: normal;
+    }
+
+    .legal :global(.text a) {
+        text-decoration: underline;
+        text-decoration-thickness: 1px;
+        text-decoration-color: color-mix(in srgb, var(--color-accent) 45%, transparent);
+        text-underline-offset: 0.18em;
+    }
+
+    .legal :global(.text a:hover) {
+        text-decoration-color: currentColor;
+    }
+
+    @media (max-width: 63.99rem) {
+        .page-head h1 {
+            font-size: 2rem;
+        }
+    }
+</style>

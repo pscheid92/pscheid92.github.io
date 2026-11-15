@@ -7,7 +7,11 @@ import {defineConfig} from 'astro/config';
 // https://astro.build/config
 export default defineConfig({
     site: 'https://patrickscheid.de',
-    integrations: [mdx(), sitemap()],
+    integrations: [
+        mdx(),
+        // The legal pages carry a private address: no sitemap entry, and noindex in LegalPage.astro
+        sitemap({filter: (page) => !/\/(impressum|datenschutz)\/$/.test(page)}),
+    ],
     markdown: {
         shikiConfig: {
             // Both themes are emitted as CSS variables; global.css picks one per data-theme
