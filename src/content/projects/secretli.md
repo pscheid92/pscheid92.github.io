@@ -7,6 +7,8 @@ github: https://github.com/secretli
 liveUrl: https://secretli.app
 kind: Live
 topics: [encryption, zero-knowledge, pake, react, golang, cli, self-hosted]
+image: '../../assets/projects/secretli.png'
+imageAlt: 'The Secretli web app: a text field to paste a secret, with expiry, one-time opening and an optional password'
 ---
 
 ## Why I Built This

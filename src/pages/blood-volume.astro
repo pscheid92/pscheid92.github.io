@@ -5,11 +5,11 @@ import Layout from '../layouts/Layout.astro';
 <Layout
     title="Blood Volume Calculator - Patrick Scheid"
     description="Estimate total blood volume with the Nadler, Lemmens and Gilcher formulas side by side, plus the ATLS haemorrhagic shock classes."
-    pageClass="page-blood-volume"
+    pageClass="tool page-blood-volume"
 >
     <section class="calculator-shell" aria-labelledby="calculator-title">
         <div class="calculator-header">
-            <p class="eyebrow">Calculator</p>
+            <a class="eyebrow" href="/pages/">&larr; More tools</a>
             <h1 id="calculator-title">Blood Volume</h1>
             <p class="formula">Nadler, Lemmens &amp; Gilcher — shown side by side</p>
         </div>
@@ -480,16 +480,11 @@ import Layout from '../layouts/Layout.astro';
 </script>
 
 <style>
-    :global(body.page-blood-volume main) {
-        width: 100%;
-        max-width: 54rem;
-    }
-
     .calculator-shell {
         display: grid;
         gap: 1.75rem;
         max-width: 54rem;
-        margin: 0 auto;
+        margin: 0;
     }
 
     [hidden] {
@@ -501,12 +496,15 @@ import Layout from '../layouts/Layout.astro';
     }
 
     .eyebrow {
-        margin: 0 0 0.35rem;
+        display: inline-block;
+        margin: 0 0 0.6rem;
+        color: var(--color-text-muted);
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    .eyebrow:hover {
         color: var(--color-accent);
-        font-size: 0.85rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
     }
 
     .calculator-header h1 {
@@ -659,7 +657,6 @@ import Layout from '../layouts/Layout.astro';
         border-radius: 8px;
         padding: 1.1rem;
         background: var(--color-bg);
-        box-shadow: 0 2px 8px color-mix(in srgb, var(--color-shadow) 35%, transparent);
     }
 
     .result-card.featured {
@@ -670,9 +667,7 @@ import Layout from '../layouts/Layout.astro';
     /* The card the ATLS bands are built from. Marks "most cautious", not "most accurate". */
     .result-card[data-atls-reference] {
         border-color: color-mix(in srgb, var(--color-accent) 45%, var(--color-border));
-        box-shadow:
-            0 2px 8px color-mix(in srgb, var(--color-shadow) 35%, transparent),
-            inset 0 0 0 1px color-mix(in srgb, var(--color-accent) 22%, transparent);
+        box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-accent) 22%, transparent);
     }
 
     .atls-flag {
@@ -687,8 +682,6 @@ import Layout from '../layouts/Layout.astro';
         color: var(--color-text-muted);
         font-size: 0.86rem;
         font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
     }
 
     .result-card strong {
@@ -894,8 +887,6 @@ import Layout from '../layouts/Layout.astro';
         color: var(--color-text-heading);
         font-size: 0.86rem;
         font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
     }
 
     .atls-pct {

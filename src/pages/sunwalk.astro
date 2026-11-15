@@ -29,11 +29,11 @@ const EVENING_PHASES: PhaseRow[] = [
 <Layout
     title="Sun Walk - Patrick Scheid"
     description="Sunrise, sunset, golden hour and twilight phases for any place on Earth, on any day."
-    pageClass="page-sunwalk"
+    pageClass="tool page-sunwalk"
 >
     <section class="sunwalk-shell" aria-labelledby="sunwalk-title">
         <div class="sunwalk-header">
-            <p class="eyebrow">App</p>
+            <a class="eyebrow" href="/pages/">&larr; More tools</a>
             <h1 id="sunwalk-title">Sun Walk</h1>
             <p class="tagline">Sunrise, sunset, golden hour and twilight — for any place, on any day.</p>
         </div>
@@ -733,16 +733,11 @@ const EVENING_PHASES: PhaseRow[] = [
 </script>
 
 <style>
-    :global(body.page-sunwalk main) {
-        width: 100%;
-        max-width: 54rem;
-    }
-
     .sunwalk-shell {
         display: grid;
         gap: 1.5rem;
         max-width: 54rem;
-        margin: 0 auto;
+        margin: 0;
     }
 
     .sunwalk-header {
@@ -750,12 +745,15 @@ const EVENING_PHASES: PhaseRow[] = [
     }
 
     .eyebrow {
-        margin: 0 0 0.35rem;
+        display: inline-block;
+        margin: 0 0 0.6rem;
+        color: var(--color-text-muted);
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    .eyebrow:hover {
         color: var(--color-accent);
-        font-size: 0.85rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
     }
 
     .sunwalk-header h1 {
@@ -1046,7 +1044,6 @@ const EVENING_PHASES: PhaseRow[] = [
         border: 1px solid var(--color-border);
         border-radius: 8px;
         background: var(--color-bg);
-        box-shadow: 0 2px 8px color-mix(in srgb, var(--color-shadow) 35%, transparent);
     }
 
     .times-column {
@@ -1062,8 +1059,6 @@ const EVENING_PHASES: PhaseRow[] = [
         margin: 0 0 0.5rem;
         font-size: 0.8rem;
         font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
     }
 
     .column-title.morning {
@@ -1171,15 +1166,8 @@ const EVENING_PHASES: PhaseRow[] = [
     }
 
     /* ---------- responsive ---------- */
-    @media (max-width: 760px) {
-        .date-row {
-            grid-template-columns: 2.75rem minmax(0, 1fr) 2.75rem;
-        }
-
-        .text-button {
-            grid-column: 1 / -1;
-        }
-
+    /* Below desktop the page is as narrow as the text column: one column of times */
+    @media (max-width: 63.99rem) {
         .times-panel {
             grid-template-columns: 1fr;
         }
@@ -1187,6 +1175,16 @@ const EVENING_PHASES: PhaseRow[] = [
         .times-column + .times-column {
             border-left: none;
             border-top: 1px solid var(--color-border);
+        }
+    }
+
+    @media (max-width: 760px) {
+        .date-row {
+            grid-template-columns: 2.75rem minmax(0, 1fr) 2.75rem;
+        }
+
+        .text-button {
+            grid-column: 1 / -1;
         }
 
         /* Stack each phase: dot + name on the first line, time + duration on the second. */

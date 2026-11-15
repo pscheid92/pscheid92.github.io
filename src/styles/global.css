@@ -602,3 +602,20 @@ a:hover > .ledger-title {
         max-width: none;
     }
 }
+
+/* ------------------------------------------------------------------ */
+/* Tool pages                                                          */
+/* ------------------------------------------------------------------ */
+
+/* The tools use the page grid's full width, so their edges line up with the header and footer */
+.tool main {
+    width: 100%;
+    max-width: calc(var(--measure) + 2 * var(--page-pad));
+    padding: 2.5rem var(--page-pad) 4rem;
+}
+
+@media (min-width: 64rem) {
+    .tool main {
+        max-width: calc(var(--index) + var(--gutter) + var(--measure) + var(--bleed) + 2 * var(--page-pad));
+    }
+}

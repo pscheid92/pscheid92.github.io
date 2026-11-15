@@ -4,6 +4,9 @@ description: "Production Kubernetes cluster on Hetzner running k3s, fully manage
 language: YAML
 kind: Infrastructure
 topics: [kubernetes, k3s, fluxcd, gitops, envoy-gateway, cert-manager, cloudnativepg, object-storage]
+image: '../../assets/projects/k8s-cluster.svg'
+imageAlt: 'Overview of the cluster: FluxCD applies the GitHub repository and new images from GHCR; Envoy Gateway takes visitors to the apps; backups go to object storage, metrics to Grafana Cloud'
+imageIsLineArt: true
 ---
 
 ## Why I Built This

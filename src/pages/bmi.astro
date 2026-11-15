@@ -5,11 +5,11 @@ import Layout from '../layouts/Layout.astro';
 <Layout
     title="BMI Calculator - Patrick Scheid"
     description="Calculate your Body Mass Index with the standard formula and the Oxford (Trefethen) BMI."
-    pageClass="page-bmi"
+    pageClass="tool page-bmi"
 >
     <section class="calculator-shell" aria-labelledby="calculator-title">
         <div class="calculator-header">
-            <p class="eyebrow">Calculator</p>
+            <a class="eyebrow" href="/pages/">&larr; More tools</a>
             <h1 id="calculator-title">Body Mass Index</h1>
             <p class="formula">Standard &amp; Oxford (Trefethen) BMI</p>
         </div>
@@ -152,16 +152,11 @@ import Layout from '../layouts/Layout.astro';
 </script>
 
 <style>
-    :global(body.page-bmi main) {
-        width: 100%;
-        max-width: 48rem;
-    }
-
     .calculator-shell {
         display: grid;
         gap: 1.75rem;
         max-width: 48rem;
-        margin: 0 auto;
+        margin: 0;
     }
 
     .calculator-header {
@@ -169,12 +164,15 @@ import Layout from '../layouts/Layout.astro';
     }
 
     .eyebrow {
-        margin: 0 0 0.35rem;
+        display: inline-block;
+        margin: 0 0 0.6rem;
+        color: var(--color-text-muted);
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    .eyebrow:hover {
         color: var(--color-accent);
-        font-size: 0.85rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
     }
 
     .calculator-header h1 {
@@ -257,7 +255,6 @@ import Layout from '../layouts/Layout.astro';
         border-radius: 8px;
         padding: 1.1rem;
         background: var(--color-bg);
-        box-shadow: 0 2px 8px color-mix(in srgb, var(--color-shadow) 35%, transparent);
     }
 
     .result-card.featured {
@@ -269,8 +266,6 @@ import Layout from '../layouts/Layout.astro';
         color: var(--color-text-muted);
         font-size: 0.86rem;
         font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
     }
 
     .result-card strong {
