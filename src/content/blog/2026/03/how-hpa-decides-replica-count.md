@@ -7,7 +7,7 @@ tags: ['Kubernetes', 'Infrastructure']
 draft: true
 ---
 
-The Horizontal Pod Autoscaler (HPA) automatically adjusts the number of pod replicas in a deployment based on observed metrics. Every **sync period** (default: 15 seconds), it runs a four-stage pipeline to decide whether to scale up, scale down, or do nothing.
+The Horizontal Pod Autoscaler (HPA) automatically adjusts the number of pod replicas in a deployment based on observed metrics. Every **sync period** (default: 15 seconds; we'll call one run a **tick**), it runs a four-stage pipeline to decide whether to scale up, scale down, or do nothing.
 
 ![HPA 4-stage pipeline overview](../../../../assets/2026/03/hpa-pipeline-overview.dark.svg)
 
@@ -19,7 +19,7 @@ This article walks through each stage, building the full picture incrementally.
 
 The HPA watches a metric you define — CPU utilization, request rate, custom metrics — and you tell it a **target** value. This target is your 100% baseline.
 
-**Example:** You want each pod to use about 2 vCPU, so you set target = 2 vCPU.
+**Example:** You want each pod to run at about half of the CPU it requested, so you set the target to 50% utilization.
 
 Every sync period, the HPA reads the current metric value, computes the **ratio** (`currentValue / targetValue`), and multiplies current replicas by that ratio:
 
@@ -27,28 +27,41 @@ Every sync period, the HPA reads the current metric value, computes the **ratio*
 desiredReplicas = ceil(currentReplicas × currentValue / targetValue)
 ```
 
-**Concrete example:** You have 12 pods, target is 2 vCPU, current CPU is 2.5 vCPU.
+**Concrete example:** You have 7 pods, the target is 50%, and average CPU utilization is at 70%.
 
 ```
-ratio = 2.5 / 2.0 = 1.25  (25% over target)
-desired = ceil(12 × 1.25) = ceil(15) = 15 pods
+ratio = 70 / 50 = 1.4  (40% over target)
+desired = ceil(7 × 1.4) = ceil(9.8) = 10 pods
 ```
 
-The metric is 25% over target, so we need 25% more pods. This works for scale-down too: if CPU drops to 1.5 vCPU, ratio = 0.75, desired = ceil(12 × 0.75) = 9 pods.
+The metric is 40% over target, so the formula asks for 40% more pods: 9.8, rounded up to 10. This works for scale-down too: if utilization drops to 35%, ratio = 0.7, desired = ceil(7 × 0.7) = ceil(4.9) = 5 pods.
+
+We'll follow these seven pods through all four stages. The HPA in this example is configured with:
+
+- **target:** 50% CPU utilization
+- **bounds:** at least 1, at most 10 replicas
+- **scale-up limit:** +1 pod per 60 seconds
+- **scale-down stabilization window:** 180 seconds (the default is 300)
+
+The YAML for exactly this setup is in [Configuring the Behavior API](#configuring-the-behavior-api).
 
 ![Formula ratio and tolerance band diagram](../../../../assets/2026/03/hpa-formula-ratio.dark.svg)
 
 ### The ±10% Tolerance Band
 
-The HPA doesn't react to tiny fluctuations. If the ratio is within **±10% of 1.0** (i.e., between 0.9 and 1.1), it does nothing. This prevents constant micro-adjustments when the metric hovers near the target.
+The HPA doesn't react to tiny fluctuations. If the ratio is within **±10% of 1.0** (i.e., between 0.9 and 1.1), Stage 1 returns the current replica count unchanged, so nothing scales. At 9 pods and a ratio of 1.09, for example, the formula would give `ceil(9 × 1.09) = 10`, but the result is 9. That 10% is the cluster-wide default; since Kubernetes 1.35 you can also set a `tolerance` per HPA and per direction. This prevents constant micro-adjustments when the metric hovers near the target.
 
 ### Multiple Metrics
 
 If you configure multiple metrics (e.g., CPU and memory), the HPA computes desired replicas for each metric independently and takes the **maximum**. This ensures you have enough pods to satisfy the most demanding metric.
 
+If one of the metrics can't be read, the HPA still scales up on the ones that work, but it refuses to scale down: the missing metric might have asked for more.
+
 ### The Feedback Loop
 
-The formula uses *current replicas* as input, which creates a feedback loop. If the HPA scaled to 15 last sync, the formula uses 15 as its starting point next sync. This means desired replicas can overshoot — if the metric is still high but declining, the formula may compute an even higher number because it's multiplying against more replicas.
+The formula uses *current replicas* as input, which creates a feedback loop. If the HPA scaled to 8 last tick, the formula starts from 8 next tick. That loop is what makes scaling settle: more pods spread the same load thinner, the ratio falls, and the formula stops asking for more. You'll see it happen in the trace below.
+
+It can also overshoot. A new pod needs time to start, and until it reports metrics, the old pods still look busy, so the formula keeps asking for more. The HPA guards against this: it multiplies by the number of pods that are ready, and a pod that is still starting counts as using 0% of the target when the HPA considers scaling up.
 
 ---
 
@@ -64,23 +77,17 @@ Stabilization keeps a **sliding window** of recent raw desired values (the Stage
 
 Why does it look at raw values and not filtered ones? Because if it only saw the already-smoothed output, it would have nothing to smooth. It needs to see the actual noise to filter it out.
 
-There are **two separate windows**, one for each direction:
+There are **two separate windows**, one for each direction. Each one decides how far the HPA may move from the current replica count:
 
-**Scale-down stabilization** (default: 300 seconds / 5 minutes):
-- Looks at all raw desired values within the window
-- Picks the **maximum** — the highest recent recommendation
-- Logic: "Someone recently said we need a lot of pods. Don't rush to remove them."
+- **Scaling up** (window default: 0 seconds — only the current proposal): if the current count is below the window's **minimum**, it goes up to that minimum and no further. "Only add what every recent recommendation agrees on."
+- **Scaling down** (window default: 300 seconds): if the current count is above the window's **maximum**, it comes down to that maximum and no further. "Someone recently said we need this many pods. Don't rush to remove them."
+- **Otherwise**, the count stays where it is.
 
-**Scale-up stabilization** (default: 0 seconds — disabled):
-- Looks at all raw desired values within the window
-- Picks the **minimum** — the lowest recent recommendation
-- Logic: "Even the most conservative recent recommendation says we need at least this many."
-
-The current desired value is included in the window — it's pushed into the history before the window is evaluated.
+The current proposal counts as part of both windows and is stored in the history afterwards.
 
 ![Stabilization window with data points](../../../../assets/2026/03/hpa-stabilization-window.dark.svg)
 
-The shaded region is the stabilization window. Dots show raw desired values from Stage 1 at each sync point — some high, some low. The solid line at the top is the stabilized output: the **max** of all dots within the window (for scale-down). It won't drop until the high values expire from the window.
+The diagram shows a later moment of our example. The trace below follows the seven pods up to nine; a minute after that, the load drops. The shaded region is our 180-second scale-down window, and each dot is one tick's raw recommendation from Stage 1. The 10s from the scale-up have left the window, but four 9s are still inside. The solid line is the window's **maximum**, 9 — so the HPA stays at 9 pods although the newest proposals say 5 or 6. It won't come down until those 9s leave the window.
 
 ### What Stabilization Does NOT Do
 
@@ -105,13 +112,13 @@ Each policy has three parts:
 - **Value**: how much change is allowed
 - **Period**: the time window to measure against (in seconds)
 
-**Example with Pods:** "Max +4 pods per 60 seconds" — if you already added 2 pods in the last 60 seconds, you can only add 2 more this tick.
+**Example with Pods** (outside our running example): "Max +4 pods per 60 seconds" — if you already added 2 pods in the last 60 seconds, you can only add 2 more this tick.
 
 **Example with Percent:** "Max +50% per 60 seconds" — if you started the period at 10 pods, you can scale up to at most 15 (10 × 1.5).
 
 ![Rate limiting staircase diagram](../../../../assets/2026/03/hpa-rate-limiting.dark.svg)
 
-The staircase shows how rate limiting works in practice. The desired value sits at 10 (dashed line), but the actual replicas climb one step at a time. Each sync period, the rate limiter checks the budget — if the policy allows +1 pod per 60s, that's all you get per tick.
+The staircase is the first two minutes of our example. Stage 1 asks for 10 pods (dashed line), but with +1 pod per 60 seconds the replicas climb one step at a time: 7, 8, 9. The dots are ticks. At each one the rate limiter checks the budget, and most of the time it is used up, so the count doesn't move.
 
 ### Period Start Replicas
 
@@ -127,9 +134,9 @@ If you already used some of your "budget" for the period, the remaining budget i
 
 You can define multiple policies per direction. The `selectPolicy` field controls how they combine:
 
-- **Max** (default for scale-up): pick the most permissive policy — allows the most change
+- **Max** (default): pick the most permissive policy — allows the most change
 - **Min**: pick the most restrictive policy — allows the least change
-- **Disabled**: skip rate limiting entirely for this direction
+- **Disabled**: turn off scaling in this direction entirely
 
 Rate limiting doesn't have its own timer. It's evaluated at every sync period. The `periodSeconds` on a policy is just a lookback window.
 
@@ -143,15 +150,17 @@ After the formula, stabilization, and rate limiting have all had their say, clam
 actual = max(minReplicas, min(maxReplicas, rateLimitedValue))
 ```
 
-If the pipeline computed 100 pods but `maxReplicas` is 50, the actual becomes 50. If it computed 0 but `minReplicas` is 2, the actual becomes 2.
+If the pipeline computed 14 pods but `maxReplicas` is 10, the actual becomes 10. If it computed 0 but `minReplicas` is 1, the actual becomes 1.
 
 ![Clamping number line with min/max bounds](../../../../assets/2026/03/hpa-clamping.dark.svg)
 
 ### Clamping Is Applied Last
 
-This ordering matters. The entire pipeline runs fully — the formula might say 100, stabilization confirms 100, rate limiting allows 100 — and only at the very end does clamping say "nope, max is 50."
+This ordering matters. Say our seven pods hit 100% CPU, and the scale-up limit were the default +100% per 15 seconds instead of +1 pod per minute. The formula says `ceil(7 × 100/50) = 14`, stabilization confirms 14, rate limiting allows 14 (double of 7) — and only at the very end does clamping say "nope, max is 10."
 
-The consequence: **the stabilization window still remembers that 100.** Since stabilization looks at raw Stage 1 outputs (not clamped values), future scale-down decisions will be held by that high recommendation until it expires from the window. Clamping doesn't erase the signal — it just prevents the actual scaling from exceeding bounds.
+The consequence: **the stabilization window still remembers that 14.** Since stabilization looks at raw Stage 1 outputs (not clamped values), future scale-down decisions will be held by that high recommendation until it expires from the window. Clamping doesn't erase the signal — it just prevents the actual scaling from exceeding bounds.
+
+One exception to the ordering: if the *current* replica count is already outside the bounds (say you lowered `maxReplicas`), the HPA skips the pipeline and goes straight to the bound.
 
 ---
 
@@ -163,20 +172,41 @@ Every sync period (default 15 seconds), the HPA runs all four stages in sequence
 
 ### Tracing a Single Sync Period
 
-Say we have 7 pods, CPU is at 70 (target 50), scale-down stabilization window is 180s, rate limit is +1 pod per 60s:
+Back to our 7 pods at 70% CPU with a target of 50%, using the settings from Stage 1. Call this tick 0s. One tick earlier, at −15s, the HPA already scaled from 6 to 7.
 
 1. **Stage 1:** `ceil(7 × 70/50) = ceil(9.8) = 10` → raw desired = 10
-2. **Stage 2:** Look back 180s. Recent raw desires: [8, 7, 6, 10]. For scale-up, min of window = 6. Since current (7) > 6, no constraint. → stabilized = 10
-3. **Stage 3:** Policy: +1 pod per 60s. Period start replicas = 6 (rewound from 7, found a +1 event). Limit = 6 + 1 = 7. Desired is 10 > current 7, so up-limit applies: min(10, 7) = 7. → rate limited = 7 (no change, budget exhausted)
+2. **Stage 2:** The scale-up window is 0 seconds, so it holds only the current proposal: its minimum is 10. Current replicas (7) are below that, so they go up to 10. The scale-down window also holds older, lower proposals, but it only matters when scaling down. → stabilized = 10
+3. **Stage 3:** Policy: +1 pod per 60s. Period start replicas = 6 (rewound from 7: the +1 at −15s is inside the last 60 seconds). Limit = 6 + 1 = 7. Desired is 10 > current 7, so up-limit applies: min(10, 7) = 7. → rate limited = 7 (no change, budget exhausted)
 4. **Stage 4:** min=1, max=10. 7 is within bounds. → actual = 7
 
-Next sync period, if the rate limit budget has refreshed, we might get to add +1.
+### The Next Two Minutes
+
+One tick where nothing happens is only half the story. Assume the total load stays the same — 7 pods × 70% = 490% of one pod's CPU request — and that new pods are ready within a tick. The Stage 2 column shows the scale-up minimum and the scale-down maximum next to the result:
+
+| Time | Pods | CPU | Stage 1 | Stage 2 (min / max → result) | Stage 3 | Result |
+|------|------|-----|---------|------------------------------|---------|--------|
+| 0s | 7 | 70% | 10 | 10 / 10 → 10 | 7 — the +1 from −15s is still inside the 60s window | 7 |
+| 15s, 30s | 7 | 70% | 10 | 10 / 10 → 10 | 7 | 7 |
+| 45s | 7 | 70% | 10 | 10 / 10 → 10 | 8 — the +1 from −15s is now 60s old and drops out | **8** |
+| 60s – 90s | 8 | 61% | 10 | 10 / 10 → 10 | 8 | 8 |
+| 105s | 8 | 61% | 10 | 10 / 10 → 10 | 9 | **9** |
+| 120s | 9 | 54% | 9 (in tolerance) | 9 / 10 → 9 | 9 | 9 |
+
+Three things to notice:
+
+- **The staircase is the rate limit.** The formula asks for 10 from the first tick on, but the pods arrive one per minute.
+- **More pods lower the metric.** 490% spread over 8 pods is 61% each, over 9 pods 54%. Stage 1 still says `ceil(8 × 61.25/50) = 10` at 8 pods, because the total hasn't changed.
+- **The HPA stops at 9, not 10.** At 9 pods the ratio is 54.4 / 50 = 1.09 — inside the tolerance band. The formula returns the current count and the scaling is over, one pod short of what it asked for two minutes earlier.
+
+The scale-down window has its say afterwards. At 120s its maximum is still 10 — the Stage 2 column shows it. Those raw 10s stay in the window for 180 seconds, so even if the load dropped right now, the HPA would not remove a pod until they have expired.
+
+Real ticks are not this tidy: whether the +1 from −15s has left the 60-second window at 45s or only at 60s depends on milliseconds.
 
 ---
 
 ## Configuring the Behavior API
 
-All stabilization and rate limiting is configured through the HPA's `behavior` field:
+All stabilization and rate limiting is configured through the HPA's `behavior` field. This is the configuration from the trace:
 
 ```yaml
 apiVersion: autoscaling/v2
@@ -189,31 +219,28 @@ spec:
     kind: Deployment
     name: my-app
   minReplicas: 1
-  maxReplicas: 50
+  maxReplicas: 10
   metrics:
     - type: Resource
       resource:
         name: cpu
         target:
           type: Utilization
-          averageUtilization: 50
+          averageUtilization: 50             # Target: 50% of the CPU request
   behavior:
     scaleUp:
       stabilizationWindowSeconds: 0          # No delay on scale-up (default)
       policies:
         - type: Pods
-          value: 4
-          periodSeconds: 60                  # Max +4 pods per 60s
-        - type: Percent
-          value: 100
-          periodSeconds: 60                  # Max +100% per 60s
-      selectPolicy: Max                      # Use the most permissive policy
+          value: 1
+          periodSeconds: 60                  # Max +1 pod per 60s
+      selectPolicy: Max                      # Only one policy, so nothing to choose
     scaleDown:
-      stabilizationWindowSeconds: 300        # 5 min cooldown (default)
+      stabilizationWindowSeconds: 180        # Hold scale-down for 3 minutes
       policies:
         - type: Percent
-          value: 10
-          periodSeconds: 60                  # Max -10% per 60s
+          value: 100
+          periodSeconds: 15                  # No rate limit on the way down (default)
       selectPolicy: Max
 ```
 
@@ -224,6 +251,8 @@ spec:
 | Stabilization Window | 0s (immediate) | 300s (5 minutes) |
 | Policies | +4 pods/15s, +100%/15s | -100%/15s |
 | Select Policy | Max | Max |
+
+These defaults fill in whatever you leave out of `behavior`. If you leave out the whole block, the controller takes an older, simpler path with the same effect: the recommendation is the highest raw value of the last five minutes, and a single sync adds at most as many pods as are already running (or enough to reach 4). It keeps no history of scale events there, so there is nothing to rewind.
 
 The asymmetric defaults reflect Kubernetes' philosophy: **scale up quickly** (don't lose traffic) but **scale down cautiously** (don't kill pods you might need in a minute).
 
@@ -237,5 +266,3 @@ The asymmetric defaults reflect Kubernetes' philosophy: **scale up quickly** (do
 | **2. Stabilization** | Raw desired + history window | Stabilized desired | "Is it safe to act on this, or is it noise?" |
 | **3. Rate Limiting** | Stabilized desired + event history | Constrained desired | "How fast are we allowed to get there?" |
 | **4. Clamping** | Constrained desired | Actual replicas | "Are we within [min, max] bounds?" |
-
-Each stage is a filter. The formula proposes, stabilization smooths, rate limiting paces, and clamping bounds. Together, they transform a noisy metric signal into controlled, predictable scaling behavior.
