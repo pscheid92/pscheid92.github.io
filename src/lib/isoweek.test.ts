@@ -1,5 +1,5 @@
 import {describe, expect, it} from 'vitest';
-import {daysOf, isoWeekOf, mondayOf, parseWeekInput, shiftWeek, todayUtc, weeksInYear} from './isoweek';
+import {daysOf, isoWeekOf, mondayOf, parseWeekInput, shiftWeek, todayUtc, weekInAddress, weeksInYear} from './isoweek';
 
 const iso = (date: Date) => date.toISOString().slice(0, 10);
 const utc = (s: string) => new Date(`${s}T00:00:00Z`);
@@ -85,6 +85,45 @@ describe('shiftWeek', () => {
         expect(shiftWeek({year: 2026, week: 53}, 1)).toEqual({year: 2027, week: 1});
         expect(shiftWeek({year: 2025, week: 52}, 1)).toEqual({year: 2026, week: 1});
         expect(shiftWeek({year: 2027, week: 1}, -1)).toEqual({year: 2026, week: 53});
+    });
+});
+
+describe('weekInAddress', () => {
+    const at = (address: string) => {
+        const url = new URL(address, 'https://patrickscheid.de');
+        return weekInAddress(url);
+    };
+
+    it('reads what follows /cw/ in the path', () => {
+        expect(at('/cw/2027/42')).toBe('2027/42');
+        expect(at('/cw/this/26')).toBe('this/26');
+        expect(at('/cw/42')).toBe('42');
+        expect(at('/cw/2027/42/')).toBe('2027/42');
+        expect(at('/cw/2027%2F42')).toBe('2027/42');
+        expect(at('/cw/2027-W42')).toBe('2027-W42');
+    });
+
+    it('still reads the older forms, after ? and after #', () => {
+        expect(at('/cw/?2027/42')).toBe('2027/42');
+        expect(at('/cw/?this/26')).toBe('this/26');
+        expect(at('/cw/#2027/42')).toBe('2027/42');
+        expect(at('/cw/?year=2027&week=42')).toBe('year=2027&week=42');
+    });
+
+    it('goes by the path when there is one', () => {
+        expect(at('/cw/2027/42?utm_source=feed')).toBe('2027/42');
+        expect(at('/cw/2027/42#2026/1')).toBe('2027/42');
+    });
+
+    it('is empty for the page itself', () => {
+        expect(at('/cw/')).toBe('');
+        expect(at('/cw')).toBe('');
+        expect(at('/cw/index.html')).toBe('');
+        expect(at('/cw//')).toBe('');
+    });
+
+    it('keeps text it cannot decode', () => {
+        expect(weekInAddress({pathname: '/cw/%E0%A4%A', search: '', hash: ''})).toBe('%E0%A4%A');
     });
 });
 

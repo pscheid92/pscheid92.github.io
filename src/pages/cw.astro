@@ -47,7 +47,7 @@ import Layout from '../layouts/Layout.astro';
 </Layout>
 
 <script>
-    import {daysOf, isoWeekOf, parseWeekInput, shiftWeek, todayUtc, type IsoWeek} from '../lib/isoweek';
+    import {daysOf, isoWeekOf, parseWeekInput, shiftWeek, todayUtc, weekInAddress, type IsoWeek} from '../lib/isoweek';
 
     const form = document.querySelector<HTMLFormElement>('#cw-form');
     const input = document.querySelector<HTMLInputElement>('#week');
@@ -60,14 +60,6 @@ import Layout from '../layouts/Layout.astro';
     const rangeFormatter = new Intl.DateTimeFormat('en-GB', {day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC'});
     const weekdayFormatter = new Intl.DateTimeFormat('en-GB', {weekday: 'long', timeZone: 'UTC'});
     const dateFormatter = new Intl.DateTimeFormat('en-GB', {day: 'numeric', month: 'long', timeZone: 'UTC'});
-
-    function safeDecode(text: string) {
-        try {
-            return decodeURIComponent(text);
-        } catch {
-            return text;
-        }
-    }
 
     let current: IsoWeek = isoWeekOf(todayUtc());
 
@@ -147,10 +139,11 @@ import Layout from '../layouts/Layout.astro';
     document.querySelector('#next-week')?.addEventListener('click', () => step(shiftWeek(current, 1)));
     document.querySelector('#this-week')?.addEventListener('click', () => step(isoWeekOf(todayUtc())));
 
-    // /cw/2027/42 reaches this page as /cw/?2027/42 through the 404 page; /cw/#2027/42 works too
-    const fromUrl = location.search.slice(1) || location.hash.slice(1);
-    if (fromUrl) {
-        const typed = safeDecode(fromUrl).replace(/\/+$/, '');
+    // The server answers every address below /cw/ with this page (nginx/default.conf),
+    // so /cw/2027/42 arrives as it is. Where it doesn't (GitHub Pages, the dev server),
+    // the 404 page sends it here as /cw/?2027/42; /cw/#2027/42 works too.
+    const typed = weekInAddress(location);
+    if (typed) {
         const result = parseWeekInput(typed, isoWeekOf(todayUtc()).year);
         if (input) {
             input.value = result.ok ? `${result.year}/${result.week}` : typed;

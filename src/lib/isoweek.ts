@@ -58,6 +58,24 @@ export function shiftWeek({year, week}: IsoWeek, delta: -1 | 1): IsoWeek {
     return week < weeksInYear(year) ? {year, week: week + 1} : {year: year + 1, week: 1};
 }
 
+function decoded(text: string): string {
+    try {
+        return decodeURIComponent(text);
+    } catch {
+        return text;
+    }
+}
+
+/**
+ * What an address of the calendar week page says after /cw/, as it was
+ * typed: "2027/42" for /cw/2027/42, and for the older /cw/?2027/42 and
+ * /cw/#2027/42. Empty when the address names no week.
+ */
+export function weekInAddress({pathname, search, hash}: {pathname: string; search: string; hash: string}): string {
+    const path = pathname.replace(/^\/cw(\/|$)/, '').replace(/^index\.html$/, '');
+    return decoded(path || search.slice(1) || hash.slice(1)).replace(/\/+$/, '');
+}
+
 /**
  * Reads a week, optionally with a year, from loose input such as "42",
  * "2026/42", "this/42", "42/2026", "2026-W42", "KW 42" or "year=2026&week=42".
@@ -65,13 +83,7 @@ export function shiftWeek({year, week}: IsoWeek, delta: -1 | 1): IsoWeek {
  * without either, defaultYear is used.
  */
 export function parseWeekInput(raw: string, defaultYear: number): ParseResult {
-    let text = raw;
-    try {
-        text = decodeURIComponent(raw);
-    } catch {
-        // keep the raw text
-    }
-    text = text.replace(/this/gi, String(defaultYear));
+    const text = decoded(raw).replace(/this/gi, String(defaultYear));
 
     const numbers = (text.match(/\d+/g) ?? []).map((n) => ({value: Number(n), digits: n.length}));
     if (numbers.length === 0) {
