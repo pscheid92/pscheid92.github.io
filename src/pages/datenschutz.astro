@@ -16,7 +16,9 @@ import LegalPage from '../layouts/LegalPage.astro';
                 Germany, and no IP addresses are logged. Two tools send data elsewhere, and only when you use them: the
                 <a href="/spelling-trainer/">Spelling Alphabet Trainer</a> can stream your voice to Google for
                 transcription, after you agree, and <a href="/sunwalk/">Sun Walk</a> sends place searches and, if
-                you allow it, your location to Komoot's Photon geocoder. The details below are in German.
+                you allow it, your location to Komoot's Photon geocoder. It also covers my two services:
+                <a href="#secretli">Secretli</a>, which stores only end-to-end encrypted secrets for at most a
+                week, and <a href="#excalidraw">Excalidraw</a>. The details below are in German.
             </p>
         </div>
     </section>
@@ -32,7 +34,11 @@ import LegalPage from '../layouts/LegalPage.astro';
                 Deutschland<br/>
                 E-Mail: <a href="mailto:patrick@patrickscheid.de">patrick@patrickscheid.de</a>
             </address>
-            <p>Diese Erklärung gilt für patrickscheid.de.</p>
+            <p>
+                Diese Erklärung gilt für patrickscheid.de und für die beiden Dienste, die ich daneben
+                betreibe: <a href="#secretli">Secretli</a> (secretli.app) und
+                <a href="#excalidraw">Excalidraw</a> (excalidraw.k.patrickscheid.de).
+            </p>
         </div>
     </section>
 
@@ -51,7 +57,7 @@ import LegalPage from '../layouts/LegalPage.astro';
         <h2 class="index label">Hosting</h2>
         <div class="text">
             <p>
-                Die Website läuft auf meinen eigenen Servern, die ich bei der Hetzner Online GmbH,
+                Die Website und die beiden Dienste laufen auf meinen eigenen Servern, die ich bei der Hetzner Online GmbH,
                 Industriestr.&nbsp;25, 91710 Gunzenhausen, Deutschland, miete. Die Server stehen in Hetzners
                 Rechenzentrum in Falkenstein (Sachsen). Hetzner verarbeitet die Daten auf diesen Servern in meinem
                 Auftrag; mit Hetzner besteht ein Vertrag zur Auftragsverarbeitung (Art.&nbsp;28 DSGVO).
@@ -178,6 +184,101 @@ import LegalPage from '../layouts/LegalPage.astro';
                 Einstellungen Ihres Browsers zurücknehmen. Rechtsgrundlage für die Ortssuche ist
                 Art.&nbsp;6 Abs.&nbsp;1 lit.&nbsp;f DSGVO: mein berechtigtes Interesse, die von Ihnen aufgerufene
                 Funktion bereitzustellen.
+            </p>
+        </div>
+    </section>
+
+    <section class="grid section" id="secretli">
+        <h2 class="index label">Secretli</h2>
+        <div class="text">
+            <p>
+                Secretli (secretli.app) gibt Texte und Dateien über einen Link weiter. Sie werden in Ihrem Browser
+                verschlüsselt, bevor sie ihn verlassen; der Schlüssel steht nur im Link hinter dem
+                <code>#</code> und erreicht den Server nie. Ich kann die Inhalte daher nicht lesen. Wie das im
+                Einzelnen funktioniert, steht unter <a href="https://secretli.app/how" rel="noopener">How it works</a>.
+            </p>
+            <ul>
+                <li>
+                    <strong>Gespeichert</strong> werden der verschlüsselte Inhalt (in Hetzner Object Storage,
+                    Falkenstein) und in einer Datenbank verschlüsselte Metadaten, Prüfwerte, Größe, Ablaufzeit
+                    und Zeitpunkte auf die Minute gerundet. Ein Secret ist nach höchstens 7 Tagen gelöscht,
+                    ein einmal lesbares kurz nach dem Öffnen.
+                </li>
+                <li>
+                    <strong>Sicherungen:</strong> Die Datenbank, nicht die Inhalte, wird laufend in Hetzner Object
+                    Storage (Nürnberg) gesichert und die Sicherung 7 Tage aufbewahrt, die älteste Grundsicherung
+                    ein bis zwei Tage länger. Sie zeigt, wann ein Secret angelegt, geöffnet oder gelöscht wurde,
+                    aber nicht seinen Inhalt.
+                </li>
+                <li>
+                    <strong>IP-Adresse:</strong> Der Server begrenzt die Anfragen und Uploads je Adresse (bei IPv6
+                    je /64-Netz). Dafür hält er die Adresse im Arbeitsspeicher, nicht in der Datenbank, und
+                    vergisst sie nach wenigen Minuten, nach einem großen Upload spätestens nach etwa einer Stunde.
+                    Protokolliert werden weder Adressen noch aufgerufene Links, nur Art und Ergebnis einer Anfrage
+                    und ihre Dauer.
+                </li>
+                <li>
+                    <strong>Kennzahlen:</strong> Summen wie die Zahl der Anfragen je Funktion, ihre Dauer und die
+                    Zahl gespeicherter Secrets gehen an Grafana Cloud (Grafana Labs), um den Betrieb zu überwachen.
+                    Sie enthalten keine Adressen, Kennungen oder Inhalte.
+                </li>
+                <li>
+                    <strong>Im Browser</strong> merkt sich Secretli nur das gewählte Farbschema (Local Storage).
+                    Es lädt nichts von fremden Servern. Die Kamera wird nur zum Scannen eines QR-Codes verwendet und
+                    nur, wenn Sie es erlauben; das Bild verlässt Ihr Gerät nicht.
+                </li>
+            </ul>
+            <p>
+                Rechtsgrundlage ist Art.&nbsp;6 Abs.&nbsp;1 lit.&nbsp;b DSGVO, soweit Sie Secretli nutzen, um
+                etwas weiterzugeben, und im Übrigen Art.&nbsp;6 Abs.&nbsp;1 lit.&nbsp;f DSGVO: mein berechtigtes
+                Interesse, den Dienst sicher und vor Missbrauch geschützt zu betreiben.
+            </p>
+        </div>
+    </section>
+
+    <section class="grid section" id="excalidraw">
+        <h2 class="index label">Excalidraw</h2>
+        <div class="text">
+            <p>
+                Unter excalidraw.k.patrickscheid.de betreibe ich das Zeichenprogramm
+                <a href="https://github.com/excalidraw/excalidraw" rel="noopener">Excalidraw</a> mit eigenem
+                Server für gemeinsames Zeichnen und geteilte Links. Zeichnungen bleiben in Ihrem Browser, bis Sie
+                eine Sitzung mit anderen starten oder einen Link erzeugen. Dann werden sie in Ihrem Browser
+                verschlüsselt; der Schlüssel steht nur im Link hinter dem <code>#</code> und erreicht den Server
+                nie.
+            </p>
+            <ul>
+                <li>
+                    <strong>Gemeinsames Zeichnen:</strong> Der Server reicht die verschlüsselten Änderungen an die
+                    anderen Teilnehmer weiter und speichert den Stand des Raums verschlüsselt in einer Datenbank,
+                    ebenso geteilte Zeichnungen und eingefügte Bilder (höchstens 10&nbsp;MB je Stück).
+                </li>
+                <li>
+                    <strong>Speicherdauer:</strong> Gespeichertes wird 90 Tage nach dem letzten Öffnen gelöscht.
+                    Es gibt keine Sicherungskopien.
+                </li>
+                <li>
+                    <strong>IP-Adresse:</strong> Sie wird für die Verbindung verarbeitet, aber weder gespeichert
+                    noch protokolliert. Der Server protokolliert nur, dass ein Raum gelesen oder gespeichert wurde,
+                    mit dessen zufälliger Kennung.
+                </li>
+                <li>
+                    <strong>Im Browser</strong> speichert Excalidraw Ihre Zeichnung, Bilder, Bibliothek,
+                    Einstellungen und den Namen, den Sie für gemeinsames Zeichnen wählen (Local Storage,
+                    IndexedDB), und hält Schriften und Programmteile für den Offline-Betrieb vor. Das bleibt auf
+                    Ihrem Gerät.
+                </li>
+                <li>
+                    <strong>Fremde Angebote</strong> erreicht Excalidraw nur, wenn Sie es ausdrücklich auslösen:
+                    die öffentliche Bibliothek (libraries.excalidraw.com), die KI-Funktionen (Server von
+                    Excalidraw), Excalidraw+ und das Laden einer Zeichnung von einer fremden Adresse. Dann gelten die
+                    Datenschutzhinweise des jeweiligen Anbieters.
+                </li>
+            </ul>
+            <p>
+                Rechtsgrundlage ist Art.&nbsp;6 Abs.&nbsp;1 lit.&nbsp;b DSGVO, soweit Sie die Funktionen zum
+                gemeinsamen Zeichnen und Teilen nutzen, und im Übrigen Art.&nbsp;6 Abs.&nbsp;1 lit.&nbsp;f DSGVO:
+                mein berechtigtes Interesse, das Programm bereitzustellen.
             </p>
         </div>
     </section>
