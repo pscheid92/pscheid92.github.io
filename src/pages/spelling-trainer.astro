@@ -45,6 +45,11 @@ import Layout from '../layouts/Layout.astro';
             </div>
             <button type="submit" id="check-btn">Check</button>
         </form>
+        <!-- Always visible, so pressing the mic is an informed consent (see /datenschutz/). -->
+        <p class="mic-note">
+            Mic input is transcribed by Google · 18+ ·
+            <a href="/datenschutz/#spracheingabe" target="_blank" rel="noopener">Details</a>
+        </p>
 
         <p class="hint" id="hint"></p>
         <!-- While recording: level meter, timer and microphone choice; while loading: a bar. -->
@@ -450,23 +455,6 @@ import Layout from '../layouts/Layout.astro';
     navigator.mediaDevices?.addEventListener?.('devicechange', () => void refreshMicChoice());
     void refreshMicChoice();
     let stopLive: (() => void) | null = null;
-    let cloudNoticeShown = false;
-
-    // Shown once before the first streamed recording; pressing the mic again is
-    // the consent. What it says has to match /datenschutz/.
-    function showCloudNotice() {
-        const link = document.createElement('a');
-        link.href = '/datenschutz/#spracheingabe';
-        link.target = '_blank';
-        link.rel = 'noopener';
-        link.textContent = 'Details';
-        hint.replaceChildren(
-            'Your voice is sent to Google to turn it into text. 18+ only. ',
-            link,
-            '. Press the mic again to start.',
-        );
-    }
-
     // The row under the hint: an indeterminate bar while something loads or
     // transcribes, or the level meter and a timer while recording.
     function showProgress(label: string) {
@@ -702,14 +690,6 @@ import Layout from '../layouts/Layout.astro';
 
     async function startRecording() {
         if (stopLive || starting) return;
-        if (storage.get('cloud-speech') !== 'ok') {
-            if (!cloudNoticeShown) {
-                cloudNoticeShown = true;
-                showCloudNotice();
-                return;
-            }
-            storage.set('cloud-speech', 'ok');
-        }
         if (!navigator.mediaDevices?.getUserMedia || typeof AudioWorkletNode === 'undefined' || typeof WebSocket === 'undefined') {
             hint.textContent = 'This browser can’t stream audio — type the code words instead.';
             return;
@@ -724,6 +704,9 @@ import Layout from '../layouts/Layout.astro';
             return;
         }
         void refreshMicChoice(); // names are visible now that access was granted
+        // The note under the field says where the audio goes, so pressing the
+        // mic is the consent. Remembered so /datenschutz/ can offer to withdraw it.
+        storage.set('cloud-speech', 'ok');
 
         const lang = speechLang();
         input.value = ''; // a new recording replaces the previous attempt
@@ -1208,6 +1191,17 @@ import Layout from '../layouts/Layout.astro';
 
     .actions button[aria-expanded='true'] {
         color: var(--color-accent);
+    }
+
+    .mic-note {
+        margin: -0.9rem 0 0;
+        font-size: 0.78rem;
+        color: var(--color-text-muted);
+        text-align: center;
+    }
+
+    .mic-note a {
+        color: inherit;
     }
 
     .hint {
