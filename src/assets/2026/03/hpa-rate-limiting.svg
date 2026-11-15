@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 320"  aria-label="Rate limiting staircase diagram">
+<line x1="80" y1="30" x2="80" y2="250" stroke="#b3ab9d" stroke-width="1"/>
+<line x1="80" y1="250" x2="750" y2="250" stroke="#b3ab9d" stroke-width="1"/>
+<text x="28" y="145" transform="rotate(-90 28 145)" fill="#5c574e" font-size="9" font-family="monospace">replicas</text>
+<line x1="80" y1="240" x2="750" y2="240" stroke="#ddd6c8" stroke-width="0.5"/>
+<text x="70" y="244" text-anchor="end" fill="#5c574e" font-size="9" font-family="monospace">6</text>
+<line x1="80" y1="195" x2="750" y2="195" stroke="#ddd6c8" stroke-width="0.5"/>
+<text x="70" y="199" text-anchor="end" fill="#5c574e" font-size="9" font-family="monospace">7</text>
+<line x1="80" y1="150" x2="750" y2="150" stroke="#ddd6c8" stroke-width="0.5"/>
+<text x="70" y="154" text-anchor="end" fill="#5c574e" font-size="9" font-family="monospace">8</text>
+<line x1="80" y1="105" x2="750" y2="105" stroke="#ddd6c8" stroke-width="0.5"/>
+<text x="70" y="109" text-anchor="end" fill="#5c574e" font-size="9" font-family="monospace">9</text>
+<line x1="80" y1="60" x2="750" y2="60" stroke="#ddd6c8" stroke-width="0.5"/>
+<text x="70" y="64" text-anchor="end" fill="#5c574e" font-size="9" font-family="monospace">10</text>
+<line x1="90" y1="250" x2="90" y2="255" stroke="#857e72" stroke-width="1"/>
+<text x="90" y="268" text-anchor="middle" fill="#5c574e" font-size="9" font-family="monospace">0s</text>
+<line x1="171" y1="250" x2="171" y2="255" stroke="#857e72" stroke-width="1"/>
+<text x="171" y="268" text-anchor="middle" fill="#5c574e" font-size="9" font-family="monospace">15s</text>
+<line x1="252" y1="250" x2="252" y2="255" stroke="#857e72" stroke-width="1"/>
+<text x="252" y="268" text-anchor="middle" fill="#5c574e" font-size="9" font-family="monospace">30s</text>
+<line x1="333" y1="250" x2="333" y2="255" stroke="#857e72" stroke-width="1"/>
+<text x="333" y="268" text-anchor="middle" fill="#5c574e" font-size="9" font-family="monospace">45s</text>
+<line x1="414" y1="250" x2="414" y2="255" stroke="#857e72" stroke-width="1"/>
+<text x="414" y="268" text-anchor="middle" fill="#5c574e" font-size="9" font-family="monospace">60s</text>
+<line x1="495" y1="250" x2="495" y2="255" stroke="#857e72" stroke-width="1"/>
+<text x="495" y="268" text-anchor="middle" fill="#5c574e" font-size="9" font-family="monospace">75s</text>
+<line x1="576" y1="250" x2="576" y2="255" stroke="#857e72" stroke-width="1"/>
+<text x="576" y="268" text-anchor="middle" fill="#5c574e" font-size="9" font-family="monospace">90s</text>
+<line x1="657" y1="250" x2="657" y2="255" stroke="#857e72" stroke-width="1"/>
+<text x="657" y="268" text-anchor="middle" fill="#5c574e" font-size="9" font-family="monospace">105s</text>
+<line x1="738" y1="250" x2="738" y2="255" stroke="#857e72" stroke-width="1"/>
+<text x="738" y="268" text-anchor="middle" fill="#5c574e" font-size="9" font-family="monospace">120s</text>
+<text x="415" y="290" text-anchor="middle" fill="#5c574e" font-size="10" font-family="monospace">time → (one tick every 15s)</text>
+<line x1="80" y1="60" x2="694.8" y2="60" stroke="#be123c" stroke-width="1.5" stroke-dasharray="6 3"/>
+<text x="657" y="52" text-anchor="end" fill="#be123c" font-size="10" font-weight="500" font-family="monospace">desired = 10 (Stage 1)</text>
+<text x="738" y="79" text-anchor="end" fill="#5c574e" font-size="8" font-family="monospace">at 9 pods: in tolerance,</text>
+<text x="738" y="90" text-anchor="end" fill="#5c574e" font-size="8" font-family="monospace">desired drops to 9</text>
+<polyline points="90,195 333,195 333,150 657,150 657,105 738,105" fill="none" stroke="#be123c" stroke-width="2.5"/>
+<circle cx="90" cy="195" r="3" fill="#be123c" fill-opacity="0.6" stroke="#be123c" stroke-width="1"/>
+<circle cx="171" cy="195" r="3" fill="#be123c" fill-opacity="0.6" stroke="#be123c" stroke-width="1"/>
+<circle cx="252" cy="195" r="3" fill="#be123c" fill-opacity="0.6" stroke="#be123c" stroke-width="1"/>
+<circle cx="333" cy="150" r="3" fill="#be123c" fill-opacity="0.6" stroke="#be123c" stroke-width="1"/>
+<circle cx="414" cy="150" r="3" fill="#be123c" fill-opacity="0.6" stroke="#be123c" stroke-width="1"/>
+<circle cx="495" cy="150" r="3" fill="#be123c" fill-opacity="0.6" stroke="#be123c" stroke-width="1"/>
+<circle cx="576" cy="150" r="3" fill="#be123c" fill-opacity="0.6" stroke="#be123c" stroke-width="1"/>
+<circle cx="657" cy="105" r="3" fill="#be123c" fill-opacity="0.6" stroke="#be123c" stroke-width="1"/>
+<circle cx="738" cy="105" r="3" fill="#be123c" fill-opacity="0.6" stroke="#be123c" stroke-width="1"/>
+<text x="339" y="142" fill="#be123c" font-size="9" font-weight="600" font-family="monospace">+1</text>
+<text x="663" y="97" fill="#be123c" font-size="9" font-weight="600" font-family="monospace">+1</text>
+<rect x="150" y="296" width="200" height="20" rx="4" fill="#be123c" fill-opacity="0.08" stroke="#be123c" stroke-width="0.5"/>
+<text x="250" y="310" text-anchor="middle" fill="#be123c" font-size="9" opacity="0.8" font-family="monospace">policy: +1 pod / 60s</text>
+</svg>

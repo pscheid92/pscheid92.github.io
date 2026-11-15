@@ -9,7 +9,7 @@ draft: true
 
 The Horizontal Pod Autoscaler (HPA) automatically adjusts the number of pod replicas in a deployment based on observed metrics. Every **sync period** (default: 15 seconds; we'll call one run a **tick**), it runs a four-stage pipeline to decide whether to scale up, scale down, or do nothing.
 
-![HPA 4-stage pipeline overview](../../../../assets/2026/03/hpa-pipeline-overview.dark.svg)
+![HPA 4-stage pipeline overview](../../../../assets/2026/03/hpa-pipeline-overview.svg)
 
 This article walks through each stage, building the full picture incrementally.
 
@@ -45,7 +45,7 @@ We'll follow these seven pods through all four stages. The HPA in this example i
 
 The YAML for exactly this setup is in [Configuring the Behavior API](#configuring-the-behavior-api).
 
-![Formula ratio and tolerance band diagram](../../../../assets/2026/03/hpa-formula-ratio.dark.svg)
+![Formula ratio and tolerance band diagram](../../../../assets/2026/03/hpa-formula-ratio.svg)
 
 ### The ±10% Tolerance Band
 
@@ -85,7 +85,7 @@ There are **two separate windows**, one for each direction. Each one decides how
 
 The current proposal counts as part of both windows and is stored in the history afterwards.
 
-![Stabilization window with data points](../../../../assets/2026/03/hpa-stabilization-window.dark.svg)
+![Stabilization window with data points](../../../../assets/2026/03/hpa-stabilization-window.svg)
 
 The diagram shows a later moment of our example. The trace below follows the seven pods up to nine; a minute after that, the load drops. The shaded region is our 180-second scale-down window, and each dot is one tick's raw recommendation from Stage 1. The 10s from the scale-up have left the window, but four 9s are still inside. The solid line is the window's **maximum**, 9 — so the HPA stays at 9 pods although the newest proposals say 5 or 6. It won't come down until those 9s leave the window.
 
@@ -116,7 +116,7 @@ Each policy has three parts:
 
 **Example with Percent:** "Max +50% per 60 seconds" — if you started the period at 10 pods, you can scale up to at most 15 (10 × 1.5).
 
-![Rate limiting staircase diagram](../../../../assets/2026/03/hpa-rate-limiting.dark.svg)
+![Rate limiting staircase diagram](../../../../assets/2026/03/hpa-rate-limiting.svg)
 
 The staircase is the first two minutes of our example. Stage 1 asks for 10 pods (dashed line), but with +1 pod per 60 seconds the replicas climb one step at a time: 7, 8, 9. The dots are ticks. At each one the rate limiter checks the budget, and most of the time it is used up, so the count doesn't move.
 
@@ -152,7 +152,7 @@ actual = max(minReplicas, min(maxReplicas, rateLimitedValue))
 
 If the pipeline computed 14 pods but `maxReplicas` is 10, the actual becomes 10. If it computed 0 but `minReplicas` is 1, the actual becomes 1.
 
-![Clamping number line with min/max bounds](../../../../assets/2026/03/hpa-clamping.dark.svg)
+![Clamping number line with min/max bounds](../../../../assets/2026/03/hpa-clamping.svg)
 
 ### Clamping Is Applied Last
 
@@ -168,7 +168,7 @@ One exception to the ordering: if the *current* replica count is already outside
 
 Every sync period (default 15 seconds), the HPA runs all four stages in sequence. The only feedback loop: the final actual replica count becomes `currentReplicas` for the next sync.
 
-![Full HPA pipeline with feedback loop](../../../../assets/2026/03/hpa-full-pipeline.dark.svg)
+![Full HPA pipeline with feedback loop](../../../../assets/2026/03/hpa-full-pipeline.svg)
 
 ### Tracing a Single Sync Period
 

@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 90"  aria-label="HPA 4-stage pipeline overview">
+<rect x="10" y="15" width="160" height="60" rx="12" fill="#b45309" fill-opacity="0.12" stroke="#b45309" stroke-width="1.5"/>
+<text x="90" y="38" text-anchor="middle" fill="#b45309" font-size="11" font-weight="600" font-family="monospace">Stage 1</text>
+<text x="90" y="56" text-anchor="middle" fill="#b45309" font-size="13" font-weight="700" font-family="monospace">Formula</text>
+<text x="90" y="70" text-anchor="middle" fill="#b45309" font-size="9" opacity="0.7" font-family="monospace">Propose</text>
+<line x1="175" y1="45" x2="205" y2="45" stroke="#857e72" stroke-width="1.5"/>
+<polygon points="205,41 213,45 205,49" fill="#857e72"/>
+<rect x="218" y="15" width="160" height="60" rx="12" fill="#7e22ce" fill-opacity="0.12" stroke="#7e22ce" stroke-width="1.5"/>
+<text x="298" y="38" text-anchor="middle" fill="#7e22ce" font-size="11" font-weight="600" font-family="monospace">Stage 2</text>
+<text x="298" y="56" text-anchor="middle" fill="#7e22ce" font-size="13" font-weight="700" font-family="monospace">Stabilization</text>
+<text x="298" y="70" text-anchor="middle" fill="#7e22ce" font-size="9" opacity="0.7" font-family="monospace">Smooth</text>
+<line x1="383" y1="45" x2="413" y2="45" stroke="#857e72" stroke-width="1.5"/>
+<polygon points="413,41 421,45 413,49" fill="#857e72"/>
+<rect x="426" y="15" width="160" height="60" rx="12" fill="#be123c" fill-opacity="0.12" stroke="#be123c" stroke-width="1.5"/>
+<text x="506" y="38" text-anchor="middle" fill="#be123c" font-size="11" font-weight="600" font-family="monospace">Stage 3</text>
+<text x="506" y="56" text-anchor="middle" fill="#be123c" font-size="13" font-weight="700" font-family="monospace">Rate Limit</text>
+<text x="506" y="70" text-anchor="middle" fill="#be123c" font-size="9" opacity="0.7" font-family="monospace">Pace</text>
+<line x1="591" y1="45" x2="621" y2="45" stroke="#857e72" stroke-width="1.5"/>
+<polygon points="621,41 629,45 621,49" fill="#857e72"/>
+<rect x="634" y="15" width="150" height="60" rx="12" fill="#047857" fill-opacity="0.12" stroke="#047857" stroke-width="1.5"/>
+<text x="709" y="38" text-anchor="middle" fill="#047857" font-size="11" font-weight="600" font-family="monospace">Stage 4</text>
+<text x="709" y="56" text-anchor="middle" fill="#047857" font-size="13" font-weight="700" font-family="monospace">Clamp</text>
+<text x="709" y="70" text-anchor="middle" fill="#047857" font-size="9" opacity="0.7" font-family="monospace">Bound</text>
+</svg>

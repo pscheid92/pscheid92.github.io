@@ -6,12 +6,15 @@ interface Props {
 
 const {headings, maxDepth = 3} = Astro.props;
 const items = headings.filter((h) => h.depth >= 2 && h.depth <= maxDepth);
+
+// "Stage 1: The Formula — Metric Ratio × Current Pods" lists as "Stage 1: The Formula"
+const short = (text: string) => text.split(' — ')[0];
 ---
 
 <ol class="toc-list">
     {items.map((h) => (
         <li class:list={[`depth-${h.depth}`]}>
-            <a href={`#${h.slug}`}>{h.text}</a>
+            <a href={`#${h.slug}`} title={short(h.text) === h.text ? undefined : h.text}>{short(h.text)}</a>
         </li>
     ))}
 </ol>
