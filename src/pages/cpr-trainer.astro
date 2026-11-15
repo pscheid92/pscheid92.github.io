@@ -5,11 +5,11 @@ import Layout from '../layouts/Layout.astro';
 <Layout
     title="CPR Rhythm Trainer (110 BPM) - Patrick Scheid"
     description="Learn the CPR chest compression rhythm: listen to a 110 beats per minute metronome, tap along, count to 30, and test how well you hold the tempo over a full two-minute cycle. A practice and education tool, not for use during a real resuscitation."
-    pageClass="page-cpr-trainer"
+    pageClass="tool page-cpr-trainer"
 >
     <section class="trainer-shell" aria-labelledby="trainer-title">
         <div class="page-header">
-            <p class="eyebrow">Training tool</p>
+            <a class="eyebrow" href="/pages/">&larr; More tools</a>
             <h1 id="trainer-title">CPR Rhythm Trainer</h1>
             <p class="tagline">Hear the beat, tap the pad, learn to hold 110 per minute.</p>
         </div>
@@ -706,11 +706,6 @@ import Layout from '../layouts/Layout.astro';
 </script>
 
 <style>
-    :global(body.page-cpr-trainer main) {
-        width: 100%;
-        max-width: 64rem;
-    }
-
     .trainer-shell {
         --pulse: #d6203f;
         --slow: #2b6cb0;
@@ -744,7 +739,7 @@ import Layout from '../layouts/Layout.astro';
         --fast: #ff9a4d;
     }
 
-    @media (max-width: 860px) {
+    @media (max-width: 63.99rem) {
         .trainer-shell {
             grid-template-columns: 1fr;
             grid-template-areas:
@@ -761,12 +756,15 @@ import Layout from '../layouts/Layout.astro';
     }
 
     .eyebrow {
-        margin: 0 0 0.35rem;
-        color: var(--pulse);
-        font-size: 0.85rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
+        display: inline-block;
+        margin: 0 0 0.6rem;
+        color: var(--color-text-muted);
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    .eyebrow:hover {
+        color: var(--color-accent);
     }
 
     .page-header h1 {
@@ -797,8 +795,6 @@ import Layout from '../layouts/Layout.astro';
         border: none;
         color: var(--color-text-muted);
         font: 600 0.9rem/1.3 var(--font-ui);
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
         padding: 0.55rem 0.25rem;
         cursor: pointer;
     }
@@ -839,8 +835,6 @@ import Layout from '../layouts/Layout.astro';
     .unit {
         font-size: 1rem;
         font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.12em;
         color: var(--color-text-muted);
     }
 
@@ -857,8 +851,6 @@ import Layout from '../layouts/Layout.astro';
         margin-top: 0.3rem;
         font-weight: 700;
         font-size: 1.15rem;
-        letter-spacing: 0.18em;
-        text-transform: uppercase;
         color: var(--color-text-muted);
         text-align: center;
         transition: color 0.15s;
@@ -995,8 +987,6 @@ import Layout from '../layouts/Layout.astro';
     #cycle {
         font-weight: 600;
         font-size: 0.8rem;
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
         color: var(--color-text-muted);
     }
 
@@ -1033,8 +1023,6 @@ import Layout from '../layouts/Layout.astro';
 
     .controls button {
         font: 600 0.85rem/1.3 var(--font-ui);
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
         color: var(--color-text-heading);
         background: var(--color-surface);
         border: 1px solid var(--color-border);
@@ -1081,8 +1069,6 @@ import Layout from '../layouts/Layout.astro';
     .r-label {
         font-weight: 700;
         font-size: 0.8rem;
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
         color: var(--pulse);
         margin-bottom: 0.35rem;
     }
@@ -1114,8 +1100,6 @@ import Layout from '../layouts/Layout.astro';
     :global(.page-cpr-trainer .rcell .l) {
         font-size: 0.68rem;
         font-weight: 600;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
         color: var(--color-text-muted);
         margin-top: 0.1rem;
     }
@@ -1128,8 +1112,6 @@ import Layout from '../layouts/Layout.astro';
     .c-label {
         font-weight: 600;
         font-size: 0.75rem;
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
         color: var(--color-text-muted);
         margin-bottom: 0.25rem;
     }
@@ -1224,8 +1206,6 @@ import Layout from '../layouts/Layout.astro';
     .stat .l {
         font-size: 0.72rem;
         font-weight: 600;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
         color: var(--color-text-muted);
         margin-top: 0.1rem;
     }

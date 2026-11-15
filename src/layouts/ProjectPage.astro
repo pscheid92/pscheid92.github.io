@@ -1,10 +1,11 @@
 ---
+import {Image} from 'astro:assets';
 import type {CollectionEntry} from 'astro:content';
 import Layout from './Layout.astro';
 
 type Props = CollectionEntry<'projects'>['data'];
 
-const {title, description, language, secondaryLanguage, github, liveUrl, kind, topics = []} = Astro.props;
+const {title, description, language, secondaryLanguage, github, liveUrl, kind, topics = [], image, imageAlt = '', imageIsLineArt} = Astro.props;
 const external = (url: string) => !url.startsWith('/');
 ---
 
@@ -25,6 +26,12 @@ const external = (url: string) => !url.startsWith('/');
                 </p>
             </div>
         </header>
+
+        {image && (
+            <figure class="grid project-figure">
+                <Image class:list={['wide', {'line-art': imageIsLineArt}]} src={image} alt={imageAlt} width={1200} loading="eager"/>
+            </figure>
+        )}
 
         <div class="grid">
             <div class="prose">
@@ -72,6 +79,27 @@ const external = (url: string) => !url.startsWith('/');
         gap: 0.5rem 1.5rem;
         margin: 1.25rem 0 0;
         font-weight: 700;
+    }
+
+    .project-figure {
+        margin: 0 auto 3rem;
+    }
+
+    .project-figure img {
+        display: block;
+        width: 100%;
+        height: auto;
+        border-radius: 10px;
+        border: 1px solid var(--color-border);
+    }
+
+    .project-figure img.line-art {
+        border: 0;
+        border-radius: 0;
+    }
+
+    :global([data-theme="dark"]) .project-figure img.line-art {
+        filter: invert(0.88) hue-rotate(180deg);
     }
 
     .project-footer {

@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 420" width="960" height="420" font-family="IBM Plex Sans, Helvetica Neue, Arial, sans-serif" fill="#24221e">
+  <!-- Overview of the k3s cluster for src/content/projects/k8s-cluster.md.
+       Transparent line art in dark ink: the site inverts it in dark mode. -->
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 10 5 0 10z" fill="#24221e"/>
+    </marker>
+  </defs>
+  <g stroke="#24221e" stroke-width="1.5" fill="none">
+    <!-- outside: git, registry -->
+    <rect x="20" y="40" width="180" height="64" rx="8"/>
+    <rect x="20" y="140" width="180" height="64" rx="8"/>
+    <!-- the cluster -->
+    <rect x="250" y="20" width="460" height="380" rx="12" stroke-dasharray="6 5"/>
+    <rect x="280" y="64" width="400" height="56" rx="8"/>
+    <rect x="280" y="150" width="190" height="56" rx="8"/>
+    <rect x="490" y="150" width="190" height="56" rx="8"/>
+    <rect x="280" y="236" width="400" height="76" rx="8"/>
+    <rect x="280" y="330" width="400" height="48" rx="8"/>
+    <!-- outside: internet, storage, metrics -->
+    <rect x="760" y="64" width="180" height="56" rx="8"/>
+    <rect x="760" y="236" width="180" height="76" rx="8"/>
+    <rect x="760" y="330" width="180" height="48" rx="8"/>
+    <!-- arrows -->
+    <path d="M200 72H232V162H280" marker-end="url(#a)"/>
+    <path d="M200 172H244V190H280" marker-end="url(#a)"/>
+    <path d="M760 92h-80" marker-end="url(#a)"/>
+    <path d="M480 120v116" marker-end="url(#a)"/>
+    <path d="M680 274h80" marker-end="url(#a)"/>
+    <path d="M680 354h80" marker-end="url(#a)"/>
+    <path d="M375 206v30" marker-end="url(#a)"/>
+  </g>
+  <g font-size="15">
+    <text x="36" y="68" font-weight="600">GitHub repository</text>
+    <text x="36" y="90" font-size="13">manifests, SOPS secrets</text>
+    <text x="36" y="168" font-weight="600">Container registry</text>
+    <text x="36" y="190" font-size="13">GHCR, dated image tags</text>
+
+    <text x="266" y="46" font-size="13">k3s on three Hetzner nodes · control plane and etcd on each</text>
+    <text x="296" y="90" font-weight="600">Envoy Gateway</text>
+    <text x="296" y="110" font-size="13">TLS from cert-manager (Let's Encrypt, DNS-01)</text>
+    <text x="296" y="176" font-weight="600">FluxCD</text>
+    <text x="296" y="196" font-size="13">reconciles the repo</text>
+    <text x="506" y="176" font-weight="600">Image automation</text>
+    <text x="506" y="196" font-size="13">new tags → commits</text>
+    <text x="296" y="262" font-weight="600">Apps</text>
+    <text x="296" y="284" font-size="13">patrickscheid.de · Secretli · Excalidraw · Zitadel</text>
+    <text x="296" y="302" font-size="13">CloudNativePG: one PostgreSQL cluster per app</text>
+    <text x="296" y="359" font-weight="600">Grafana Alloy</text>
+
+    <text x="776" y="90" font-weight="600">Visitors</text>
+    <text x="776" y="110" font-size="13">HTTPS</text>
+    <text x="776" y="262" font-weight="600">Object Storage</text>
+    <text x="776" y="282" font-size="13">app files; WAL and</text>
+    <text x="776" y="300" font-size="13">nightly base backups</text>
+    <text x="776" y="359" font-weight="600">Grafana Cloud</text>
+  </g>
+</svg>

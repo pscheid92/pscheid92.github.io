@@ -5,11 +5,11 @@ import Layout from '../layouts/Layout.astro';
 <Layout
     title="Calendar Week - Patrick Scheid"
     description="Monday to Sunday of any ISO 8601 calendar week. Add year and week to the address, as in /cw/this/42 or /cw/2027/42."
-    pageClass="page-cw"
+    pageClass="tool page-cw"
 >
     <section class="cw-shell" aria-labelledby="cw-title">
         <div class="cw-header">
-            <p class="eyebrow">Calendar</p>
+            <a class="eyebrow" href="/pages/">&larr; More tools</a>
             <h1 id="cw-title">Calendar Week</h1>
         </div>
 
@@ -164,16 +164,11 @@ import Layout from '../layouts/Layout.astro';
 </script>
 
 <style>
-    :global(body.page-cw main) {
-        width: 100%;
-        max-width: 48rem;
-    }
-
     .cw-shell {
         display: grid;
         gap: 1.75rem;
         max-width: 48rem;
-        margin: 0 auto;
+        margin: 0;
     }
 
     .cw-header {
@@ -181,12 +176,15 @@ import Layout from '../layouts/Layout.astro';
     }
 
     .eyebrow {
-        margin: 0 0 0.35rem;
+        display: inline-block;
+        margin: 0 0 0.6rem;
+        color: var(--color-text-muted);
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    .eyebrow:hover {
         color: var(--color-accent);
-        font-size: 0.85rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
     }
 
     .cw-header h1 {
@@ -273,7 +271,6 @@ import Layout from '../layouts/Layout.astro';
         border-radius: 8px;
         padding: 1.1rem 1.25rem 0.6rem;
         background: var(--color-bg);
-        box-shadow: 0 2px 8px color-mix(in srgb, var(--color-shadow) 35%, transparent);
     }
 
     .week-card[hidden] {

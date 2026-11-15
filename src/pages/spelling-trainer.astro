@@ -5,11 +5,11 @@ import Layout from '../layouts/Layout.astro';
 <Layout
     title="Spelling Alphabet Trainer - Patrick Scheid"
     description="Practise the NATO alphabet, the German Buchstabiertafel and the BOS Inland-Alphabet: spell random words by keyboard or voice and get per-letter feedback."
-    pageClass="page-spelling-trainer"
+    pageClass="tool page-spelling-trainer"
 >
     <section class="trainer-shell" aria-labelledby="trainer-title">
         <div class="page-header">
-            <p class="eyebrow">Training tool</p>
+            <a class="eyebrow" href="/pages/">&larr; More tools</a>
             <h1 id="trainer-title">Spelling Alphabet Trainer</h1>
             <p class="tagline">Alfa, Bravo, Charlie — or Anton, Berta, Cäsar. Spell the word, letter by letter.</p>
         </div>
@@ -885,11 +885,6 @@ import Layout from '../layouts/Layout.astro';
 </script>
 
 <style>
-    :global(body.page-spelling-trainer main) {
-        width: 100%;
-        max-width: 58rem;
-    }
-
     .trainer-shell {
         --good: #27ae60;
         --bad: #eb5757;
@@ -906,12 +901,15 @@ import Layout from '../layouts/Layout.astro';
     }
 
     .eyebrow {
-        margin: 0 0 0.35rem;
+        display: inline-block;
+        margin: 0 0 0.6rem;
+        color: var(--color-text-muted);
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    .eyebrow:hover {
         color: var(--color-accent);
-        font-size: 0.85rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
     }
 
     .page-header h1 {
@@ -943,8 +941,6 @@ import Layout from '../layouts/Layout.astro';
         text-align: center;
         color: var(--color-text-muted);
         font: 600 0.85rem/1.3 var(--font-ui);
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
         padding: 0.7rem 0.25rem;
         cursor: pointer;
     }
@@ -1159,8 +1155,6 @@ import Layout from '../layouts/Layout.astro';
         background: var(--color-accent);
         color: var(--color-on-accent);
         font: 700 0.85rem/1 var(--font-ui);
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
         cursor: pointer;
     }
 

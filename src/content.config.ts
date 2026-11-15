@@ -24,10 +24,15 @@ const blog = defineCollection({
 
 const projects = defineCollection({
     loader: glob({base: './src/content/projects', pattern: '**/*.{md,mdx}'}),
-    schema: () =>
+    schema: ({image}) =>
         z.object({
             title: z.string(),
             description: z.string(),
+            // A screenshot or diagram, shown on the project page and in the project list
+            image: image().optional(),
+            imageAlt: z.string().optional(),
+            // Line art in dark ink on a transparent background, inverted in dark mode
+            imageIsLineArt: z.boolean().default(false),
             language: z.string(),
             secondaryLanguage: z.string().optional(),
             github: z.url().optional(),
