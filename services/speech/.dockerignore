@@ -1,0 +1,5 @@
+# The image is the two source files and nothing else: no tests, and never a
+# local .env with the API key.
+*
+!token.ts
+!server.ts
