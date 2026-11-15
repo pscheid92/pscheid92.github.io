@@ -89,6 +89,11 @@ const next = seriesInfo?.parts.find((p) => p.part === (seriesPart ?? 0) + 1);
             </div>
         </footer>
     </article>
+
+    <dialog class="zoom" aria-label="Enlarged image">
+        <img alt=""/>
+        <button type="button" class="zoom-close">Close</button>
+    </dialog>
 </Layout>
 
 <style>
@@ -270,6 +275,81 @@ const next = seriesInfo?.parts.find((p) => p.part === (seriesPart ?? 0) + 1);
             margin-bottom: 0.75rem;
         }
     }
+
+    /* Figures open enlarged: a click or Enter on the image, a click anywhere or Escape to close */
+    .prose :global(img[data-zoom]) {
+        cursor: zoom-in;
+    }
+
+    .prose :global(img[data-zoom]:focus-visible) {
+        outline: 2px solid var(--color-accent);
+        outline-offset: 3px;
+    }
+
+    .zoom {
+        position: fixed;
+        inset: 0;
+        width: 100vw;
+        height: 100dvh;
+        max-width: none;
+        max-height: none;
+        margin: 0;
+        padding: 3.5rem 1rem 1rem;
+        border: 0;
+        background: var(--color-overlay);
+        cursor: zoom-out;
+    }
+
+    .zoom[open] {
+        display: grid;
+        place-items: center;
+    }
+
+    .zoom::backdrop {
+        background: var(--color-overlay);
+    }
+
+    .zoom img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        min-height: 0;
+        object-fit: contain;
+    }
+
+    :global([data-theme="dark"]) .zoom img:not([src*=".dark."]) {
+        filter: invert(0.88) hue-rotate(180deg);
+    }
+
+    .zoom-close {
+        position: absolute;
+        top: 0.75rem;
+        right: 1rem;
+        font: 600 0.9rem var(--font-ui);
+        color: var(--color-text);
+        background: var(--color-surface);
+        border: 1px solid var(--color-border);
+        border-radius: 6px;
+        padding: 0.35rem 0.8rem;
+        cursor: pointer;
+    }
+
+    .zoom-close:focus-visible {
+        outline: 2px solid var(--color-accent);
+        outline-offset: 2px;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+        .zoom[open] {
+            animation: zoom-in 0.15s ease-out;
+        }
+    }
+
+    @keyframes zoom-in {
+        from {
+            opacity: 0;
+        }
+    }
 </style>
 
 <script>
@@ -291,5 +371,47 @@ const next = seriesInfo?.parts.find((p) => p.part === (seriesPart ?? 0) + 1);
     if (links.length) {
         window.addEventListener('scroll', update, {passive: true});
         update();
+    }
+
+    // Click a figure to see it enlarged
+    const zoom = document.querySelector<HTMLDialogElement>('dialog.zoom');
+    const zoomed = zoom?.querySelector('img');
+
+    function largestSource(img: HTMLImageElement) {
+        // Photos come with a srcset; take its widest file. Diagrams are a single SVG.
+        const candidates = img.srcset
+            .split(',')
+            .map((part) => part.trim().split(/\s+/))
+            .filter(([url]) => url)
+            .map(([url, size]) => ({url, width: parseFloat(size ?? '0') || 0}))
+            .sort((a, b) => b.width - a.width);
+        return candidates[0]?.url ?? img.currentSrc ?? img.src;
+    }
+
+    if (zoom && zoomed) {
+        const open = (img: HTMLImageElement) => {
+            const src = largestSource(img);
+            zoomed.src = src;
+            zoomed.alt = img.alt;
+            // A photo is not blown up past its own pixels; an SVG scales freely
+            zoomed.style.maxWidth = /\.svg|f=svg/.test(src) ? '' : `${img.naturalWidth}px`;
+            zoom.showModal();
+        };
+
+        document.querySelectorAll<HTMLImageElement>('.prose img').forEach((img) => {
+            img.dataset.zoom = '';
+            img.tabIndex = 0;
+            img.setAttribute('role', 'button');
+            img.setAttribute('aria-label', `Enlarge image${img.alt ? `: ${img.alt}` : ''}`);
+            img.addEventListener('click', () => open(img));
+            img.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    open(img);
+                }
+            });
+        });
+
+        zoom.addEventListener('click', () => zoom.close());
     }
 </script>
