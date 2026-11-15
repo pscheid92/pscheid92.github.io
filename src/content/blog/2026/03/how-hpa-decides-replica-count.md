@@ -46,6 +46,8 @@ The HPA doesn't react to tiny fluctuations. If the ratio is within **±10% of 1.
 
 If you configure multiple metrics (e.g., CPU and memory), the HPA computes desired replicas for each metric independently and takes the **maximum**. This ensures you have enough pods to satisfy the most demanding metric.
 
+If one of the metrics can't be read, the HPA still scales up on the ones that work, but it refuses to scale down: the missing metric might have asked for more.
+
 ### The Feedback Loop
 
 The formula uses *current replicas* as input, which creates a feedback loop. If the HPA scaled to 15 last sync, the formula uses 15 as its starting point next sync. This means desired replicas can overshoot — if the metric is still high but declining, the formula may compute an even higher number because it's multiplying against more replicas. The HPA dampens this itself: the multiplication counts only pods that are ready, and pods that are not ready yet count as using 0% of the target when it considers scaling up.
