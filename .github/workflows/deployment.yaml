@@ -39,6 +39,7 @@ jobs:
     permissions:
       contents: read
       packages: write
+      id-token: write # the OIDC token that tells Flux about the new images
     steps:
       - uses: actions/checkout@v5
       - name: Tag
@@ -70,3 +71,15 @@ jobs:
           tags: ghcr.io/pscheid92/website-speech:${{ steps.tag.outputs.tag }}
           labels: |
             org.opencontainers.image.source=https://github.com/${{ github.repository }}
+      # Tells Flux on the cluster to look for the new images now rather than at
+      # its next poll (pscheid92/k8s, apps/website/flux-receiver.yaml). Flux
+      # accepts only an OIDC token issued to this repository's main. If the
+      # call fails, Flux still finds the images within 5 minutes.
+      - name: Tell Flux
+        run: |
+          token=$(curl -sSf -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=notification-controller" | jq -r .value)
+          curl -sSf --max-time 20 -X POST -H "Authorization: Bearer $token" "$FLUX_RECEIVER" \
+            || echo "::warning::Flux was not reached; it will find the images at its next poll"
+        env:
+          FLUX_RECEIVER: https://flux-webhook.k.patrickscheid.de/hook/ef37ff30e018a3a9587364878feed6394f080b22f82983aafff68511cf2e5e32
