@@ -40,7 +40,7 @@ The metric is 25% over target, so we need 25% more pods. This works for scale-do
 
 ### The ±10% Tolerance Band
 
-The HPA doesn't react to tiny fluctuations. If the ratio is within **±10% of 1.0** (i.e., between 0.9 and 1.1), it does nothing. That 10% is the cluster-wide default; newer Kubernetes versions let you set a `tolerance` per HPA and per direction. This prevents constant micro-adjustments when the metric hovers near the target.
+The HPA doesn't react to tiny fluctuations. If the ratio is within **±10% of 1.0** (i.e., between 0.9 and 1.1), it does nothing. That 10% is the cluster-wide default; since Kubernetes 1.35 you can also set a `tolerance` per HPA and per direction. This prevents constant micro-adjustments when the metric hovers near the target.
 
 ### Multiple Metrics
 
@@ -48,7 +48,7 @@ If you configure multiple metrics (e.g., CPU and memory), the HPA computes desir
 
 ### The Feedback Loop
 
-The formula uses *current replicas* as input, which creates a feedback loop. If the HPA scaled to 15 last sync, the formula uses 15 as its starting point next sync. This means desired replicas can overshoot — if the metric is still high but declining, the formula may compute an even higher number because it's multiplying against more replicas. The HPA dampens this itself: pods that are not ready yet count as using 0% of the target when it considers scaling up.
+The formula uses *current replicas* as input, which creates a feedback loop. If the HPA scaled to 15 last sync, the formula uses 15 as its starting point next sync. This means desired replicas can overshoot — if the metric is still high but declining, the formula may compute an even higher number because it's multiplying against more replicas. The HPA dampens this itself: the multiplication counts only pods that are ready, and pods that are not ready yet count as using 0% of the target when it considers scaling up.
 
 ---
 
