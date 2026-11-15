@@ -322,7 +322,7 @@ const next = seriesInfo?.parts.find((p) => p.part === (seriesPart ?? 0) + 1);
     }
 
     .zoom-close {
-        position: absolute;
+        position: fixed;
         top: 0.75rem;
         right: 1rem;
         font: 600 0.9rem var(--font-ui);
@@ -339,15 +339,21 @@ const next = seriesInfo?.parts.find((p) => p.part === (seriesPart ?? 0) + 1);
         outline-offset: 2px;
     }
 
-    @media (prefers-reduced-motion: no-preference) {
-        .zoom[open] {
-            animation: zoom-in 0.15s ease-out;
+    /* On phones a diagram at window width is smaller than in the text, so it keeps a readable size and scrolls */
+    @media (max-width: 720px) {
+        .zoom {
+            overflow: auto;
+            padding-inline: var(--page-pad);
         }
-    }
 
-    @keyframes zoom-in {
-        from {
-            opacity: 0;
+        .zoom[open] {
+            justify-items: start;
+        }
+
+        .zoom img {
+            width: 900px;
+            max-width: none;
+            height: auto;
         }
     }
 </style>
@@ -385,7 +391,7 @@ const next = seriesInfo?.parts.find((p) => p.part === (seriesPart ?? 0) + 1);
             .filter(([url]) => url)
             .map(([url, size]) => ({url, width: parseFloat(size ?? '0') || 0}))
             .sort((a, b) => b.width - a.width);
-        return candidates[0]?.url ?? img.currentSrc ?? img.src;
+        return candidates[0]?.url || img.currentSrc || img.src;
     }
 
     if (zoom && zoomed) {
@@ -394,7 +400,7 @@ const next = seriesInfo?.parts.find((p) => p.part === (seriesPart ?? 0) + 1);
             zoomed.src = src;
             zoomed.alt = img.alt;
             // A photo is not blown up past its own pixels; an SVG scales freely
-            zoomed.style.maxWidth = /\.svg|f=svg/.test(src) ? '' : `${img.naturalWidth}px`;
+            zoomed.style.maxWidth = /\.svg|f=svg/.test(src) || !img.naturalWidth ? '' : `${img.naturalWidth}px`;
             zoom.showModal();
         };
 
