@@ -2,7 +2,7 @@
 <line x1="80" y1="30" x2="80" y2="260" stroke="#3f3f46" stroke-width="1"/>
 <line x1="80" y1="260" x2="740" y2="260" stroke="#3f3f46" stroke-width="1"/>
 <text x="28" y="155" fill="#71717a" font-size="9" font-family="monospace" transform="rotate(-90 28 155)">replicas</text>
-<text x="410" y="288" text-anchor="middle" fill="#71717a" font-size="10" font-family="monospace">sync periods →</text>
+<text x="410" y="288" text-anchor="middle" fill="#71717a" font-size="10" font-family="monospace">time → (one step every 60s = 4 sync periods)</text>
 <text x="70" y="254" text-anchor="end" fill="#71717a" font-size="9" font-family="monospace">1</text>
 <text x="70" y="227" text-anchor="end" fill="#71717a" font-size="9" font-family="monospace">2</text>
 <text x="70" y="200" text-anchor="end" fill="#71717a" font-size="9" font-family="monospace">3</text>
@@ -20,7 +20,7 @@
 <line x1="80" y1="115" x2="740" y2="115" stroke="#27272a" stroke-width="0.5"/>
 <line x1="80" y1="88" x2="740" y2="88" stroke="#27272a" stroke-width="0.5"/>
 <line x1="80" y1="35" x2="740" y2="35" stroke="#fb7185" stroke-width="1.5" stroke-dasharray="6 3"/>
-<text x="745" y="39" fill="#fb7185" font-size="10" font-weight="500" font-family="monospace">desired = 10</text>
+<text x="740" y="27" text-anchor="end" fill="#fb7185" font-size="10" font-weight="500" font-family="monospace">desired = 10</text>
 <line x1="80" y1="250" x2="190" y2="250" stroke="#fb7185" stroke-width="2.5"/>
 <line x1="190" y1="250" x2="190" y2="223" stroke="#fb7185" stroke-width="2.5"/>
 <line x1="190" y1="223" x2="300" y2="223" stroke="#fb7185" stroke-width="2.5"/>
