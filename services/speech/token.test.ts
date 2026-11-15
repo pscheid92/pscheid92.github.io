@@ -241,6 +241,29 @@ describe('the rate limit', () => {
     });
 });
 
+describe('addresses in memory', () => {
+    it('are forgotten on a timer, without another request', async () => {
+        vi.useFakeTimers({now: NOON});
+        const sweep = vi.spyOn(RateLimiter.prototype, 'sweep');
+        try {
+            const handle = createHandler({
+                apiKey: 'test-key',
+                allowedOrigins: [SITE],
+                fetch: (async () => Response.json({name: 'auth_tokens/abc'})) as typeof fetch,
+            });
+            await handle(post(german), '203.0.113.7');
+            expect(sweep).not.toHaveBeenCalled();
+
+            vi.advanceTimersByTime(60_000);
+
+            expect(sweep).toHaveBeenCalledWith(NOON + 60_000);
+            expect((sweep.mock.contexts[0] as RateLimiter).size).toBe(0);
+        } finally {
+            vi.useRealTimers();
+        }
+    });
+});
+
 describe('RateLimiter', () => {
     it('says how long to wait', () => {
         const limiter = new RateLimiter(2, 1000);
@@ -251,14 +274,17 @@ describe('RateLimiter', () => {
         expect(limiter.take('a', 1000)).toBe(0);
     });
 
-    it('forgets addresses that have gone quiet', () => {
+    it('forgets addresses that have been quiet for a whole period when swept', () => {
         const limiter = new RateLimiter(2, 1000);
         limiter.take('a', 0);
         limiter.take('b', 900);
-        expect(limiter.size).toBe(2);
 
-        limiter.take('c', 1500);
-        expect(limiter.size).toBe(2); // b and c
+        limiter.sweep(999);
+        expect(limiter.size).toBe(2);
+        limiter.sweep(1000);
+        expect(limiter.size).toBe(1); // b
+        limiter.sweep(1900);
+        expect(limiter.size).toBe(0);
     });
 
     it('holds a limited number of addresses, and makes new ones wait when it is full', () => {

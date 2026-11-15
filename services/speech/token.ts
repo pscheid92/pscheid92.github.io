@@ -14,7 +14,8 @@
 // another site can't read what this answers.
 //
 // Nothing about a request is logged, only a failed call to Google. A
-// visitor's address is held in memory for a minute, to count their requests.
+// visitor's address is held in memory to count their requests, and forgotten
+// at most two minutes after their last one.
 
 export interface Options {
     apiKey: string;
@@ -71,6 +72,9 @@ export function createHandler(options: Options): Handler {
     const send = options.fetch ?? fetch;
     const now = options.now ?? Date.now;
     const limiter = new RateLimiter(RATE_LIMIT, RATE_PERIOD_MS);
+    // On a timer, not when the next request happens to come: an address must
+    // not stay in memory for hours because nobody else used the trainer.
+    setInterval(() => limiter.sweep(now()), RATE_PERIOD_MS).unref();
 
     async function handle(request: Request, client: string): Promise<Response> {
         if (new URL(request.url).pathname !== PATH) throw new HttpError(404, 'not found');
@@ -163,7 +167,6 @@ export class RateLimiter {
     readonly #periodMs: number;
     readonly #maxKeys: number;
     readonly #requests = new Map<string, number[]>();
-    #sweptAt = 0;
 
     constructor(limit: number, periodMs: number, maxKeys = 10_000) {
         this.#limit = limit;
@@ -173,8 +176,6 @@ export class RateLimiter {
 
     /** Counts a request. Returns 0 if it may pass, else the milliseconds until the next one may. */
     take(key: string, now: number): number {
-        if (now - this.#sweptAt >= this.#periodMs) this.#sweep(now);
-
         const recent = (this.#requests.get(key) ?? []).filter((time) => time > now - this.#periodMs);
         if (recent.length >= this.#limit) {
             this.#requests.set(key, recent);
@@ -184,7 +185,7 @@ export class RateLimiter {
         // A flood from more addresses than the table holds: those not in it
         // wait until others have gone quiet, so the table can't grow without end.
         if (!this.#requests.has(key) && this.#requests.size >= this.#maxKeys) {
-            this.#sweep(now);
+            this.sweep(now);
             if (this.#requests.size >= this.#maxKeys) return this.#periodMs;
         }
 
@@ -197,9 +198,8 @@ export class RateLimiter {
         return this.#requests.size;
     }
 
-    // Forgets every address that has been quiet for a whole period.
-    #sweep(now: number) {
-        this.#sweptAt = now;
+    /** Forgets every address that has been quiet for a whole period. */
+    sweep(now: number): void {
         for (const [key, times] of this.#requests) {
             if (times[times.length - 1] <= now - this.#periodMs) this.#requests.delete(key);
         }
