@@ -39,6 +39,8 @@ const [latest] = toEntries(await getPublishedPosts());
     :global(body.page-home main) {
         display: grid;
         align-content: center;
+        /* Sit a little above the middle: dead centre reads as low on a tall screen */
+        padding-bottom: max(4rem, 12vh);
     }
 
     .intro {
@@ -51,17 +53,17 @@ const [latest] = toEntries(await getPublishedPosts());
     }
 
     .avatar {
-        width: 112px;
-        height: 112px;
+        width: 128px;
+        height: 128px;
         border-radius: 50%;
-        margin-bottom: 1.75rem;
+        margin-bottom: 2rem;
     }
 
     h1 {
-        font-size: 2.75rem;
-        line-height: 1.1;
-        margin: 0 0 1rem;
-        letter-spacing: -0.02em;
+        font-size: 4rem;
+        line-height: 1.05;
+        margin: 0 0 1.25rem;
+        letter-spacing: -0.03em;
     }
 
     .lede {
@@ -105,7 +107,7 @@ const [latest] = toEntries(await getPublishedPosts());
         }
 
         h1 {
-            font-size: 2.1rem;
+            font-size: 2.6rem;
         }
 
         .lede {
