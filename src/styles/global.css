@@ -432,10 +432,20 @@ a:hover > .ledger-title {
     scroll-margin-top: 1.5rem;
 }
 
-/* Heading sizes follow the text size, so every level stays larger than the text on any screen */
+/* Heading sizes follow the text size, so every level stays larger than the text on any screen.
+   A main section opens with a rule, so a long article reads as a few clear parts. */
 .prose h2 {
-    font-size: 1.3em;
-    margin: 2.2em 0 0.6em;
+    font-size: 1.6em;
+    line-height: 1.2;
+    margin: 2.4em 0 0.7em;
+    padding-top: 1em;
+    border-top: 1px solid var(--color-border);
+}
+
+.prose > h2:first-child,
+.prose > .toc-details + h2 {
+    padding-top: 0;
+    border-top: 0;
 }
 
 .prose h3 {
@@ -507,7 +517,6 @@ a:hover > .ledger-title {
     padding: 0.12em 0.35em;
     border-radius: 4px;
     background: var(--color-code-bg);
-    border: 1px solid var(--color-border);
     overflow-wrap: anywhere;
 }
 
