@@ -288,9 +288,6 @@ import Layout from '../layouts/Layout.astro';
 
     // --- speech input ---
 
-    const SpeechRecognitionCtor =
-        (window as any).SpeechRecognition ?? (window as any).webkitSpeechRecognition;
-    let recognition: any = null;
     let listening = false;
     let suppressFinalCheck = false;
 
@@ -302,29 +299,17 @@ import Layout from '../layouts/Layout.astro';
 
     function stopListening(runFinalCheck: boolean) {
         suppressFinalCheck = !runFinalCheck;
-        if (stopLive) {
-            stopLive();
-            return;
-        }
-        recognition?.stop();
+        stopLive?.();
     }
 
     const SPEECH_ERRORS: Record<string, string> = {
         'not-allowed': 'Microphone access was denied — allow the microphone for this site and try again.',
-        'service-not-allowed': 'The speech service is not available — in Safari, enable Siri or Dictation in the system settings first.',
-        'audio-capture': 'No microphone was found.',
         'no-speech': 'Didn’t hear anything — press the mic again and speak the code words clearly.',
-        network: 'The browser’s speech service could not be reached — check your connection, or try Chrome, Edge or Safari.',
     };
 
-    // Brave exposes the speech API but has no cloud speech service behind it, so
-    // it can only work with an on-device model; without one it streams to
-    // Gemini's live transcription, like browsers without the API.
-    const isBrave = typeof (navigator as any).brave?.isBrave === 'function';
-    const BRAVE_NO_MODEL = 'Brave’s speech model isn’t installed — press the mic and allow the download, or type the code words.';
     let starting = false;
 
-    // --- streamed speech input (browsers without usable speech recognition) ---
+    // --- streamed speech input ---
 
     // The site's own token service (services/speech) hands out single-use tokens;
     // the audio goes straight to Google. In development `npm run speech` runs the
@@ -460,7 +445,7 @@ import Layout from '../layouts/Layout.astro';
     function restartIfRequested() {
         if (!restartAfterStop) return;
         restartAfterStop = false;
-        void startListening();
+        void startRecording();
     }
     navigator.mediaDevices?.addEventListener?.('devicechange', () => void refreshMicChoice());
     void refreshMicChoice();
@@ -476,7 +461,7 @@ import Layout from '../layouts/Layout.astro';
         link.rel = 'noopener';
         link.textContent = 'privacy policy';
         hint.replaceChildren(
-            'This browser has no speech recognition of its own. To use the mic, what you say is streamed to Google for transcription. This site stores nothing; Google may keep it for up to 55 days to detect abuse. Adults (18+) only. Details are in the ',
+            'To use the mic, what you say is streamed to Google for transcription. This site stores nothing; Google may keep it for up to 55 days to detect abuse. Adults (18+) only. Details are in the ',
             link,
             ' (German). Press the mic again to agree and start.',
         );
@@ -716,6 +701,7 @@ import Layout from '../layouts/Layout.astro';
     }
 
     async function startRecording() {
+        if (stopLive || starting) return;
         if (storage.get('cloud-speech') !== 'ok') {
             if (!cloudNoticeShown) {
                 cloudNoticeShown = true;
@@ -829,169 +815,11 @@ import Layout from '../layouts/Layout.astro';
         return mode === 'nato' ? 'en-US' : 'de-DE';
     }
 
-    async function onDeviceStatus(lang: string): Promise<string> {
-        if (typeof SpeechRecognitionCtor?.available !== 'function') return 'unavailable';
-        try {
-            return await SpeechRecognitionCtor.available({langs: [lang], processLocally: true});
-        } catch {
-            return 'unavailable';
-        }
-    }
-
-    async function startListening() {
-        if (recognition || stopLive || starting) return;
-        if (!SpeechRecognitionCtor) return startRecording();
-        const lang = speechLang();
-        let processLocally = false;
-        if (isBrave) {
-            starting = true;
-            const initial = await onDeviceStatus(lang);
-            if (initial === 'unavailable') {
-                starting = false;
-                return startRecording();
-            }
-            let status = initial;
-            if (status === 'downloadable' || status === 'downloading') {
-                // Brave asks the user for consent first, then downloads a model of
-                // several hundred MB, so this can take minutes. Wait for it.
-                hint.textContent = status === 'downloadable'
-                    ? 'Brave needs to download its on-device speech model (about 600 MB) — allow it in the prompt, then wait…'
-                    : 'Brave is downloading its on-device speech model (about 600 MB) — this can take a few minutes…';
-                micButton.disabled = true;
-                // install() reports no progress, so show an indeterminate bar with elapsed time.
-                const startedAt = Date.now();
-                const tick = () => {
-                    modelElapsed.textContent = formatSeconds(Date.now() - startedAt);
-                };
-                showProgress('Downloading speech model');
-                tick();
-                const timer = setInterval(tick, 1000);
-                const installed = await SpeechRecognitionCtor.install({langs: [lang], processLocally: true}).catch(() => false);
-                clearInterval(timer);
-                hideProgress();
-                micButton.disabled = false;
-                status = installed ? 'available' : await onDeviceStatus(lang);
-            }
-            starting = false;
-            if (status !== 'available') {
-                // Declined or failed: leave the mic enabled so the user can retry.
-                hint.textContent = BRAVE_NO_MODEL;
-                return;
-            }
-            // The language may have changed while the model was downloading.
-            if (lang !== speechLang()) {
-                hint.textContent = 'Speech model ready — press the mic to start.';
-                return;
-            }
-            processLocally = true;
-        }
-        // Our own stream of the chosen mic: feeds the level meter, and is handed
-        // to the recognizer where the browser supports that. Without it, the
-        // recognizer still works on the default mic, just without a meter.
-        starting = true;
-        let micStream: MediaStream | null = null;
-        try {
-            micStream = await openMic();
-            void refreshMicChoice();
-        } catch {
-            micStream = null;
-        }
-        starting = false;
-        const mic = micStream ? watchMic(micStream) : null;
-        const stopTimer = micStream ? showRecording() : () => {};
-        const releaseMic = () => {
-            mic?.stop();
-            stopTimer();
-            micStream?.getTracks().forEach((track) => track.stop());
-            hideProgress();
-        };
-
-        recognition = new SpeechRecognitionCtor();
-        recognition.lang = lang;
-        if (processLocally) recognition.processLocally = true;
-        recognition.continuous = true;
-        recognition.interimResults = true;
-        input.value = ''; // a new recording replaces the previous attempt
-        onLiveInput();
-        suppressFinalCheck = false;
-        // The browser's recognizer tells us when words arrive; stop once none
-        // have come for PAUSE_MS after the first one, or at MAX_RECORDING_MS.
-        const startedAt = Date.now();
-        let lastResultAt = 0;
-        const pauseWatch = setInterval(() => {
-            const now = Date.now();
-            if ((lastResultAt && now - lastResultAt >= PAUSE_MS) || now - startedAt >= MAX_RECORDING_MS) {
-                stopListening(true);
-            }
-        }, 250);
-        recognition.onstart = () => {
-            listening = true;
-            updateMicUi();
-            hint.textContent = LISTENING_HINT;
-        };
-        recognition.onresult = (event: any) => {
-            lastResultAt = Date.now();
-            let finalText = '';
-            let interimText = '';
-            for (let i = 0; i < event.results.length; i++) {
-                const result = event.results[i];
-                const transcript = String(result[0].transcript).trim();
-                if (result.isFinal) {
-                    finalText += `${transcript} `;
-                } else {
-                    interimText += `${transcript} `;
-                }
-            }
-            input.value = [finalText.trim(), interimText.trim()].filter(Boolean).join(' ');
-            onLiveInput();
-        };
-        recognition.onend = () => {
-            clearInterval(pauseWatch);
-            releaseMic();
-            listening = false;
-            recognition = null;
-            updateMicUi();
-            if (suppressFinalCheck) {
-                restartIfRequested();
-                return;
-            }
-            if (tokenize(input.value).length > 0) {
-                runCheck(true);
-            } else {
-                hint.textContent = DEFAULT_HINT;
-            }
-        };
-        recognition.onerror = (event: any) => {
-            if (event.error === 'aborted') return;
-            // Keep the error visible instead of letting the final check overwrite it.
-            suppressFinalCheck = true;
-            hint.textContent = SPEECH_ERRORS[event.error] ?? `Speech input failed (${event.error}) — you can keep typing instead.`;
-        };
-        const track = storage.get('mic') ? micStream?.getAudioTracks()[0] : undefined;
-        try {
-            if (track) {
-                try {
-                    recognition.start(track); // newer browsers: recognize this mic
-                } catch (error) {
-                    if (!(error instanceof TypeError)) throw error;
-                    recognition.start(); // older ones only know the default mic
-                }
-            } else {
-                recognition.start();
-            }
-        } catch {
-            clearInterval(pauseWatch);
-            releaseMic();
-            recognition = null;
-            hint.textContent = 'Speech input could not start — try reloading the page.';
-        }
-    }
-
     micButton.addEventListener('click', () => {
         if (listening) {
             stopListening(true);
         } else {
-            void startListening();
+            void startRecording();
         }
     });
 
