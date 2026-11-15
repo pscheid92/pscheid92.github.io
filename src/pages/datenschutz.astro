@@ -101,8 +101,8 @@ import LegalPage from '../layouts/LegalPage.astro';
                 Sie beginnt erst, wenn Sie auf das Mikrofon klicken und Ihrem Browser den Zugriff erlauben.
             </p>
             <p>
-                Die Spracherkennung läuft über Google. Sie wird erst verwendet, nachdem Sie dem Hinweis im
-                Trainer zugestimmt haben. Dann geschieht Folgendes:
+                Die Spracherkennung läuft über Google. Darauf weist der Trainer direkt unter dem Eingabefeld
+                hin. Wenn Sie auf das Mikrofon klicken, geschieht Folgendes:
             </p>
             <ul>
                 <li>
@@ -130,8 +130,7 @@ import LegalPage from '../layouts/LegalPage.astro';
             </ul>
             <p>
                 Rechtsgrundlage ist Ihre Einwilligung (Art.&nbsp;6 Abs.&nbsp;1 lit.&nbsp;a DSGVO). Sie erteilen
-                sie mit dem zweiten Klick auf das Mikrofon, nachdem der Hinweis erschienen ist, und können sie
-                jederzeit für die Zukunft widerrufen:
+                sie mit dem Klick auf das Mikrofon und können sie jederzeit für die Zukunft widerrufen:
             </p>
             <p class="revoke">
                 <button type="button" id="revoke-speech" disabled>Einwilligung widerrufen</button>
@@ -348,7 +347,7 @@ import LegalPage from '../layouts/LegalPage.astro';
             /* nothing stored, nothing to remove */
         }
         showState();
-        status.textContent = 'Einwilligung widerrufen. Der Trainer fragt vor der nächsten Aufnahme erneut.';
+        status.textContent = 'Einwilligung widerrufen. Erst ein neuer Klick auf das Mikrofon gilt wieder als Einwilligung.';
     });
 
     showState();
