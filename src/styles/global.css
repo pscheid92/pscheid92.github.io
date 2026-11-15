@@ -17,6 +17,8 @@ html {
     overflow-x: clip;
     /* Reserve the scrollbar's space on short pages too, so the layout doesn't shift sideways between pages */
     scrollbar-gutter: stable;
+    /* No faked bold: weights the fonts don't have resolve to their heaviest real one */
+    font-synthesis-weight: none;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -25,43 +27,72 @@ html {
     }
 }
 
-/* Subsets built by scripts/build-fonts.py. "Atkinson" is Atkinson Hyperlegible Next; the tool pages use that name too. */
+/*
+  IBM Plex (SIL Open Font License), as subsets built by scripts/build-fonts.py.
+  Plex Sans ships at weights 400 to 600 only, and nothing bolder is synthesized:
+  every "bold" on the site, whatever number it asks for, is Plex SemiBold.
+ */
 @font-face {
-    font-family: "Atkinson";
-    src: url("/fonts/atkinson-next.woff2") format("woff2");
-    font-weight: 400 700;
+    font-family: "IBM Plex Sans";
+    src: url("/fonts/plex-sans.woff2") format("woff2");
+    font-weight: 400 600;
     font-style: normal;
     font-display: swap;
 }
 
 @font-face {
-    font-family: "Atkinson";
-    src: url("/fonts/atkinson-next-italic.woff2") format("woff2");
-    font-weight: 400 700;
+    font-family: "IBM Plex Sans";
+    src: url("/fonts/plex-sans-italic.woff2") format("woff2");
+    font-weight: 400 600;
     font-style: italic;
     font-display: swap;
 }
 
 @font-face {
-    font-family: "Source Serif";
-    src: url("/fonts/source-serif-4.woff2") format("woff2");
-    font-weight: 400 700;
+    font-family: "IBM Plex Serif";
+    src: url("/fonts/plex-serif.woff2") format("woff2");
+    font-weight: 400;
     font-style: normal;
     font-display: swap;
 }
 
 @font-face {
-    font-family: "Source Serif";
-    src: url("/fonts/source-serif-4-italic.woff2") format("woff2");
-    font-weight: 400 700;
+    font-family: "IBM Plex Serif";
+    src: url("/fonts/plex-serif-italic.woff2") format("woff2");
+    font-weight: 400;
     font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "IBM Plex Serif";
+    src: url("/fonts/plex-serif-semibold.woff2") format("woff2");
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "IBM Plex Serif";
+    src: url("/fonts/plex-serif-semibold-italic.woff2") format("woff2");
+    font-weight: 600;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "IBM Plex Mono";
+    src: url("/fonts/plex-mono.woff2") format("woff2");
+    font-weight: 400;
+    font-style: normal;
     font-display: swap;
 }
 
 :root {
-    --font-ui: "Atkinson", system-ui, -apple-system, "Segoe UI", sans-serif;
-    --font-text: "Source Serif", "Iowan Old Style", Charter, Georgia, serif;
-    --font-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
+    --font-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    /* Plex Serif has no Greek alphabet: Greek letters in the reading text come from Plex Sans */
+    --font-text: "IBM Plex Serif", "IBM Plex Sans", Georgia, serif;
+    --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
 
     /* One grid for every page: index column | reading column | bleed for wide code and figures */
     --index: 11rem;
@@ -70,37 +101,37 @@ html {
     --bleed: 8rem;
     --page-pad: 1.25rem;
 
-    /* Contrast on --color-bg: text 15.8:1, muted 6.1:1, accent 7.5:1 (dark: 12.6, 6.8, 8.0) */
-    --color-bg: #fcfcfa;
-    --color-surface: #f3f2ed;
-    --color-text: #1f2024;
-    --color-text-muted: #5d6068;
-    --color-text-heading: #111214;
-    --color-border: #e2e1db;
-    --color-code-bg: #f3f2ed;
-    --color-accent: #2749b8;
-    --color-accent-dark: #1a3690;
+    /* Warm paper. Contrast on --color-bg: text 14.6:1, muted 6.6:1, accent 7.8:1 (dark: 12.2, 6.7, 8.8) */
+    --color-bg: #f8f5ee;
+    --color-surface: #efebe1;
+    --color-text: #24221e;
+    --color-text-muted: #5c574e;
+    --color-text-heading: #161512;
+    --color-border: #e0dace;
+    --color-code-bg: #efebe1;
+    --color-accent: #2443ab;
+    --color-accent-dark: #1a3288;
     --color-on-accent: #ffffff;
-    --color-shadow: rgba(17, 18, 20, 0.12);
-    --color-overlay: rgba(252, 252, 250, 0.96);
+    --color-shadow: rgba(22, 21, 18, 0.12);
+    --color-overlay: rgba(248, 245, 238, 0.96);
     --box-shadow: 0 1px 2px var(--color-shadow), 0 4px 12px var(--color-shadow);
     --accent: var(--color-accent);
     --accent-dark: var(--color-accent-dark);
 }
 
 [data-theme="dark"] {
-    --color-bg: #141518;
-    --color-surface: #1c1d21;
-    --color-text: #d5d6d9;
-    --color-text-muted: #9b9ea6;
-    --color-text-heading: #f1f1ef;
-    --color-border: #2c2e33;
-    --color-code-bg: #1c1d21;
-    --color-accent: #91a8ff;
-    --color-accent-dark: #b4c3ff;
-    --color-on-accent: #141518;
+    --color-bg: #181613;
+    --color-surface: #221f1b;
+    --color-text: #d9d4ca;
+    --color-text-muted: #a39d91;
+    --color-text-heading: #f3efe6;
+    --color-border: #35312a;
+    --color-code-bg: #221f1b;
+    --color-accent: #9fb2ff;
+    --color-accent-dark: #c0ccff;
+    --color-on-accent: #181613;
     --color-shadow: rgba(0, 0, 0, 0.4);
-    --color-overlay: rgba(20, 21, 24, 0.96);
+    --color-overlay: rgba(24, 22, 19, 0.96);
 }
 
 body {
@@ -138,14 +169,14 @@ h6 {
     margin: 0 0 0.5rem 0;
     color: var(--color-text-heading);
     font-family: var(--font-ui);
-    font-weight: 700;
+    font-weight: 600;
     line-height: 1.2;
 }
 
-h1 { font-size: 2.25em; letter-spacing: -0.015em; }
-h2 { font-size: 1.75em; letter-spacing: -0.01em; }
-h3 { font-size: 1.4em; }
-h4 { font-size: 1.15em; }
+h1 { font-size: 2.25em; letter-spacing: -0.02em; }
+h2 { font-size: 1.75em; letter-spacing: -0.02em; }
+h3 { font-size: 1.4em; letter-spacing: -0.02em; }
+h4 { font-size: 1.15em; letter-spacing: -0.02em; }
 h5 { font-size: 1em; }
 h6 { font-size: 0.875em; }
 
@@ -357,16 +388,23 @@ a:hover > .ledger-title {
 
 .prose {
     font-family: var(--font-text);
-    font-size: 1.1875rem;
-    line-height: 1.65;
+    font-size: 1.125rem;
+    line-height: 1.7;
     color: var(--color-text);
     min-width: 0;
 }
 
 @media (max-width: 720px) {
     .prose {
-        font-size: 1.0625rem;
+        font-size: 1.03125rem;
     }
+}
+
+/* The larger serif lines under a title: a hair tighter */
+.dek,
+.lede,
+.page-dek {
+    letter-spacing: -0.005em;
 }
 
 .prose p,
@@ -420,7 +458,7 @@ a:hover > .ledger-title {
 }
 
 .prose strong {
-    font-weight: 650;
+    font-weight: 600;
     color: var(--color-text-heading);
 }
 
