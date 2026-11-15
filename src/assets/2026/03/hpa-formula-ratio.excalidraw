@@ -380,7 +380,7 @@
     {
       "type": "text",
       "id": "tick-075",
-      "x": 248,
+      "x": 260,
       "y": 260,
       "width": 40,
       "height": 16,
@@ -484,7 +484,7 @@
     {
       "type": "text",
       "id": "tick-125",
-      "x": 570,
+      "x": 550,
       "y": 260,
       "width": 40,
       "height": 16,
@@ -536,7 +536,7 @@
     {
       "type": "ellipse",
       "id": "ratio-marker",
-      "x": 673,
+      "x": 665,
       "y": 243,
       "width": 14,
       "height": 14,
@@ -557,7 +557,7 @@
     {
       "type": "text",
       "id": "ratio-label",
-      "x": 635,
+      "x": 627,
       "y": 290,
       "width": 120,
       "height": 18,
@@ -583,7 +583,7 @@
     {
       "type": "text",
       "id": "ratio-action",
-      "x": 610,
+      "x": 602,
       "y": 310,
       "width": 200,
       "height": 16,
