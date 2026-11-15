@@ -20,7 +20,7 @@ New releases roll out the same way: FluxCD watches GitHub Container Registry for
 
 ## Key Design Decisions
 
-- **k3s over full Kubernetes** — lightweight single-binary distribution. Ships with containerd and CoreDNS, skips the overhead of a full control plane.
+- **k3s over vanilla Kubernetes** — lightweight single-binary distribution. Ships with containerd and CoreDNS and runs the whole control plane in one process.
 - **3-node HA** — all nodes run as control-plane with etcd, providing redundancy for both the control plane and workloads.
 - **Gateway API over Ingress** — the newer, more expressive routing standard. Envoy Gateway implements it natively and terminates TLS.
 - **Operators over manual management** — CloudNativePG handles the lifecycle of PostgreSQL, including automated failover, so I don't manage stateful workloads by hand.

@@ -9,7 +9,7 @@ topics: [post-quantum, cryptography, ml-dsa, ed25519, fips204, hybrid-signing]
 
 ## Why I Built This
 
-I wanted to get deeper into both Rust and applied cryptography, and building a real tool felt like a better way to learn than working through textbook exercises. [minisign](https://jedisct1.com/minisign/) is the go-to for simple file signing, but it's Ed25519-only — no post-quantum support. When NIST finalized [FIPS 204 (ML-DSA)](https://csrc.nist.gov/pubs/fips/204/final) in 2024, that seemed like the right project: take minisign's "simple CLI for signing files" idea, add a post-quantum layer, and learn how signature schemes, key derivation, and authenticated encryption actually fit together by implementing them end to end.
+I wanted to get deeper into both Rust and applied cryptography, and building a real tool felt like a better way to learn than working through textbook exercises. [minisign](https://jedisct1.github.io/minisign/) is the go-to for simple file signing, but it's Ed25519-only — no post-quantum support. When NIST finalized [FIPS 204 (ML-DSA)](https://csrc.nist.gov/pubs/fips/204/final) in 2024, that seemed like the right project: take minisign's "simple CLI for signing files" idea, add a post-quantum layer, and learn how signature schemes, key derivation, and authenticated encryption actually fit together by implementing them end to end.
 
 The result is a hybrid scheme where Ed25519 and ML-DSA-65 both have to verify. If lattice-based crypto turns out weaker than expected, Ed25519 still holds. If quantum computers break Ed25519, ML-DSA-65 covers you. Neither signature alone is sufficient — they're nested so you can't strip one out.
 
@@ -27,7 +27,7 @@ The signatures are nested, not independent — ML-DSA-65 signs over the Ed25519 
 
 **Trusted comments** (timestamp, filename, custom text) are bound into the Ed25519 message and transitively covered by ML-DSA-65. Tampering with the comment invalidates both signatures.
 
-**Key protection** uses Argon2id (256 MiB, 3 iterations) to derive a key from the user's password, then encrypts the secret key with XChaCha20-Poly1305. At ~2.6 attempts per second per core, even a short passphrase makes offline brute-force impractical. All secret material is zeroized on drop.
+**Key protection** uses Argon2id (256 MiB, 3 iterations) to derive a key from the user's password, then encrypts the secret key with XChaCha20-Poly1305. At ~2.6 attempts per second per core, offline brute-force becomes slow and expensive — that buys time, but it doesn't fix a weak password. All secret material is zeroized on drop.
 
 ## Quick Start
 
