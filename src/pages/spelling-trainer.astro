@@ -21,47 +21,59 @@ import Layout from '../layouts/Layout.astro';
             <label><input type="radio" name="mode" value="bos" /><span>BOS</span></label>
         </fieldset>
 
-        <div class="stats">
-            <span class="stat">Solved <strong id="solved">0</strong></span>
-            <span class="stat">Streak <strong id="streak">0</strong></span>
-        </div>
-
         <div class="board" id="board" aria-live="polite"></div>
 
+        <!-- Answer by typing or speaking: the mic sits in the field, Check beside it. -->
         <form class="entry" id="spell-form">
-            <input
-                id="spell-input"
-                type="text"
-                autocomplete="off"
-                autocapitalize="off"
-                spellcheck="false"
-                placeholder="Type code words…"
-                aria-label="Code words"
-            />
-            <div class="controls">
-                <span class="mic-wrap" id="mic-wrap">
-                    <button type="button" id="mic" aria-pressed="false" aria-label="Speech input">
-                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
-                            <rect x="9" y="3" width="6" height="11" rx="3" />
-                            <path d="M5 11a7 7 0 0 0 14 0" />
-                            <line x1="12" y1="18" x2="12" y2="21" />
-                        </svg>
-                    </button>
-                </span>
-                <button type="submit" id="check-btn">Check</button>
-                <button type="button" id="new-word">New word</button>
-                <button type="button" id="show-answer">Show answer</button>
+            <div class="field">
+                <input
+                    id="spell-input"
+                    type="text"
+                    autocomplete="off"
+                    autocapitalize="off"
+                    spellcheck="false"
+                    placeholder="Type or say code words…"
+                    aria-label="Code words"
+                />
+                <button type="button" id="mic" aria-pressed="false" aria-label="Speak the code words">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+                        <rect x="9" y="3" width="6" height="11" rx="3" />
+                        <path d="M5 11a7 7 0 0 0 14 0" />
+                        <line x1="12" y1="18" x2="12" y2="21" />
+                    </svg>
+                </button>
             </div>
+            <button type="submit" id="check-btn">Check</button>
         </form>
 
         <p class="hint" id="hint"></p>
+        <!-- While recording: level meter, timer and microphone choice; while loading: a bar. -->
+        <div class="status" id="model-download" hidden>
+            <div class="status-line">
+                <span class="level-meter" id="level-meter" aria-hidden="true" hidden></span>
+                <progress id="model-progress"></progress>
+                <span id="model-elapsed"></span>
+            </div>
+            <label class="mic-choice" id="mic-choice" hidden>
+                Microphone
+                <select id="mic-select"></select>
+            </label>
+        </div>
 
-        <details class="reference">
-            <summary id="ref-title">Reference table</summary>
-            <div id="ref-body"></div>
-        </details>
-
+        <div class="actions">
+            <button type="button" id="new-word">New word</button>
+            <button type="button" id="show-answer">Show answer</button>
+            <button type="button" id="ref-toggle" aria-expanded="false" aria-controls="ref-panel">Show alphabet</button>
+        </div>
     </section>
+
+    <aside class="ref-panel" id="ref-panel" aria-labelledby="ref-title" hidden>
+        <div class="ref-head">
+            <h2 id="ref-title">Reference table</h2>
+            <button type="button" class="ref-close" id="ref-close" aria-label="Close reference table">×</button>
+        </div>
+        <div id="ref-body"></div>
+    </aside>
 </Layout>
 
 <script>
@@ -75,14 +87,20 @@ import Layout from '../layouts/Layout.astro';
     const form = document.getElementById('spell-form') as HTMLFormElement;
     const input = document.getElementById('spell-input') as HTMLInputElement;
     const micButton = document.getElementById('mic') as HTMLButtonElement;
-    const micWrap = document.getElementById('mic-wrap') as HTMLSpanElement;
+    const modelDownload = document.getElementById('model-download') as HTMLDivElement;
+    const modelElapsed = document.getElementById('model-elapsed') as HTMLSpanElement;
+    const modelProgress = document.getElementById('model-progress') as HTMLProgressElement;
+    const levelMeter = document.getElementById('level-meter') as HTMLSpanElement;
+    const micChoice = document.getElementById('mic-choice') as HTMLLabelElement;
+    const micSelect = document.getElementById('mic-select') as HTMLSelectElement;
     const newWordButton = document.getElementById('new-word') as HTMLButtonElement;
     const showAnswerButton = document.getElementById('show-answer') as HTMLButtonElement;
-    const solvedOutput = document.getElementById('solved') as HTMLElement;
-    const streakOutput = document.getElementById('streak') as HTMLElement;
     const hint = document.getElementById('hint') as HTMLParagraphElement;
     const refTitle = document.getElementById('ref-title') as HTMLElement;
     const refBody = document.getElementById('ref-body') as HTMLDivElement;
+    const refPanel = document.getElementById('ref-panel') as HTMLElement;
+    const refToggle = document.getElementById('ref-toggle') as HTMLButtonElement;
+    const refClose = document.getElementById('ref-close') as HTMLButtonElement;
     const modeInputs = Array.from(document.querySelectorAll<HTMLInputElement>('#modes input[name="mode"]'));
 
     const MODE_LABELS: Record<Mode, string> = {
@@ -90,7 +108,7 @@ import Layout from '../layouts/Layout.astro';
         de: 'Buchstabiertafel (DIN 5009)',
         bos: 'BOS Inland-Alphabet (DV 810)',
     };
-    const DEFAULT_HINT = 'Spell the word with code words, separated by spaces. Enter checks; a full green board advances.';
+    const DEFAULT_HINT = 'Spell the word with code words: type them and press Enter, or press the mic and say them.';
 
     const storage = {
         get(key: string): string | null {
@@ -123,27 +141,11 @@ import Layout from '../layouts/Layout.astro';
     let answers = primaryAliases(modeTables[mode]);
     let currentWord = '';
     let previousWord = '';
-    let solved = Number(storage.get('solved') ?? '0') || 0;
-    let streak = Number(storage.get('streak') ?? '0') || 0;
     let answerShown = false;
     let wordSolved = false;
 
     function wordList(): string[] {
         return mode === 'nato' ? englishWords : germanWords;
-    }
-
-    function updateStats() {
-        solvedOutput.textContent = String(solved);
-        streakOutput.textContent = String(streak);
-        storage.set('solved', String(solved));
-        storage.set('streak', String(streak));
-    }
-
-    function resetStreak() {
-        if (streak !== 0) {
-            streak = 0;
-            updateStats();
-        }
     }
 
     function displayLetter(letters: string): string {
@@ -202,35 +204,52 @@ import Layout from '../layouts/Layout.astro';
         return word;
     }
 
+    let advanceTimer: ReturnType<typeof setTimeout> | undefined;
+
     function loadWord() {
+        clearTimeout(advanceTimer);
         previousWord = currentWord;
         currentWord = pickWord();
         answerShown = false;
         wordSolved = false;
+        board.classList.remove('solved');
         input.value = '';
         hint.textContent = DEFAULT_HINT;
         render([]);
     }
 
     function onLiveInput() {
+        if (wordSolved) return; // keep the celebration on screen until the next word
         const decoded = liveDecode(input.value, index);
         render(check(currentWord, decoded), decoded.length);
     }
 
-    function runCheck() {
+    // A solved word celebrates (the tiles pop one after another), then the next
+    // word follows. After speech it stays a little longer, so what was heard
+    // can be read.
+    const ADVANCE_MS = {typed: 1_400, spoken: 2_500};
+
+    function celebrate(rows: Row[], heard: string | null) {
+        render(rows);
+        board.querySelectorAll<HTMLElement>('.cell').forEach((cell, i) => cell.style.setProperty('--i', String(i)));
+        board.classList.add('solved');
+        hint.textContent = heard ? `Solved! Heard “${heard}”.` : 'Solved!';
+        advanceTimer = setTimeout(() => {
+            loadWord();
+            hint.textContent = 'Here is the next word.';
+        }, heard ? ADVANCE_MS.spoken : ADVANCE_MS.typed);
+    }
+
+    function runCheck(fromSpeech = false) {
+        if (wordSolved) return;
         const tokens = tokenize(input.value);
         if (tokens.length === 0) return;
         const decoded = decode(tokens, index);
         const rows = check(currentWord, decoded);
         if (isComplete(rows)) {
             wordSolved = true;
-            solved += 1;
-            streak += 1;
-            updateStats();
-            loadWord();
-            hint.textContent = 'Solved! Here is the next word.';
+            celebrate(rows, fromSpeech ? input.value.trim() : null);
         } else {
-            resetStreak();
             render(rows, decoded.length);
             hint.textContent = 'Not quite — fix the red tiles, or show the answer.';
         }
@@ -239,22 +258,26 @@ import Layout from '../layouts/Layout.astro';
     // --- reference table ---
 
     function buildReference() {
-        refTitle.textContent = `Reference — ${MODE_LABELS[mode]}`;
-        const table = document.createElement('table');
-        const addRow = (cells: string[], header = false) => {
-            const tr = document.createElement('tr');
-            for (const text of cells) {
-                const cell = document.createElement(header ? 'th' : 'td');
-                cell.textContent = text;
-                tr.append(cell);
+        refTitle.textContent = MODE_LABELS[mode];
+        // Two columns of letter + code word, so the whole alphabet fits on screen.
+        // The official word first; accepted variants (Alpha, Caesar) quieter below.
+        const list = document.createElement('dl');
+        list.className = 'ref-list';
+        for (const [letters, [primary, ...variants]] of Object.entries(modeTables[mode][0])) {
+            const item = document.createElement('div');
+            const term = document.createElement('dt');
+            term.textContent = displayLetter(letters);
+            const word = document.createElement('dd');
+            word.textContent = primary;
+            if (variants.length > 0) {
+                const alt = document.createElement('small');
+                alt.textContent = variants.join(', ');
+                word.append(alt);
             }
-            table.append(tr);
-        };
-        addRow(['Letter', 'Code word'], true);
-        for (const [letters, aliases] of Object.entries(modeTables[mode][0])) {
-            addRow([displayLetter(letters), aliases.join(' / ')]);
+            item.append(term, word);
+            list.append(item);
         }
-        refBody.replaceChildren(table);
+        refBody.replaceChildren(list);
         if (mode === 'de') {
             const note = document.createElement('p');
             note.className = 'ref-note';
@@ -270,7 +293,6 @@ import Layout from '../layouts/Layout.astro';
     let recognition: any = null;
     let listening = false;
     let suppressFinalCheck = false;
-    let baseText = '';
 
     function updateMicUi() {
         micButton.classList.toggle('listening', listening);
@@ -279,9 +301,12 @@ import Layout from '../layouts/Layout.astro';
     }
 
     function stopListening(runFinalCheck: boolean) {
-        if (!recognition) return;
         suppressFinalCheck = !runFinalCheck;
-        recognition.stop();
+        if (stopLive) {
+            stopLive();
+            return;
+        }
+        recognition?.stop();
     }
 
     const SPEECH_ERRORS: Record<string, string> = {
@@ -293,13 +318,497 @@ import Layout from '../layouts/Layout.astro';
     };
 
     // Brave exposes the speech API but has no cloud speech service behind it, so
-    // it can only work with an on-device model.
+    // it can only work with an on-device model; without one it streams to
+    // Gemini's live transcription, like browsers without the API.
     const isBrave = typeof (navigator as any).brave?.isBrave === 'function';
-    const BRAVE_UNSUPPORTED = 'Brave has no speech service, so voice input can’t work here — use Chrome, Edge or Safari, or type the code words.';
-    const BRAVE_NO_MODEL = 'Brave couldn’t download its on-device speech model — use Chrome, Edge or Safari for voice input, or type the code words.';
-    // Brave can report a model as "downloading" indefinitely, so don't wait forever.
-    const INSTALL_TIMEOUT_MS = 15000;
+    const BRAVE_NO_MODEL = 'Brave’s speech model isn’t installed — press the mic and allow the download, or type the code words.';
     let starting = false;
+
+    // --- streamed speech input (browsers without usable speech recognition) ---
+
+    // Our Worker hands out single-use tokens; the audio goes straight to Google.
+    const TOKEN_URL: string = import.meta.env.PUBLIC_SPEECH_TOKEN_URL
+        ?? (import.meta.env.DEV ? 'http://localhost:8787/live-token' : 'https://speech.patrickscheid.de/live-token');
+    const LIVE_URL = 'wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContentConstrained';
+    const LIVE_MODEL = 'models/gemini-3.5-transcribe-live';
+    const FINAL_TIMEOUT_MS = 3_000;
+    // Generous, so slow learners can take their time.
+    const MAX_RECORDING_MS = 30_000;
+    // Recording stops by itself once the speaker has been quiet this long.
+    // Generous, so a pause between two code words doesn't cut anyone off.
+    const PAUSE_MS = 2_000;
+    const LISTENING_HINT = 'Listening — say the code words. Recording stops by itself after a short pause.';
+
+    // Listens to the microphone level: feeds the level meter, and calls onPause
+    // once someone has spoken and then been quiet for PAUSE_MS.
+    // "Quiet" is relative to the room: the background level is the 10th
+    // percentile of the last 8 s, so steady noise (traffic, a fan) is ignored.
+    // If speech never stands out from the noise, onPause never fires and the
+    // recording runs until the user clicks or MAX_RECORDING_MS.
+    function watchMic(stream: MediaStream, onPause?: () => void): {stop(): void} {
+        const ctx = new AudioContext();
+        void ctx.resume();
+        const analyser = ctx.createAnalyser();
+        analyser.fftSize = 1024;
+        ctx.createMediaStreamSource(stream).connect(analyser);
+        const samples = new Float32Array(analyser.fftSize);
+        const FRAME_MS = 50;
+        const history: number[] = [];
+        let loudFrames = 0;
+        let hasSpoken = false;
+        let lastVoiceAt = Date.now();
+
+        const timer = setInterval(() => {
+            analyser.getFloatTimeDomainData(samples);
+            let sum = 0;
+            for (const s of samples) sum += s * s;
+            const level = 10 * Math.log10(sum / samples.length + 1e-10); // dB
+
+            history.push(level);
+            if (history.length > 8000 / FRAME_MS) history.shift();
+            const background = [...history].sort((a, b) => a - b)[Math.floor(history.length * 0.1)];
+            pushLevel((level - background - 3) / 30);
+
+            if (level > background + 12) {
+                loudFrames += 1;
+                if (loudFrames >= 4) hasSpoken = true; // 200 ms of clear speech
+            } else {
+                loudFrames = 0;
+            }
+            if (level > background + 6) lastVoiceAt = Date.now();
+            if (onPause && hasSpoken && Date.now() - lastVoiceAt >= PAUSE_MS) onPause();
+        }, FRAME_MS);
+
+        return {
+            stop() {
+                clearInterval(timer);
+                void ctx.close();
+            },
+        };
+    }
+
+    // --- level meter: thin bars, newest on the right, like a voice memo ---
+
+    const METER_BARS = 28;
+    const meterLevels: number[] = [];
+
+    function resetMeter() {
+        meterLevels.length = 0;
+        levelMeter.replaceChildren(...Array.from({length: METER_BARS}, () => document.createElement('span')));
+        renderMeter();
+    }
+
+    function pushLevel(level: number) {
+        meterLevels.push(Math.max(0, Math.min(1, level)));
+        if (meterLevels.length > METER_BARS) meterLevels.shift();
+        renderMeter();
+    }
+
+    function renderMeter() {
+        const bars = levelMeter.children;
+        const offset = METER_BARS - meterLevels.length;
+        for (let i = 0; i < bars.length; i++) {
+            const level = i >= offset ? meterLevels[i - offset] : 0;
+            (bars[i] as HTMLElement).style.transform = `scaleY(${0.15 + level * 0.85})`;
+        }
+    }
+
+    // --- microphone choice ---
+
+    function chosenMic(): MediaTrackConstraints | true {
+        const id = storage.get('mic');
+        return id ? {deviceId: {ideal: id}} : true;
+    }
+
+    async function openMic(): Promise<MediaStream> {
+        return navigator.mediaDevices.getUserMedia({audio: chosenMic()});
+    }
+
+    // Lists the microphones once the page may see their names (after the first
+    // permission grant); hidden while there is only one.
+    // The choice shows only while recording, next to the level meter — where
+    // you notice that the wrong mic is listening.
+    let hasMicChoice = false;
+    let recordingShown = false;
+    let restartAfterStop = false;
+
+    async function refreshMicChoice() {
+        if (!navigator.mediaDevices?.enumerateDevices) return;
+        const mics = (await navigator.mediaDevices.enumerateDevices())
+            .filter((device) => device.kind === 'audioinput' && device.deviceId !== 'default' && device.deviceId !== 'communications');
+        hasMicChoice = mics.length > 1 && mics.every((mic) => mic.label !== '');
+        micChoice.hidden = !(hasMicChoice && recordingShown);
+        if (!hasMicChoice) return;
+        const saved = storage.get('mic') ?? '';
+        micSelect.replaceChildren(
+            new Option('System default', ''),
+            ...mics.map((mic) => new Option(mic.label, mic.deviceId)),
+        );
+        micSelect.value = mics.some((mic) => mic.deviceId === saved) ? saved : '';
+    }
+
+    // Switching mics mid-recording starts over with the new one.
+    micSelect.addEventListener('change', () => {
+        storage.set('mic', micSelect.value);
+        if (listening) {
+            restartAfterStop = true;
+            stopListening(false);
+        }
+    });
+
+    function restartIfRequested() {
+        if (!restartAfterStop) return;
+        restartAfterStop = false;
+        void startListening();
+    }
+    navigator.mediaDevices?.addEventListener?.('devicechange', () => void refreshMicChoice());
+    void refreshMicChoice();
+    const CLOUD_NOTICE = 'This browser has no speech recognition of its own, so what you say is streamed to Google for transcription and not stored. Press the mic again to agree and start.';
+    let stopLive: (() => void) | null = null;
+    let cloudNoticeShown = false;
+
+    // The row under the hint: an indeterminate bar while something loads or
+    // transcribes, or the level meter and a timer while recording.
+    function showProgress(label: string) {
+        modelProgress.setAttribute('aria-label', label);
+        modelProgress.removeAttribute('value');
+        modelProgress.hidden = false;
+        levelMeter.hidden = true;
+        recordingShown = false;
+        micChoice.hidden = true;
+        modelElapsed.textContent = '';
+        modelDownload.hidden = false;
+    }
+
+    // Shows the level meter, a running timer and the mic choice; returns a
+    // function that stops the timer.
+    function showRecording(): () => void {
+        resetMeter();
+        levelMeter.hidden = false;
+        modelProgress.hidden = true;
+        recordingShown = true;
+        micChoice.hidden = !hasMicChoice;
+        modelDownload.hidden = false;
+        const startedAt = Date.now();
+        const tick = () => {
+            modelElapsed.textContent = `${formatSeconds(Date.now() - startedAt)} / ${formatSeconds(MAX_RECORDING_MS)}`;
+        };
+        tick();
+        const timer = setInterval(tick, 250);
+        return () => clearInterval(timer);
+    }
+
+    function hideProgress() {
+        recordingShown = false;
+        modelDownload.hidden = true;
+    }
+
+    function formatSeconds(ms: number): string {
+        const s = Math.floor(ms / 1000);
+        return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+    }
+
+    // The code words, plus the doubling prefix ("Doppel-Samuel"), so the
+    // transcription spells them the way the trainer expects.
+    function vocabulary(): string[] {
+        const codeWords = modeTables[mode].flatMap((table) => Object.values(table).flat());
+        return [...new Set([...codeWords, mode === 'nato' ? 'double' : 'Doppel'])];
+    }
+
+    // --- live transcription: stream the mic to Gemini and show words as they come ---
+
+    // Captures the microphone as 16 kHz 16-bit mono PCM in ~100 ms chunks, the
+    // format the live model takes. Runs at the device's own sample rate and
+    // downsamples here, since not every browser lets a 16 kHz context read a mic.
+    const CAPTURE_WORKLET = `
+        registerProcessor('pcm-capture', class extends AudioWorkletProcessor {
+            process(inputs) {
+                const channel = inputs[0][0];
+                if (channel) this.port.postMessage(channel.slice(0));
+                return true;
+            }
+        });`;
+    const TARGET_RATE = 16_000;
+    const CHUNK_SAMPLES = TARGET_RATE / 10;
+
+    async function capturePcm(stream: MediaStream, onChunk: (pcm: Int16Array) => void): Promise<() => void> {
+        const ctx = new AudioContext();
+        const moduleUrl = URL.createObjectURL(new Blob([CAPTURE_WORKLET], {type: 'text/javascript'}));
+        try {
+            await ctx.audioWorklet.addModule(moduleUrl);
+        } finally {
+            URL.revokeObjectURL(moduleUrl);
+        }
+        const source = ctx.createMediaStreamSource(stream);
+        const worklet = new AudioWorkletNode(ctx, 'pcm-capture');
+        const mute = ctx.createGain();
+        mute.gain.value = 0;
+        source.connect(worklet).connect(mute).connect(ctx.destination); // keeps the worklet running
+
+        // Each output sample is the average of the input samples it covers
+        // (a box filter), which keeps aliasing down without a real resampler.
+        const step = ctx.sampleRate / TARGET_RATE;
+        let position = 0;
+        let chunk = new Int16Array(CHUNK_SAMPLES);
+        let filled = 0;
+        worklet.port.onmessage = (event: MessageEvent<Float32Array>) => {
+            const samples = event.data;
+            while (position + step <= samples.length) {
+                let sum = 0;
+                const from = Math.floor(position);
+                const to = Math.floor(position + step);
+                for (let i = from; i < to; i++) sum += samples[i];
+                const value = sum / Math.max(1, to - from);
+                chunk[filled++] = Math.max(-1, Math.min(1, value)) * 0x7fff;
+                if (filled === CHUNK_SAMPLES) {
+                    onChunk(chunk);
+                    chunk = new Int16Array(CHUNK_SAMPLES);
+                    filled = 0;
+                }
+                position += step;
+            }
+            position -= samples.length;
+        };
+        await ctx.resume();
+
+        return () => {
+            if (filled > 0) onChunk(chunk.slice(0, filled));
+            worklet.port.onmessage = null;
+            source.disconnect();
+            void ctx.close();
+        };
+    }
+
+    function base64(pcm: Int16Array): string {
+        const bytes = new Uint8Array(pcm.buffer, pcm.byteOffset, pcm.byteLength);
+        let binary = '';
+        for (let i = 0; i < bytes.length; i += 0x8000) binary += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+        return btoa(binary);
+    }
+
+    interface LiveSession {
+        send(pcm: Int16Array): void;
+        /** Ends the audio and resolves with the final transcript. */
+        finish(): Promise<string>;
+        close(): void;
+    }
+
+    // One session per recording. Audio captured while the token and socket are
+    // still being set up is queued and sent once the model is ready, so
+    // nothing said right after pressing the mic is lost.
+    function openLiveSession(lang: string, onText: (text: string) => void, onError: (message: string) => void): LiveSession {
+        const queue: string[] = [];
+        let socket: WebSocket | null = null;
+        let ready = false;
+        let ended = false;
+        let closed = false;
+        let committed = '';
+        let interim = '';
+        let resolveFinal: ((text: string) => void) | null = null;
+        const transcript = () => [committed, interim].filter(Boolean).join(' ');
+
+        const fail = (message: string) => {
+            if (closed) return;
+            closed = true;
+            socket?.close();
+            if (resolveFinal) resolveFinal(transcript());
+            else onError(message);
+        };
+        const sendAudioEnd = () => socket?.send(JSON.stringify({realtimeInput: {audioStreamEnd: true}}));
+
+        void (async () => {
+            let token: string;
+            try {
+                const response = await fetch(TOKEN_URL, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({lang, vocabulary: vocabulary()}),
+                });
+                if (response.status === 429) return fail('Too many attempts — wait a minute, then try again.');
+                if (!response.ok) return fail('The speech service is unavailable right now — type the code words instead.');
+                token = (await response.json()).token;
+            } catch {
+                return fail('The speech service could not be reached — check your connection, or type the code words.');
+            }
+            if (closed) return;
+
+            socket = new WebSocket(`${LIVE_URL}?access_token=${encodeURIComponent(token)}`);
+            socket.onopen = () => socket?.send(JSON.stringify({setup: {model: LIVE_MODEL}})); // the rest is locked in the token
+            socket.onerror = () => fail('The speech service could not be reached — check your connection, or type the code words.');
+            socket.onclose = () => {
+                if (!closed) fail('The speech service closed the connection — try again, or type the code words.');
+            };
+            socket.onmessage = async (event) => {
+                const message = JSON.parse(typeof event.data === 'string' ? event.data : await event.data.text());
+                if (message.setupComplete) {
+                    ready = true;
+                    for (const data of queue.splice(0)) socket?.send(data);
+                    if (ended) sendAudioEnd();
+                    return;
+                }
+                const content = message.serverContent;
+                if (content?.interimInputTranscription) {
+                    interim = String(content.interimInputTranscription.text ?? '').trim();
+                    onText(transcript());
+                }
+                if (content?.inputTranscription) {
+                    committed = [committed, String(content.inputTranscription.text ?? '').trim()].filter(Boolean).join(' ');
+                    interim = '';
+                    onText(transcript());
+                }
+                if (ended && resolveFinal && (content?.inputTranscription || content?.generationComplete || content?.turnComplete)) {
+                    resolveFinal(transcript());
+                }
+            };
+        })();
+
+        return {
+            send(pcm) {
+                if (closed || ended) return;
+                const data = JSON.stringify({realtimeInput: {audio: {data: base64(pcm), mimeType: `audio/pcm;rate=${TARGET_RATE}`}}});
+                if (ready) socket?.send(data);
+                else queue.push(data);
+            },
+            finish() {
+                return new Promise((resolve) => {
+                    const done = (text: string) => {
+                        resolveFinal = null;
+                        clearTimeout(timeout);
+                        this.close();
+                        resolve(text);
+                    };
+                    // Gemini finalises each phrase on its own shortly after the
+                    // speaker stops, so after our pause the text is usually final
+                    // already. Otherwise the rest comes within half a second.
+                    const timeout = setTimeout(() => done(transcript()), FINAL_TIMEOUT_MS);
+                    resolveFinal = done;
+                    ended = true;
+                    if (closed || (committed && !interim)) done(transcript());
+                    else if (ready) sendAudioEnd();
+                });
+            },
+            close() {
+                closed = true;
+                socket?.close();
+            },
+        };
+    }
+
+    // Does the text spoken so far already spell the whole word? Then there's
+    // no need to wait for the pause.
+    function spellsCurrentWord(text: string): boolean {
+        return isComplete(check(currentWord, decode(tokenize(text), index)));
+    }
+
+    async function startRecording() {
+        if (storage.get('cloud-speech') !== 'ok') {
+            if (!cloudNoticeShown) {
+                cloudNoticeShown = true;
+                hint.textContent = CLOUD_NOTICE;
+                return;
+            }
+            storage.set('cloud-speech', 'ok');
+        }
+        if (!navigator.mediaDevices?.getUserMedia || typeof AudioWorkletNode === 'undefined' || typeof WebSocket === 'undefined') {
+            hint.textContent = 'This browser can’t stream audio — type the code words instead.';
+            return;
+        }
+        starting = true;
+        let stream: MediaStream;
+        try {
+            stream = await openMic();
+        } catch {
+            starting = false;
+            hint.textContent = SPEECH_ERRORS['not-allowed'];
+            return;
+        }
+        void refreshMicChoice(); // names are visible now that access was granted
+
+        const lang = speechLang();
+        input.value = ''; // a new recording replaces the previous attempt
+        onLiveInput();
+        suppressFinalCheck = false;
+
+        // Declared first: the session can report text or errors while the
+        // capture below is still starting.
+        let finished = false;
+        let finish: (() => Promise<void>) | null = null;
+        let failure: string | null = null;
+        const failWith = (message: string) => {
+            failure = message;
+            if (!finish || finished) return; // handled once the capture has started
+            suppressFinalCheck = true;
+            void finish();
+            hint.textContent = message;
+        };
+
+        const session = openLiveSession(
+            lang,
+            (text) => {
+                if (finished || lang !== speechLang()) return;
+                input.value = text;
+                onLiveInput();
+                if (spellsCurrentWord(text)) stopListening(true);
+            },
+            failWith,
+        );
+        let stopCapture: () => void;
+        try {
+            stopCapture = await capturePcm(stream, (pcm) => session.send(pcm));
+        } catch {
+            starting = false;
+            session.close();
+            stream.getTracks().forEach((track) => track.stop());
+            hint.textContent = 'This browser can’t stream audio — type the code words instead.';
+            return;
+        }
+        starting = false;
+        const cutoff = setTimeout(() => stopListening(true), MAX_RECORDING_MS);
+        const stopTimer = showRecording();
+        const mic = watchMic(stream, () => stopListening(true));
+
+        finish = async () => {
+            if (finished) return;
+            finished = true;
+            clearTimeout(cutoff);
+            stopTimer();
+            mic.stop();
+            stopCapture();
+            stream.getTracks().forEach((track) => track.stop());
+            listening = false;
+            updateMicUi();
+            if (suppressFinalCheck) {
+                session.close();
+                hideProgress();
+                stopLive = null;
+                restartIfRequested();
+                return;
+            }
+            micButton.disabled = true;
+            showProgress('Finishing transcription');
+            try {
+                const text = await session.finish();
+                if (lang !== speechLang()) return; // mode changed meanwhile
+                input.value = text;
+                onLiveInput();
+                if (tokenize(text).length > 0) {
+                    runCheck(true);
+                } else {
+                    hint.textContent = SPEECH_ERRORS['no-speech'];
+                }
+            } finally {
+                hideProgress();
+                stopLive = null;
+                micButton.disabled = false;
+            }
+        };
+        stopLive = () => void finish?.();
+
+        listening = true;
+        updateMicUi();
+        hint.textContent = LISTENING_HINT;
+        if (failure) failWith(failure); // the session failed while the capture was starting
+    }
 
     function speechLang(): string {
         return mode === 'nato' ? 'en-US' : 'de-DE';
@@ -314,55 +823,99 @@ import Layout from '../layouts/Layout.astro';
         }
     }
 
-    function setMicAvailable(available: boolean, reason = '') {
-        micButton.disabled = !available;
-        micWrap.title = available ? '' : reason;
-    }
-
-    async function refreshSpeechSupport() {
-        if (!SpeechRecognitionCtor || !isBrave) return;
-        const status = await onDeviceStatus(speechLang());
-        setMicAvailable(status !== 'unavailable', BRAVE_UNSUPPORTED);
-    }
-
     async function startListening() {
-        if (recognition || starting) return;
+        if (recognition || stopLive || starting) return;
+        if (!SpeechRecognitionCtor) return startRecording();
         const lang = speechLang();
         let processLocally = false;
         if (isBrave) {
             starting = true;
             const initial = await onDeviceStatus(lang);
+            if (initial === 'unavailable') {
+                starting = false;
+                return startRecording();
+            }
             let status = initial;
             if (status === 'downloadable' || status === 'downloading') {
-                hint.textContent = 'Downloading the on-device speech model…';
-                const installed = await Promise.race([
-                    SpeechRecognitionCtor.install({langs: [lang], processLocally: true}).catch(() => false),
-                    new Promise<boolean>((resolve) => setTimeout(() => resolve(false), INSTALL_TIMEOUT_MS)),
-                ]);
-                status = installed ? 'available' : 'unavailable';
+                // Brave asks the user for consent first, then downloads a model of
+                // several hundred MB, so this can take minutes. Wait for it.
+                hint.textContent = status === 'downloadable'
+                    ? 'Brave needs to download its on-device speech model (about 600 MB) — allow it in the prompt, then wait…'
+                    : 'Brave is downloading its on-device speech model (about 600 MB) — this can take a few minutes…';
+                micButton.disabled = true;
+                // install() reports no progress, so show an indeterminate bar with elapsed time.
+                const startedAt = Date.now();
+                const tick = () => {
+                    modelElapsed.textContent = formatSeconds(Date.now() - startedAt);
+                };
+                showProgress('Downloading speech model');
+                tick();
+                const timer = setInterval(tick, 1000);
+                const installed = await SpeechRecognitionCtor.install({langs: [lang], processLocally: true}).catch(() => false);
+                clearInterval(timer);
+                hideProgress();
+                micButton.disabled = false;
+                status = installed ? 'available' : await onDeviceStatus(lang);
             }
             starting = false;
             if (status !== 'available') {
-                const reason = initial === 'unavailable' ? BRAVE_UNSUPPORTED : BRAVE_NO_MODEL;
-                setMicAvailable(false, reason);
-                hint.textContent = reason;
+                // Declined or failed: leave the mic enabled so the user can retry.
+                hint.textContent = BRAVE_NO_MODEL;
+                return;
+            }
+            // The language may have changed while the model was downloading.
+            if (lang !== speechLang()) {
+                hint.textContent = 'Speech model ready — press the mic to start.';
                 return;
             }
             processLocally = true;
         }
+        // Our own stream of the chosen mic: feeds the level meter, and is handed
+        // to the recognizer where the browser supports that. Without it, the
+        // recognizer still works on the default mic, just without a meter.
+        starting = true;
+        let micStream: MediaStream | null = null;
+        try {
+            micStream = await openMic();
+            void refreshMicChoice();
+        } catch {
+            micStream = null;
+        }
+        starting = false;
+        const mic = micStream ? watchMic(micStream) : null;
+        const stopTimer = micStream ? showRecording() : () => {};
+        const releaseMic = () => {
+            mic?.stop();
+            stopTimer();
+            micStream?.getTracks().forEach((track) => track.stop());
+            hideProgress();
+        };
+
         recognition = new SpeechRecognitionCtor();
         recognition.lang = lang;
         if (processLocally) recognition.processLocally = true;
         recognition.continuous = true;
         recognition.interimResults = true;
-        baseText = input.value.trim();
+        input.value = ''; // a new recording replaces the previous attempt
+        onLiveInput();
         suppressFinalCheck = false;
+        // The browser's recognizer tells us when words arrive; stop once none
+        // have come for PAUSE_MS after the first one, or at MAX_RECORDING_MS.
+        const startedAt = Date.now();
+        let lastResultAt = 0;
+        const pauseWatch = setInterval(() => {
+            const now = Date.now();
+            if ((lastResultAt && now - lastResultAt >= PAUSE_MS) || now - startedAt >= MAX_RECORDING_MS) {
+                stopListening(true);
+            }
+        }, 250);
         recognition.onstart = () => {
             listening = true;
             updateMicUi();
-            hint.textContent = 'Listening — say the code words…';
+            hint.textContent = LISTENING_HINT;
         };
         recognition.onresult = (event: any) => {
+            lastResultAt = Date.now();
             let finalText = '';
             let interimText = '';
             for (let i = 0; i < event.results.length; i++) {
@@ -374,16 +927,21 @@ import Layout from '../layouts/Layout.astro';
                     interimText += `${transcript} `;
                 }
             }
-            input.value = [baseText, finalText.trim(), interimText.trim()].filter(Boolean).join(' ');
+            input.value = [finalText.trim(), interimText.trim()].filter(Boolean).join(' ');
             onLiveInput();
         };
         recognition.onend = () => {
+            clearInterval(pauseWatch);
+            releaseMic();
             listening = false;
             recognition = null;
             updateMicUi();
-            if (suppressFinalCheck) return;
+            if (suppressFinalCheck) {
+                restartIfRequested();
+                return;
+            }
             if (tokenize(input.value).length > 0) {
-                runCheck();
+                runCheck(true);
             } else {
                 hint.textContent = DEFAULT_HINT;
             }
@@ -394,26 +952,33 @@ import Layout from '../layouts/Layout.astro';
             suppressFinalCheck = true;
             hint.textContent = SPEECH_ERRORS[event.error] ?? `Speech input failed (${event.error}) — you can keep typing instead.`;
         };
+        const track = storage.get('mic') ? micStream?.getAudioTracks()[0] : undefined;
         try {
-            recognition.start();
+            if (track) {
+                try {
+                    recognition.start(track); // newer browsers: recognize this mic
+                } catch (error) {
+                    if (!(error instanceof TypeError)) throw error;
+                    recognition.start(); // older ones only know the default mic
+                }
+            } else {
+                recognition.start();
+            }
         } catch {
+            clearInterval(pauseWatch);
+            releaseMic();
             recognition = null;
             hint.textContent = 'Speech input could not start — try reloading the page.';
         }
     }
 
-    if (!SpeechRecognitionCtor) {
-        setMicAvailable(false, 'Speech input is not supported in this browser — try Chrome, Edge or Safari.');
-    } else {
-        void refreshSpeechSupport();
-        micButton.addEventListener('click', () => {
-            if (listening) {
-                stopListening(true);
-            } else {
-                void startListening();
-            }
-        });
-    }
+    micButton.addEventListener('click', () => {
+        if (listening) {
+            stopListening(true);
+        } else {
+            void startListening();
+        }
+    });
 
     // --- wiring ---
 
@@ -423,7 +988,6 @@ import Layout from '../layouts/Layout.astro';
         index = buildIndex(modeTables[mode]);
         answers = primaryAliases(modeTables[mode]);
         if (listening) stopListening(false);
-        void refreshSpeechSupport();
         buildReference();
         previousWord = '';
         loadWord();
@@ -457,19 +1021,40 @@ import Layout from '../layouts/Layout.astro';
 
     newWordButton.addEventListener('click', () => {
         if (listening) stopListening(false);
-        if (!wordSolved) resetStreak();
         loadWord();
         input.focus();
     });
 
     showAnswerButton.addEventListener('click', () => {
         answerShown = true;
-        resetStreak();
         onLiveInput();
     });
 
-    updateStats();
+    // --- reference panel ---
+
+    function setReferenceOpen(open: boolean, remember = true) {
+        refPanel.hidden = !open;
+        document.body.classList.toggle('ref-open', open);
+        refToggle.setAttribute('aria-expanded', String(open));
+        refToggle.textContent = open ? 'Hide alphabet' : 'Show alphabet';
+        if (remember) storage.set('reference', open ? 'open' : 'closed');
+    }
+
+    refToggle.addEventListener('click', () => setReferenceOpen(refPanel.hidden));
+    refClose.addEventListener('click', () => {
+        setReferenceOpen(false);
+        refToggle.focus();
+    });
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && !refPanel.hidden && refPanel.contains(document.activeElement)) {
+            setReferenceOpen(false);
+            refToggle.focus();
+        }
+    });
+
     buildReference();
+    // Reopen it only where it sits beside the trainer; on phones it would cover it.
+    setReferenceOpen(storage.get('reference') === 'open' && matchMedia('(min-width: 60rem)').matches, false);
     loadWord();
 </script>
 
@@ -565,22 +1150,6 @@ import Layout from '../layouts/Layout.astro';
         outline-offset: -2px;
     }
 
-    /* ---- stats ---- */
-    .stats {
-        display: flex;
-        gap: 2.2rem;
-        color: var(--color-text-muted);
-        font-size: 0.85rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-    }
-
-    .stat strong {
-        color: var(--color-text-heading);
-        font-variant-numeric: tabular-nums;
-    }
-
     /* ---- tile board ---- */
     .board {
         display: flex;
@@ -654,66 +1223,94 @@ import Layout from '../layouts/Layout.astro';
         :global(.page-spelling-trainer .tile) {
             transition: background-color 0.15s ease, border-color 0.15s ease;
         }
+
+        /* Solved: the tiles pop one after another, left to right. */
+        :global(.page-spelling-trainer .board.solved .cell .tile) {
+            animation: tile-pop 0.45s cubic-bezier(0.3, 1.6, 0.5, 1) both;
+            animation-delay: calc(var(--i, 0) * 60ms);
+        }
+
+        @keyframes tile-pop {
+            0% { transform: scale(1); }
+            40% { transform: scale(1.18) translateY(-4px); }
+            100% { transform: scale(1); }
+        }
     }
 
-    /* ---- input row ---- */
+    /* Solved: a stronger green and a soft glow, also without motion. */
+    :global(.page-spelling-trainer .board.solved .cell.ok .tile) {
+        border-color: var(--good);
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--good) 22%, transparent);
+    }
+
+    /* ---- answer row: [ field with mic ] [ Check ] ---- */
     .entry {
-        display: grid;
-        justify-items: center;
-        gap: 0.9rem;
+        display: flex;
+        gap: 0.6rem;
         width: 100%;
         max-width: 44rem;
     }
 
-    .entry input {
-        width: 100%;
+    .field {
+        position: relative;
         flex: 1;
         min-width: 0;
+    }
+
+    .field input {
+        box-sizing: border-box;
+        width: 100%;
         min-height: 3rem;
         border: 1px solid var(--color-border);
-        border-radius: 8px;
-        padding: 0.6rem 0.9rem;
+        border-radius: 10px;
+        padding: 0.6rem 3.4rem 0.6rem 0.95rem;
         background: var(--color-bg);
         color: var(--color-text);
         font: 400 1.05rem/1.2 'Atkinson', sans-serif;
     }
 
-    .entry input:focus {
+    .field input:focus {
         border-color: var(--color-accent);
         outline: none;
         box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 18%, transparent);
     }
 
-    .controls button {
-        font: 600 0.85rem/1.3 'Atkinson', sans-serif;
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
-        color: var(--color-text-heading);
-        background: var(--color-surface);
-        border: 1px solid var(--color-border);
+    #mic {
+        position: absolute;
+        top: 50%;
+        right: 0.4rem;
+        transform: translateY(-50%);
+        display: grid;
+        place-items: center;
+        width: 2.4rem;
+        height: 2.4rem;
+        border: 0;
         border-radius: 8px;
-        padding: 0.65rem 1.3rem;
+        background: color-mix(in srgb, var(--color-accent) 12%, transparent);
+        color: var(--color-accent);
         cursor: pointer;
     }
 
-    .controls button:hover:not(:disabled) {
-        border-color: var(--color-text-muted);
+    #mic:hover:not(:disabled) {
+        background: color-mix(in srgb, var(--color-accent) 20%, transparent);
     }
 
-    .controls button:disabled {
+    #mic.listening {
+        background: color-mix(in srgb, var(--bad) 15%, transparent);
+        color: var(--bad);
+    }
+
+    #mic:disabled {
         opacity: 0.45;
         cursor: default;
     }
 
-    #mic {
-        display: grid;
-        place-items: center;
-        padding: 0.65rem 0.9rem;
-    }
-
-    #mic.listening {
-        border-color: var(--bad);
-        color: var(--bad);
+    #mic:focus-visible,
+    #check-btn:focus-visible,
+    .actions button:focus-visible,
+    .ref-close:focus-visible {
+        outline: 2px solid var(--color-accent);
+        outline-offset: 2px;
     }
 
     @media (prefers-reduced-motion: no-preference) {
@@ -728,12 +1325,46 @@ import Layout from '../layouts/Layout.astro';
         }
     }
 
-    /* ---- controls / hint ---- */
-    .controls {
+    #check-btn {
+        flex-shrink: 0;
+        border: 0;
+        border-radius: 10px;
+        padding: 0 1.4rem;
+        background: var(--color-accent);
+        color: var(--color-on-accent);
+        font: 700 0.85rem/1 'Atkinson', sans-serif;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        cursor: pointer;
+    }
+
+    #check-btn:hover {
+        background: var(--color-accent-dark);
+    }
+
+    /* ---- secondary actions: quiet text buttons ---- */
+    .actions {
         display: flex;
-        gap: 0.8rem;
         flex-wrap: wrap;
         justify-content: center;
+        gap: 0.25rem 1.6rem;
+    }
+
+    .actions button {
+        border: 0;
+        background: none;
+        padding: 0.35rem 0.2rem;
+        color: var(--color-text-muted);
+        font: 600 0.88rem/1.3 'Atkinson', sans-serif;
+        cursor: pointer;
+    }
+
+    .actions button:hover {
+        color: var(--color-accent);
+    }
+
+    .actions button[aria-expanded='true'] {
+        color: var(--color-accent);
     }
 
     .hint {
@@ -746,35 +1377,186 @@ import Layout from '../layouts/Layout.astro';
         text-align: center;
     }
 
-    /* ---- reference ---- */
-    .reference {
-        width: 100%;
-        max-width: 44rem;
-        border: 1px solid var(--color-border);
-        border-radius: 10px;
-        background: var(--color-surface);
-        padding: 0.75rem 1rem;
+    .status {
+        display: grid;
+        justify-items: center;
+        gap: 0.5rem;
+        width: min(20rem, 100%);
+        margin-top: -0.8rem;
+        font-size: 0.8rem;
+        color: var(--color-text-muted);
     }
 
-    .reference summary {
-        cursor: pointer;
-        font-weight: 700;
-        font-size: 0.9rem;
+    .status[hidden] {
+        display: none;
+    }
+
+    .status-line {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        width: 100%;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .status progress {
+        flex: 1;
+        accent-color: var(--color-accent);
+    }
+
+    /* Level meter: thin rounded bars that grow from the middle. */
+    .level-meter {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 1.4rem;
+    }
+
+    .level-meter[hidden] {
+        display: none;
+    }
+
+    :global(.page-spelling-trainer .level-meter span) {
+        width: 3px;
+        height: 100%;
+        border-radius: 2px;
+        background: var(--color-accent);
+        transform: scaleY(0.15);
+        transition: transform 60ms linear;
+    }
+
+    /* ---- microphone choice ---- */
+    .mic-choice {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        max-width: 100%;
+        font-size: 0.8rem;
+        color: var(--color-text-muted);
+    }
+
+    .mic-choice[hidden] {
+        display: none;
+    }
+
+    .mic-choice select {
+        min-width: 0;
+        max-width: 16rem;
+        font: inherit;
+        color: var(--color-text);
+        background: var(--color-surface);
+        border: 1px solid var(--color-border);
+        border-radius: 6px;
+        padding: 0.2rem 0.4rem;
+    }
+
+    /* ---- reference: a panel at the right edge ---- */
+    .ref-panel {
+        --ref-width: min(22rem, 100vw - 3rem);
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 20;
+        width: var(--ref-width);
+        box-sizing: border-box;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        padding: 1rem 1.1rem 1.5rem;
+        background: var(--color-surface);
+        border-left: 1px solid var(--color-border);
+        box-shadow: -8px 0 24px var(--color-shadow);
+    }
+
+    .ref-panel[hidden] {
+        display: none;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+        .ref-panel:not([hidden]) {
+            animation: ref-slide 0.18s ease-out;
+        }
+
+        @keyframes ref-slide {
+            from { transform: translateX(100%); }
+        }
+    }
+
+    /* Wide screens: make room, so the panel sits beside the trainer instead of over it. */
+    @media (min-width: 60rem) {
+        :global(body.page-spelling-trainer.ref-open) {
+            padding-right: min(22rem, 100vw - 3rem);
+        }
+
+        .ref-panel {
+            box-shadow: none;
+        }
+    }
+
+    .ref-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .ref-head h2 {
+        margin: 0;
+        font-size: 1rem;
+        line-height: 1.3;
         color: var(--color-text-heading);
     }
 
-    .reference summary:focus-visible {
-        outline: 2px solid var(--color-accent);
-        outline-offset: 2px;
+    .ref-close {
+        flex-shrink: 0;
+        width: 2rem;
+        height: 2rem;
+        border: 1px solid var(--color-border);
+        border-radius: 8px;
+        background: var(--color-bg);
+        color: var(--color-text-heading);
+        font-size: 1.2rem;
+        line-height: 1;
+        cursor: pointer;
     }
 
-    :global(.page-spelling-trainer .reference table) {
-        margin: 1em 0 0.5em;
-        font-size: 0.9rem;
+    :global(.page-spelling-trainer .ref-list) {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.15rem 0.9rem;
+        margin: 0;
+        font-size: 0.88rem;
+        line-height: 1.35;
+    }
+
+    :global(.page-spelling-trainer .ref-list > div) {
+        display: flex;
+        gap: 0.45rem;
+        padding: 0.2rem 0;
+        border-bottom: 1px solid var(--color-border);
+    }
+
+    :global(.page-spelling-trainer .ref-list dt) {
+        flex: 0 0 1.6rem;
+        font-weight: 700;
+        color: var(--color-text-heading);
+    }
+
+    :global(.page-spelling-trainer .ref-list dd) {
+        margin: 0;
+        color: var(--color-text);
+    }
+
+    :global(.page-spelling-trainer .ref-list dd small) {
+        display: block;
+        font-size: 0.75rem;
+        color: var(--color-text-muted);
     }
 
     :global(.page-spelling-trainer .ref-note) {
-        margin: 0;
+        margin: 0.75rem 0 0;
         font-size: 0.82rem;
         color: var(--color-text-muted);
     }
@@ -795,8 +1577,8 @@ import Layout from '../layouts/Layout.astro';
             font-size: 1.2rem;
         }
 
-        .controls button {
-            flex: 1 1 auto;
+        #check-btn {
+            padding: 0 1rem;
         }
     }
 </style>
