@@ -459,11 +459,11 @@ import Layout from '../layouts/Layout.astro';
         link.href = '/datenschutz/#spracheingabe';
         link.target = '_blank';
         link.rel = 'noopener';
-        link.textContent = 'privacy policy';
+        link.textContent = 'Details';
         hint.replaceChildren(
-            'To use the mic, what you say is streamed to Google for transcription. This site stores nothing; Google may keep it for up to 55 days to detect abuse. Adults (18+) only. Details are in the ',
+            'Your voice is sent to Google to turn it into text. 18+ only. ',
             link,
-            ' (German). Press the mic again to agree and start.',
+            '. Press the mic again to start.',
         );
     }
 
