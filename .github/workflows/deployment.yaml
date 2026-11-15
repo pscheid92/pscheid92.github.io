@@ -7,8 +7,6 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 # One run at a time, in the order of the pushes: the image tags carry the
 # time of their build, and the cluster deploys whichever tag is newest.
@@ -28,28 +26,6 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run check
-
-  build:
-    needs: check
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout your repository using git
-        uses: actions/checkout@v5
-      - name: Install, build, and upload your site
-        uses: withastro/action@v6
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
 
   # The site and its speech-token service as container images for the k3s
   # cluster. Flux's image automation in pscheid92/k8s (apps/website) puts the

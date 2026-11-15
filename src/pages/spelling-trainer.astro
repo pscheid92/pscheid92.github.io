@@ -326,9 +326,10 @@ import Layout from '../layouts/Layout.astro';
 
     // --- streamed speech input (browsers without usable speech recognition) ---
 
-    // Our Worker hands out single-use tokens; the audio goes straight to Google.
-    const TOKEN_URL: string = import.meta.env.PUBLIC_SPEECH_TOKEN_URL
-        ?? (import.meta.env.DEV ? 'http://localhost:8787/live-token' : 'https://speech.patrickscheid.de/live-token');
+    // The site's own token service (services/speech) hands out single-use tokens;
+    // the audio goes straight to Google. In development `npm run speech` runs the
+    // service, and the dev server passes /api on to it (astro.config.mjs).
+    const TOKEN_URL = '/api/live-token';
     const LIVE_URL = 'wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContentConstrained';
     const LIVE_MODEL = 'models/gemini-3.5-transcribe-live';
     const FINAL_TIMEOUT_MS = 3_000;

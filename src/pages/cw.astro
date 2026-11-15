@@ -140,8 +140,8 @@ import Layout from '../layouts/Layout.astro';
     document.querySelector('#this-week')?.addEventListener('click', () => step(isoWeekOf(todayUtc())));
 
     // The server answers every address below /cw/ with this page (nginx/default.conf),
-    // so /cw/2027/42 arrives as it is. Where it doesn't (GitHub Pages, the dev server),
-    // the 404 page sends it here as /cw/?2027/42; /cw/#2027/42 works too.
+    // so /cw/2027/42 arrives as it is. On the dev server, which doesn't, the 404 page
+    // sends it here as /cw/?2027/42; /cw/#2027/42 works too.
     const typed = weekInAddress(location);
     if (typed) {
         const result = parseWeekInput(typed, isoWeekOf(todayUtc()).year);

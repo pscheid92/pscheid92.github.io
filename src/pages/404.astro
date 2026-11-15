@@ -9,7 +9,8 @@ import Layout from '../layouts/Layout.astro';
 >
     <Fragment slot="head">
         <script is:inline>
-            // GitHub Pages serves this page for /cw/2027/42; hand the rest of the path to the week page
+            // In production nginx answers /cw/2027/42 with the week page itself. The dev server
+            // serves this page for it instead; hand the rest of the path to the week page
             const cw = location.pathname.match(/^\/cw\/(.+?)\/?$/);
             if (cw) location.replace('/cw/?' + cw[1]);
         </script>

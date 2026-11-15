@@ -9,10 +9,7 @@ ENV ASTRO_TELEMETRY_DISABLED=1
 COPY package.json package-lock.json ./
 RUN npm ci
 COPY . .
-# On the cluster the spelling trainer gets its speech tokens from the site's
-# own origin (services/speech). The site that GitHub Pages still builds from
-# the same commit keeps asking the Cloudflare Worker.
-RUN PUBLIC_SPEECH_TOKEN_URL=/api/live-token npm run build
+RUN npm run build
 
 # nginx as an unprivileged user (101), listening on 8080. The site gets a
 # directory of its own: the image's html directory holds nginx's sample pages.

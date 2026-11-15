@@ -19,4 +19,11 @@ export default defineConfig({
         // the former CPR metronome page was folded into the trainer
         '/cpr': '/cpr-trainer',
     },
+    vite: {
+        server: {
+            // In production the gateway sends /api/live-token to the speech-token
+            // service (services/speech); here `npm run speech` runs it on 8787.
+            proxy: {'/api': 'http://localhost:8787'},
+        },
+    },
 });

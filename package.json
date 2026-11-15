@@ -7,6 +7,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
+    "speech": "PORT=8787 ALLOWED_ORIGINS=http://localhost:4321 node --env-file-if-exists=services/speech/.env services/speech/server.ts",
     "test": "vitest run",
     "check": "astro check"
   },

@@ -5,12 +5,10 @@
 .claude
 .idea
 .astro
-.wrangler
 node_modules
 dist
 scripts
 services
-workers
 Dockerfile
 .dockerignore
 
