@@ -1,0 +1,21 @@
+# Only what the site's build reads goes into the build context. The
+# speech-token service has a context of its own (services/speech).
+.git
+.github
+.claude
+.idea
+.astro
+.wrangler
+node_modules
+dist
+scripts
+services
+workers
+Dockerfile
+.dockerignore
+
+# Never: local secrets.
+**/.env*
+**/.dev.vars
+
+**/.DS_Store

@@ -1,4 +1,4 @@
-name: Deploy to GitHub Pages
+name: Deploy
 
 on:
   push:
@@ -9,6 +9,12 @@ permissions:
   contents: read
   pages: write
   id-token: write
+
+# One run at a time, in the order of the pushes: the image tags carry the
+# time of their build, and the cluster deploys whichever tag is newest.
+concurrency:
+  group: deploy
+  cancel-in-progress: false
 
 jobs:
   check:
@@ -44,3 +50,47 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+  # The site and its speech-token service as container images for the k3s
+  # cluster. Flux's image automation in pscheid92/k8s (apps/website) puts the
+  # newest tag of the form YYYYMMDD-HHMMSS-<sha> into production by itself,
+  # so only main builds them: a run started by hand on another branch would
+  # otherwise deploy that branch.
+  images:
+    needs: check
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v5
+      - name: Tag
+        id: tag
+        run: echo "tag=$(date -u +%Y%m%d-%H%M%S)-$(git rev-parse --short=7 HEAD)" >> "$GITHUB_OUTPUT"
+      - uses: docker/setup-buildx-action@v4
+      - uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Site
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          platforms: linux/amd64
+          push: true
+          tags: ghcr.io/pscheid92/website:${{ steps.tag.outputs.tag }}
+          labels: |
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+          cache-from: type=gha,scope=website
+          cache-to: type=gha,mode=max,scope=website
+      - name: Speech tokens
+        uses: docker/build-push-action@v7
+        with:
+          context: services/speech
+          platforms: linux/amd64
+          push: true
+          tags: ghcr.io/pscheid92/website-speech:${{ steps.tag.outputs.tag }}
+          labels: |
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
