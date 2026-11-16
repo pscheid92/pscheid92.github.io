@@ -1,6 +1,6 @@
 ---
 title: 'Signing Files for a Post-Quantum World'
-description: 'A look at the cryptographic design behind pqsign — a hybrid signature tool that pairs Ed25519 with ML-DSA-65 so your signatures survive both classical and quantum attackers.'
+description: 'A look at the cryptographic design behind pqsign, a hybrid signature tool that pairs Ed25519 with ML-DSA-65 so your signatures survive both classical and quantum attackers.'
 pubDate: 'Apr 03 2026'
 tags: ['Cryptography', 'Rust', 'Security']
 series: 'inside-pqsign'
@@ -67,7 +67,7 @@ The post-quantum signature algorithm we use is ML-DSA-65, which is based on the 
 
 We need both signatures to be inseparable. If one can be swapped out without invalidating the other, the hybrid guarantee falls apart. pqsign achieves this through nesting: the ML-DSA-65 signature covers both the file and the Ed25519 signature, creating an interdependency between the two layers.
 
-First, we create a file hash by using BLAKE2b-512, producing a fixed 64-byte digest regardless of file size. The file is streamed through BLAKE2b in chunks, so it never needs to be loaded into memory entirely. It’s also fast—about 106 ms for 100 MiB. The actual cryptographic signing after that takes under 0.5 ms. As for quantum-resistance of the hash, BLAKE2b-512 produces a 512-bit digest, which gives 256 bits of collision resistance classically. The best known quantum collision search only lowers that to roughly 170 bits. Still firmly infeasible to brute-force.
+First, we create a file hash by using BLAKE2b-512, producing a fixed 64-byte digest regardless of file size. The file is streamed through BLAKE2b in chunks, so it never needs to be loaded into memory entirely. It’s also fast: about 106 ms for 100 MiB. The actual cryptographic signing after that takes under 0.5 ms. As for quantum-resistance of the hash, BLAKE2b-512 produces a 512-bit digest, which gives 256 bits of collision resistance classically. The best known quantum collision search only lowers that to roughly 170 bits. Still firmly infeasible to brute-force.
 
 Then Ed25519 signs this hash along with a trusted comment, a small metadata field that records the timestamp, filename, and optionally a user-provided text. Finally, ML-DSA-65 signs the file hash and the Ed25519 signature together.
 
@@ -109,7 +109,7 @@ Secret keys are zeroed in memory as soon as they go out of scope. This doesn't s
 
 ## Performance Characteristics
 
-Signing performance is dominated by Argon2id. It takes about 378 ms to derive the encryption key and decrypt the secret key from disk. For large files, BLAKE2b adds to that—roughly 106 ms for 100 MiB. The actual cryptographic signing, meaning Ed25519 and ML-DSA-65 together, takes under 0.5 ms. This is negligible in comparison.
+Signing performance is dominated by Argon2id. It takes about 378 ms to derive the encryption key and decrypt the secret key from disk. For large files, BLAKE2b adds roughly 106 ms for 100 MiB. The actual cryptographic signing, meaning Ed25519 and ML-DSA-65 together, takes under 0.5 ms. This is negligible in comparison.
 
 Verification is a different story. It only needs the public key, so no password prompt, no Argon2id key derivation. This asymmetry is by design: you sign a file once, but potentially many people verify it. The expensive part happens once on the signer's side. The cheap part happens on every verifier's side.
 

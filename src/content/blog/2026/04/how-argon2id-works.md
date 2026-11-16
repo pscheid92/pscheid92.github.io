@@ -1,6 +1,6 @@
 ---
 title: 'How Argon2id Works'
-description: 'Inside Argon2id — the memory-hard password hashing function that makes brute-force attacks expensive by design, from the memory matrix to the hybrid mixing passes.'
+description: 'Inside Argon2id, the memory-hard password hashing function that makes brute-force attacks expensive by design, from the memory matrix to the hybrid mixing passes.'
 pubDate: 'Apr 01 2026'
 tags: ['Cryptography', 'Security']
 series: 'inside-pqsign'
@@ -18,9 +18,9 @@ The `id` variant combines two modes: Argon2i (data-independent memory access, si
 
 ## Why Memory-Hardness Matters
 
-Traditional KDFs like PBKDF2 and bcrypt are **compute-hard**: they slow down hashing by iterating a hash function many times. But GPUs have thousands of cores — they can run thousands of PBKDF2 instances in parallel, with each core handling one candidate password.
+Traditional KDFs like PBKDF2 and bcrypt are **compute-hard**: they slow down hashing by iterating a hash function many times. But GPUs have thousands of cores and can run thousands of PBKDF2 instances in parallel, with each core handling one candidate password.
 
-Argon2 is **memory-hard**: each instance requires a large, dedicated memory allocation (e.g., 256 MiB). A GPU with 24 GB of VRAM can only run ~96 simultaneous instances at 256 MiB each. Memory-hardness turns the attack from "how many cores do you have?" into "how much RAM do you have?" — a much more expensive resource to scale.
+Argon2 is **memory-hard**: each instance requires a large, dedicated memory allocation (e.g., 256 MiB). A GPU with 24 GB of VRAM can only run ~96 simultaneous instances at 256 MiB each. Memory-hardness turns the attack from "how many cores do you have?" into "how much RAM do you have?", a much more expensive resource to scale.
 
 ---
 
@@ -28,9 +28,9 @@ Argon2 is **memory-hard**: each instance requires a large, dedicated memory allo
 
 Argon2 allocates a matrix of **q blocks**, each 1024 bytes. The blocks are organized into:
 
-- **p lanes** (parallelism parameter) — independent columns that can be computed concurrently.
-- **n passes** (iteration parameter) — how many times the entire matrix is filled.
-- **4 segments per pass per lane** — the unit of sequential dependency within a lane.
+- **p lanes** (parallelism parameter): independent columns that can be computed concurrently.
+- **n passes** (iteration parameter): how many times the entire matrix is filled.
+- **4 segments per pass per lane**: the unit of sequential dependency within a lane.
 
 For example, with 256 MiB memory and 1 lane:
 ```
@@ -57,9 +57,9 @@ where:
 
 This is where the `id` in Argon2id comes in:
 
-- **First half of pass 1 (Argon2i-style):** The reference index is generated from a pseudorandom function seeded with the pass number, lane, and position — **independent of the actual block contents**. This prevents side-channel attacks (an attacker watching memory access patterns learns nothing about the password).
+- **First half of pass 1 (Argon2i-style):** The reference index is generated from a pseudorandom function seeded with the pass number, lane, and position, **independent of the actual block contents**. This prevents side-channel attacks (an attacker watching memory access patterns learns nothing about the password).
 
-- **Second half of pass 1 and all subsequent passes (Argon2d-style):** The reference index is derived from the **content of the previous block**. This makes the memory access pattern depend on the password, which means an attacker can't precompute the access pattern — they must actually fill the memory to know which blocks to read.
+- **Second half of pass 1 and all subsequent passes (Argon2d-style):** The reference index is derived from the **content of the previous block**. This makes the memory access pattern depend on the password, which means an attacker can't precompute the access pattern. They must actually fill the memory to know which blocks to read.
 
 The hybrid gives you side-channel resistance during the critical early phase (when the matrix is being initialized and patterns are most informative) and maximum GPU resistance for the bulk of the computation.
 
@@ -116,5 +116,5 @@ Memory-hardness buys orders of magnitude, but the password's entropy is still th
 
 ## Further Reading
 
-- Alex Biryukov et al., ["Argon2: the memory-hard function for password hashing and other applications"](https://www.password-hashing.net/argon2-specs.pdf) — the original specification.
-- RFC 9106 — the IETF standard.
+- Alex Biryukov et al., ["Argon2: the memory-hard function for password hashing and other applications"](https://www.password-hashing.net/argon2-specs.pdf): the original specification.
+- RFC 9106: the IETF standard.

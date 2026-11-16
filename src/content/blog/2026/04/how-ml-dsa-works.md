@@ -1,6 +1,6 @@
 ---
 title: 'How ML-DSA Works'
-description: 'A walkthrough of ML-DSA (FIPS 204), the NIST post-quantum signature standard — from the Module Learning With Errors problem to Fiat-Shamir signing.'
+description: 'A walkthrough of ML-DSA (FIPS 204), the NIST post-quantum signature standard, from the Module Learning With Errors problem to Fiat-Shamir signing.'
 pubDate: 'Apr 01 2026'
 tags: ['Cryptography', 'Security']
 series: 'inside-pqsign'
@@ -10,7 +10,7 @@ draft: true
 
 ## The Big Picture
 
-ML-DSA (Module-Lattice-Based Digital Signature Algorithm), formerly known as CRYSTALS-Dilithium, is the primary post-quantum signature standard published by NIST as FIPS 204. It's built on the hardness of the Module Learning With Errors (MLWE) problem — a problem that remains hard even for quantum computers.
+ML-DSA (Module-Lattice-Based Digital Signature Algorithm), formerly known as CRYSTALS-Dilithium, is the primary post-quantum signature standard published by NIST as FIPS 204. It's built on the hardness of the Module Learning With Errors (MLWE) problem, which remains hard even for quantum computers.
 
 This post explains the mathematical foundation and how the signing scheme works.
 
@@ -24,9 +24,9 @@ The **Learning With Errors (LWE)** problem, introduced by Oded Regev in 2005, is
 
 > Given a matrix **A** and a vector **b = As + e** (where **s** is a secret vector and **e** is a small error vector), recover **s**.
 
-Without the error, this is just solving a linear system — easy. The small error term makes it fundamentally hard. The best known algorithms for LWE run in exponential time, even on quantum computers.
+Without the error, this is just solving a linear system, which is easy. The small error term makes it fundamentally hard. The best known algorithms for LWE run in exponential time, even on quantum computers.
 
-**Module-LWE** is a structured variant where the matrix entries come from a polynomial ring R_q = Z_q[X]/(X^n + 1). This structure makes operations faster (using NTT — the Number Theoretic Transform) and keys smaller, without compromising the security reduction.
+**Module-LWE** is a structured variant where the matrix entries come from a polynomial ring R_q = Z_q[X]/(X^n + 1). This structure makes operations faster (using NTT, the Number Theoretic Transform) and keys smaller, without compromising the security reduction.
 
 ---
 
@@ -36,7 +36,7 @@ ML-DSA follows the **Fiat-Shamir with aborts** paradigm:
 
 1. The signer commits to a random masking vector.
 2. A challenge is derived by hashing the commitment and message.
-3. The signer computes a response — but **rejects and restarts** if the response would leak information about the secret key.
+3. The signer computes a response, but **rejects and restarts** if the response would leak information about the secret key.
 
 The "abort" step is critical. Without it, an attacker could statistically recover the secret key by collecting many signatures and analyzing the distribution of responses. The rejection sampling ensures that the response distribution is independent of the secret key.
 
@@ -76,7 +76,7 @@ The security assumption: given **A** and **t = As₁ + s₂**, recovering **s₁
 
 To sign a message M:
 
-1. Compute `μ = H(H(pk) || M)` — a hash of the public key and message.
+1. Compute `μ = H(H(pk) || M)`, a hash of the public key and message.
 2. **Commit:** Sample a masking vector **y** with coefficients in [-γ₁+1, γ₁]. Compute **w = Ay**.
 3. Decompose **w** into high bits **w₁** and low bits **w₀**.
 4. **Challenge:** Compute `c̃ = H(μ || w₁)`. Expand c̃ into a polynomial **c** with exactly τ coefficients equal to ±1 and the rest zero.
@@ -97,7 +97,7 @@ Given message M, public key (seed, **t**), and signature (c̃, **z**, **h**):
 
 1. Recompute **A** from the seed.
 2. Expand c̃ into challenge polynomial **c**.
-3. Compute **w₁' = UseHint(h, Az - ct)** — recovering the high bits of the original commitment.
+3. Compute **w₁' = UseHint(h, Az - ct)**, recovering the high bits of the original commitment.
 4. Check that `c̃ = H(μ || w₁')`.
 5. Check that all coefficients of **z** are < γ₁ - β.
 
@@ -112,9 +112,9 @@ The hint h allows the verifier to recover exactly w₁ from w - cs₂ without kn
 
 ## Why It's Post-Quantum Secure
 
-Shor's algorithm breaks problems with **periodic structure** — integer factorization and discrete logarithms both reduce to period-finding. Lattice problems like Module-LWE have no known periodic structure for a quantum algorithm to exploit.
+Shor's algorithm breaks problems with **periodic structure**: integer factorization and discrete logarithms both reduce to period-finding. Lattice problems like Module-LWE have no known periodic structure for a quantum algorithm to exploit.
 
-The best known quantum attack on Module-LWE is a variant of lattice sieving, which still runs in exponential time. ML-DSA-65's parameters are chosen so that this attack requires at least 2¹²⁸ operations — matching NIST Security Level 3.
+The best known quantum attack on Module-LWE is a variant of lattice sieving, which still runs in exponential time. ML-DSA-65's parameters are chosen so that this attack requires at least 2¹²⁸ operations, matching NIST Security Level 3.
 
 ---
 
@@ -133,6 +133,6 @@ Signatures are ~50× larger than Ed25519. For file signing this is negligible; f
 
 ## Further Reading
 
-- FIPS 204 — the official NIST standard.
-- Léo Ducas et al., ["CRYSTALS-Dilithium"](https://pq-crystals.org/dilithium/) — the original submission.
-- Oded Regev, ["On Lattices, Learning with Errors, Random Linear Codes, and Cryptography"](https://arxiv.org/abs/2401.03703) — the foundational LWE paper.
+- FIPS 204: the official NIST standard.
+- Léo Ducas et al., ["CRYSTALS-Dilithium"](https://pq-crystals.org/dilithium/): the original submission.
+- Oded Regev, ["On Lattices, Learning with Errors, Random Linear Codes, and Cryptography"](https://arxiv.org/abs/2401.03703): the foundational LWE paper.

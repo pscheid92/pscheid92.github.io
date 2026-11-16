@@ -11,7 +11,7 @@ import Layout from '../layouts/Layout.astro';
         <div class="page-header">
             <a class="eyebrow" href="/pages/">&larr; More tools</a>
             <h1 id="trainer-title">Spelling Alphabet Trainer</h1>
-            <p class="tagline">Alfa, Bravo, Charlie — or Anton, Berta, Cäsar. Spell the word, letter by letter.</p>
+            <p class="tagline">Alfa, Bravo, Charlie, or Anton, Berta, Cäsar. Spell the word, letter by letter.</p>
         </div>
 
         <fieldset class="modes" id="modes">
@@ -256,7 +256,7 @@ import Layout from '../layouts/Layout.astro';
             celebrate(rows, fromSpeech ? input.value.trim() : null);
         } else {
             render(rows, decoded.length);
-            hint.textContent = 'Not quite — fix the red tiles, or show the answer.';
+            hint.textContent = 'Not quite. Fix the red tiles, or show the answer.';
         }
     }
 
@@ -286,7 +286,7 @@ import Layout from '../layouts/Layout.astro';
         if (mode === 'de') {
             const note = document.createElement('p');
             note.className = 'ref-note';
-            note.textContent = 'ch and sch have no code words in this table — they are spelled letter by letter.';
+            note.textContent = 'ch and sch have no code words in this table. They are spelled letter by letter.';
             refBody.append(note);
         }
     }
@@ -308,8 +308,8 @@ import Layout from '../layouts/Layout.astro';
     }
 
     const SPEECH_ERRORS: Record<string, string> = {
-        'not-allowed': 'Microphone access was denied — allow the microphone for this site and try again.',
-        'no-speech': 'Didn’t hear anything — press the mic again and speak the code words clearly.',
+        'not-allowed': 'Microphone access was denied. Allow the microphone for this site and try again.',
+        'no-speech': 'Didn’t hear anything. Press the mic again and speak the code words clearly.',
     };
 
     let starting = false;
@@ -328,7 +328,7 @@ import Layout from '../layouts/Layout.astro';
     // Recording stops by itself once the speaker has been quiet this long.
     // Generous, so a pause between two code words doesn't cut anyone off.
     const PAUSE_MS = 2_000;
-    const LISTENING_HINT = 'Listening — say the code words. Recording stops by itself after a short pause.';
+    const LISTENING_HINT = 'Listening. Say the code words; recording stops by itself after a short pause.';
 
     // Listens to the microphone level: feeds the level meter, and calls onPause
     // once someone has spoken and then been quiet for PAUSE_MS.
@@ -612,19 +612,19 @@ import Layout from '../layouts/Layout.astro';
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({lang, vocabulary: vocabulary()}),
                 });
-                if (response.status === 429) return fail('Too many attempts — wait a minute, then try again.');
-                if (!response.ok) return fail('The speech service is unavailable right now — type the code words instead.');
+                if (response.status === 429) return fail('Too many attempts. Wait a minute, then try again.');
+                if (!response.ok) return fail('The speech service is unavailable right now. Type the code words instead.');
                 token = (await response.json()).token;
             } catch {
-                return fail('The speech service could not be reached — check your connection, or type the code words.');
+                return fail('The speech service could not be reached. Check your connection, or type the code words.');
             }
             if (closed) return;
 
             socket = new WebSocket(`${LIVE_URL}?access_token=${encodeURIComponent(token)}`);
             socket.onopen = () => socket?.send(JSON.stringify({setup: {model: LIVE_MODEL}})); // the rest is locked in the token
-            socket.onerror = () => fail('The speech service could not be reached — check your connection, or type the code words.');
+            socket.onerror = () => fail('The speech service could not be reached. Check your connection, or type the code words.');
             socket.onclose = () => {
-                if (!closed) fail('The speech service closed the connection — try again, or type the code words.');
+                if (!closed) fail('The speech service closed the connection. Try again, or type the code words.');
             };
             socket.onmessage = async (event) => {
                 const message = JSON.parse(typeof event.data === 'string' ? event.data : await event.data.text());
@@ -691,7 +691,7 @@ import Layout from '../layouts/Layout.astro';
     async function startRecording() {
         if (stopLive || starting) return;
         if (!navigator.mediaDevices?.getUserMedia || typeof AudioWorkletNode === 'undefined' || typeof WebSocket === 'undefined') {
-            hint.textContent = 'This browser can’t stream audio — type the code words instead.';
+            hint.textContent = 'This browser can’t stream audio. Type the code words instead.';
             return;
         }
         starting = true;
@@ -743,7 +743,7 @@ import Layout from '../layouts/Layout.astro';
             starting = false;
             session.close();
             stream.getTracks().forEach((track) => track.stop());
-            hint.textContent = 'This browser can’t stream audio — type the code words instead.';
+            hint.textContent = 'This browser can’t stream audio. Type the code words instead.';
             return;
         }
         starting = false;

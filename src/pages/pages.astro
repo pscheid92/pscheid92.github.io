@@ -12,7 +12,7 @@ const pages = [
         href: '/spelling-trainer/',
         title: 'Spelling Alphabet Trainer',
         tag: 'Training tool',
-        description: 'Spell random words with the NATO alphabet, the German Buchstabiertafel or the BOS table — by keyboard or voice, with per-letter feedback.',
+        description: 'Spell random words with the NATO alphabet, the German Buchstabiertafel or the BOS table, by keyboard or voice, with per-letter feedback.',
     },
     {
         href: '/bmi/',
@@ -30,7 +30,7 @@ const pages = [
         href: '/cw/',
         title: 'Calendar Week',
         tag: 'Calculator',
-        description: 'Monday to Sunday of any ISO calendar week — add it to the address, as in /cw/this/42 or /cw/2027/42.',
+        description: 'Monday to Sunday of any ISO calendar week. Add it to the address, as in /cw/this/42 or /cw/2027/42.',
     },
     {
         href: '/sunwalk/',
@@ -50,7 +50,7 @@ const groups = [...new Set(pages.map((p) => p.tag))].map((tag) => ({tag, items: 
 >
     <header class="grid page-head">
         <h1>Pages</h1>
-        <p class="page-dek">Small tools that live off the beaten path — none of these appear in the menu.</p>
+        <p class="page-dek">Small tools that live off the beaten path. None of them appear in the menu.</p>
     </header>
 
     {groups.map((group) => (

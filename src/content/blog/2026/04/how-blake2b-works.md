@@ -1,6 +1,6 @@
 ---
 title: 'How BLAKE2b Works'
-description: 'Inside BLAKE2b — the cryptographic hash function that processes data faster than SHA-512 while maintaining a strong security margin.'
+description: 'Inside BLAKE2b, the cryptographic hash function that processes data faster than SHA-512 while maintaining a strong security margin.'
 pubDate: 'Apr 01 2026'
 tags: ['Cryptography', 'Security']
 series: 'inside-pqsign'
@@ -10,7 +10,7 @@ draft: true
 
 ## The Big Picture
 
-BLAKE2b is a cryptographic hash function that produces digests up to 512 bits. It's faster than SHA-512, MD5, and SHA-256 on 64-bit platforms — without sacrificing security. It descends from BLAKE, a SHA-3 finalist, which itself is based on Daniel J. Bernstein's ChaCha stream cipher.
+BLAKE2b is a cryptographic hash function that produces digests up to 512 bits. It's faster than SHA-512, MD5, and SHA-256 on 64-bit platforms without sacrificing security. It descends from BLAKE, a SHA-3 finalist, which itself is based on Daniel J. Bernstein's ChaCha stream cipher.
 
 This post explains how BLAKE2b turns arbitrary-length input into a fixed-length hash.
 
@@ -51,7 +51,7 @@ BLAKE2b processes input in **128-byte blocks**. For each block, the compression 
 
 1. **Initialize the working vector v** (16 words): the top 8 from the current state, the bottom 8 from the IV, with the counter and finalization flag mixed into the last 4 words.
 
-2. **Apply 12 rounds of mixing.** Each round consists of 8 calls to the **G function** — 4 on columns and 4 on diagonals of a 4×4 matrix of words.
+2. **Apply 12 rounds of mixing.** Each round consists of 8 calls to the **G function**: 4 on columns and 4 on diagonals of a 4×4 matrix of words.
 
 3. **Finalize:** XOR the top and bottom halves of v back into the state.
 
@@ -96,7 +96,7 @@ The counter serves two purposes: it acts as a block index (preventing block reor
 - **12 rounds vs. 80.** SHA-512 runs 80 rounds per block; BLAKE2b runs 12. Fewer rounds with a wider state achieves comparable diffusion at lower cost.
 - **Parallelism-friendly.** BLAKE2bp (the parallel variant) processes 4 lanes simultaneously, but even the sequential BLAKE2b benefits from instruction-level parallelism within each round.
 
-Typical throughput on modern x86-64: **~0.7 cycles/byte** — roughly 3× faster than SHA-512.
+Typical throughput on modern x86-64: **~0.7 cycles/byte**, roughly 3× faster than SHA-512.
 
 ---
 
@@ -104,7 +104,7 @@ Typical throughput on modern x86-64: **~0.7 cycles/byte** — roughly 3× faster
 
 - **Collision resistance:** 2²⁵⁶ for BLAKE2b-512 (birthday bound on 512-bit output).
 - **Preimage resistance:** 2⁵¹² (full digest).
-- **Post-quantum:** Grover's algorithm halves the security level. BLAKE2b-512 retains 2²⁵⁶ collision resistance and 2²⁵⁶ preimage resistance in the quantum setting — more than sufficient.
+- **Post-quantum:** Grover's algorithm halves the security level. BLAKE2b-512 retains 2²⁵⁶ collision resistance and 2²⁵⁶ preimage resistance in the quantum setting, which is more than sufficient.
 
 No practical attacks on the full 12-round BLAKE2b have been published. The best known attacks reach reduced-round variants (up to 7.5 rounds) with complexity far above practical.
 
@@ -112,5 +112,5 @@ No practical attacks on the full 12-round BLAKE2b have been published. The best 
 
 ## Further Reading
 
-- Jean-Philippe Aumasson et al., ["BLAKE2: simpler, smaller, fast as MD5"](https://blake2.net/) — the BLAKE2 paper.
-- RFC 7693 — the IETF specification.
+- Jean-Philippe Aumasson et al., ["BLAKE2: simpler, smaller, fast as MD5"](https://blake2.net/): the BLAKE2 paper.
+- RFC 7693: the IETF specification.
