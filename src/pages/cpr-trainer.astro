@@ -37,7 +37,7 @@ import Layout from '../layouts/Layout.astro';
             <div class="scale"><span>70</span><span>100</span><span>110</span><span>120</span><span>150</span></div>
         </div>
 
-        <button id="pad" type="button" aria-label="Tap pad — tap in rhythm">
+        <button id="pad" type="button" aria-label="Tap pad: tap in rhythm">
             <span id="count">—</span>
             <span id="cycle">tap to start</span>
         </button>
@@ -349,7 +349,7 @@ import Layout from '../layouts/Layout.astro';
             }
             pendingBreak = true;
             countEl.textContent = '—';
-            cycleEl.textContent = 'resume — tap!';
+            cycleEl.textContent = 'resume: tap!';
             stateSet('Resume compressions', 'fast');
             if (mode === 'free') armIdle();
         }, 100);
@@ -414,7 +414,7 @@ import Layout from '../layouts/Layout.astro';
         timerEl.hidden = false; // keep the elapsed time readable after stopping
         phase = 'idle';
         listenReadout(false);
-        stateSet('Stopped — tap to restart', 'none');
+        stateSet('Stopped. Tap to restart', 'none');
     }
 
     /* ================= free practice ================= */
@@ -423,7 +423,7 @@ import Layout from '../layouts/Layout.astro';
         idleTimer = window.setTimeout(() => {
             readout.classList.add('idle');
             bpmEl.style.color = ''; // inline state color would override the idle dimming
-            stateSet('Paused — tap to restart', 'none');
+            stateSet('Paused. Tap to restart', 'none');
             setNeedle(null);
         }, GAP);
     }
@@ -505,7 +505,7 @@ import Layout from '../layouts/Layout.astro';
         endTone();
         phase = 'report';
         primaryBtn.textContent = 'Start 2-minute test';
-        stateSet('Time — switch rescuers', 'none');
+        stateSet('Time to switch rescuers', 'none');
         const ivs = validIntervals();
         const overall = ivs.length ? 60000 / avg(ivs) : 0;
         setBpm(ivs.length ? overall : null);
@@ -523,11 +523,11 @@ import Layout from '../layouts/Layout.astro';
         const handsOn = Math.min(100, Math.round((100 * ivs.filter((v) => v <= 1500).reduce((a, b) => a + b, 0)) / TEST_MS));
         let verdict;
         if (f == null || l == null) {
-            verdict = 'Not enough tapping to compare start and finish — try to keep going the full two minutes.';
+            verdict = 'Not enough tapping to compare start and finish. Try to keep going the full two minutes.';
         } else {
             verdict = 'First 30 s: ' + f + '/min → last 30 s: ' + l + '/min.';
-            if (l - f <= -6) verdict += ' You sag as you tire — that’s the classic fatigue curve, train through it.';
-            else if (f > TARGET + 8) verdict += ' You start hot — ease into the tempo instead.';
+            if (l - f <= -6) verdict += ' You sag as you tire. That’s the classic fatigue curve; train through it.';
+            else if (f > TARGET + 8) verdict += ' You start too fast. Ease into the tempo instead.';
             else if (Math.abs(l - f) <= 5) verdict += ' Held steady the whole way.';
         }
         // with 30:2 breaths the pauses cap hands-on time near 75%, so "good" depends on the mode

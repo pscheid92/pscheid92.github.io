@@ -11,7 +11,7 @@ import Layout from '../layouts/Layout.astro';
         <div class="calculator-header">
             <a class="eyebrow" href="/pages/">&larr; More tools</a>
             <h1 id="calculator-title">Blood Volume</h1>
-            <p class="formula">Nadler, Lemmens &amp; Gilcher — shown side by side</p>
+            <p class="formula">Nadler, Lemmens &amp; Gilcher, side by side</p>
         </div>
 
         <form class="calculator-form" id="bv-form">
@@ -95,7 +95,7 @@ import Layout from '../layouts/Layout.astro';
                     <span class="ml-output" id="nadler-ml"></span>
                     <span class="validity-badge" id="nadler-badge"></span>
                     <span class="result-note">height³ &amp; weight, sex-specific</span>
-                    <span class="atls-flag" data-flag="nadler" hidden>↓ Most cautious — used below</span>
+                    <span class="atls-flag" data-flag="nadler" hidden>↓ Most cautious, used below</span>
                 </div>
 
                 <div class="result-card" id="card-lemmens">
@@ -104,7 +104,7 @@ import Layout from '../layouts/Layout.astro';
                     <span class="ml-output" id="lemmens-ml"></span>
                     <span class="validity-badge" id="lemmens-badge"></span>
                     <span class="result-note">70 × weight ÷ √(BMI ÷ 22)</span>
-                    <span class="atls-flag" data-flag="lemmens" hidden>↓ Most cautious — used below</span>
+                    <span class="atls-flag" data-flag="lemmens" hidden>↓ Most cautious, used below</span>
                 </div>
 
                 <div class="result-card" id="card-gilcher">
@@ -114,7 +114,7 @@ import Layout from '../layouts/Layout.astro';
                     <span class="validity-badge" id="gilcher-badge"></span>
                     <span class="result-note" id="gilcher-note">mL/kg by build</span>
                     <span class="build-hint" id="gilcher-hint" hidden></span>
-                    <span class="atls-flag" data-flag="gilcher" hidden>↓ Most cautious — used below</span>
+                    <span class="atls-flag" data-flag="gilcher" hidden>↓ Most cautious, used below</span>
                 </div>
             </div>
 
@@ -179,7 +179,7 @@ import Layout from '../layouts/Layout.astro';
 
             <p class="atls-caption" id="atls-caption"></p>
             <p class="atls-caption" id="atls-child-note" hidden>
-                Defined for adults — children compensate longer, then decompensate abruptly.
+                Defined for adults. Children compensate longer, then decompensate abruptly.
             </p>
 
             <p class="atls-caveat">
@@ -189,7 +189,7 @@ import Layout from '../layouts/Layout.astro';
         </section>
 
         <p class="disclaimer">
-            <strong>Not a medical device.</strong> Population estimates — not for clinical decisions.
+            <strong>Not a medical device.</strong> Population estimates, not for clinical decisions.
         </p>
     </section>
 </Layout>
@@ -326,8 +326,8 @@ import Layout from '../layouts/Layout.astro';
         const shift = (highest.ml - referenceMl) * 0.30;
         setText(
             atlsCaption,
-            `Based on ${reference.name} (${litres.format(referenceMl / 1000)} L), the lowest of the three — `
-            + `overestimating volume would understate severity. `
+            `Based on ${reference.name} (${litres.format(referenceMl / 1000)} L), the lowest of the three, `
+            + `because overestimating volume would understate severity. `
             + `${highest.name} would shift these by +${millilitres.format(shift)} mL.`,
         );
     }
@@ -381,7 +381,7 @@ import Layout from '../layouts/Layout.astro';
         );
         setText(
             document.querySelector('#gilcher-note'),
-            `${build} build, ${sex} — ${GILCHER[sex][build]} mL/kg × weight`,
+            `${build} build, ${sex}: ${GILCHER[sex][build]} mL/kg × weight`,
         );
 
         // Build is a judgement call, not a BMI bucket — but leaving it on "normal" for someone
@@ -390,9 +390,9 @@ import Layout from '../layouts/Layout.astro';
         const hint = document.querySelector<HTMLElement>('#gilcher-hint')!;
         let hintText = '';
         if (bmi >= 30 && build !== 'obese') {
-            hintText = `BMI ${bmiFormatter.format(bmi)} — try the obese rung (${GILCHER[sex].obese} mL/kg).`;
+            hintText = `BMI ${bmiFormatter.format(bmi)}: try the obese rung (${GILCHER[sex].obese} mL/kg).`;
         } else if (bmi < 18.5 && build !== 'thin') {
-            hintText = `BMI ${bmiFormatter.format(bmi)} — try the thin rung (${GILCHER[sex].thin} mL/kg).`;
+            hintText = `BMI ${bmiFormatter.format(bmi)}: try the thin rung (${GILCHER[sex].thin} mL/kg).`;
         }
         setText(hint, hintText);
         hint.hidden = hintText === '';
@@ -412,8 +412,8 @@ import Layout from '../layouts/Layout.astro';
 
         setText(
             document.querySelector('#spread-line'),
-            `${litres.format(lowest.ml / 1000)} – ${litres.format(highest.ml / 1000)} L across the three formulas `
-            + `— a ${millilitres.format(spread)} mL spread for the same person.`,
+            `${litres.format(lowest.ml / 1000)} – ${litres.format(highest.ml / 1000)} L across the three formulas, `
+            + `a ${millilitres.format(spread)} mL spread for the same person.`,
         );
 
         renderAtls(lowest, highest);
