@@ -10,7 +10,7 @@ draft: true
 
 ## The Big Picture
 
-Ed25519 is a digital signature scheme based on the Edwards curve Curve25519. It produces 64-byte signatures using 32-byte keys, and verification is fast enough that it's become the default signature algorithm in SSH, TLS, and most modern cryptographic tooling.
+Ed25519 is a digital signature scheme on edwards25519, the twisted Edwards curve that is birationally equivalent to Curve25519. It produces 64-byte signatures using 32-byte keys. OpenSSH generates Ed25519 keys by default since version 9.5, and TLS 1.3 supports it alongside the mandatory RSA and ECDSA P-256.
 
 This post explains how it works from the ground up.
 
@@ -26,7 +26,7 @@ An elliptic curve over a finite field is a set of points (x, y) satisfying an eq
 
 ## Curve25519 and the Edwards Form
 
-Curve25519 uses the prime p = 2²⁵⁵ - 19 (hence the name). The curve is defined in twisted Edwards form:
+Curve25519 uses the prime p = 2²⁵⁵ - 19 (hence the name). It is defined as a Montgomery curve; Ed25519 uses the birationally equivalent twisted Edwards curve, called edwards25519:
 
 ```
 -x² + y² = 1 + d·x²·y²
@@ -42,7 +42,7 @@ The base point B is a specific generator of a prime-order subgroup of order:
 ℓ = 2²⁵² + 27742317777372353535851937790883648493
 ```
 
-This ~253-bit prime is large enough to provide ~126 bits of security against classical attacks.
+This ~253-bit prime puts the best known attack at about 2¹²⁶ operations, which is what the usual "128-bit security level" refers to.
 
 ---
 
@@ -53,7 +53,7 @@ This ~253-bit prime is large enough to provide ~126 bits of security against cla
 3. Take the lower 32 bytes of H, clamp them (clear the lowest 3 bits, clear the highest bit, set the second-highest bit), and interpret as a scalar **a**.
 4. Compute the public key **A = aB** (scalar multiplication of the base point).
 
-The clamping ensures the scalar falls within the prime-order subgroup and has a fixed bit length, preventing small-subgroup attacks and timing leaks.
+The clamping makes the scalar a multiple of the cofactor 8, so multiplying any curve point by it lands in the prime-order subgroup, and it fixes the position of the highest set bit so every scalar has the same length.
 
 ---
 
@@ -69,7 +69,7 @@ To sign a message M with secret key seed and public key A:
 
 The signature is **(R, s)**: the point R (32 bytes) and the scalar s (32 bytes), totaling 64 bytes.
 
-**Why the deterministic nonce matters:** In ECDSA, a bad random nonce leaks the secret key (this is how the PS3 signing key was extracted). Ed25519 derives r from the secret key and message, making nonce reuse impossible and the scheme deterministic.
+**Why the deterministic nonce matters:** In ECDSA, a repeated or biased nonce leaks the secret key (a repeated nonce is how the PS3 signing key was extracted). Ed25519 derives r from the secret key and message, making nonce reuse impossible and the scheme deterministic.
 
 ---
 
@@ -77,8 +77,9 @@ The signature is **(R, s)**: the point R (32 bytes) and the scalar s (32 bytes),
 
 Given a message M, public key A, and signature (R, s):
 
-1. Compute `k = SHA-512(R || A || M)`, reduced mod ℓ.
-2. Check that `sB = R + kA`.
+1. Reject the signature if s is not smaller than ℓ.
+2. Compute `k = SHA-512(R || A || M)`, reduced mod ℓ.
+3. Check that `sB = R + kA`.
 
 This works because:
 ```
@@ -91,17 +92,17 @@ If the signature is valid, the equation holds. If either s or R was forged, the 
 
 ## Why Ed25519 Is Fast
 
-- **No modular inversion during verification.** The Edwards addition formula avoids the expensive field inversions that plague Weierstrass curves.
-- **Fixed-base scalar multiplication.** Precomputed tables for B speed up both signing (computing rB) and verification (computing sB).
+- **No scalar inversion.** ECDSA has to invert a number modulo the group order for every signature and every verification. The Schnorr-style equation sB = R + kA needs none.
+- **Fixed-base scalar multiplication.** A precomputed table for B makes signing (computing rB) cheap. Verification also has to compute kA for a point it has never seen, which is why it takes about three times as long as signing.
 - **Small keys and signatures.** 32 + 64 bytes total, compact enough to embed anywhere.
 
 ---
 
 ## Security Properties
 
-- **~128-bit classical security.** The best known attack on Curve25519 is Pollard's rho, requiring ~2¹²⁶ group operations.
+- **~128-bit security level.** The best known attack is Pollard's rho, which needs about 2¹²⁶ group operations.
 - **Not post-quantum.** Shor's algorithm solves ECDLP in polynomial time on a quantum computer. This is why Ed25519 needs a post-quantum companion in hybrid schemes.
-- **SUF-CMA secure.** Ed25519 provides strong unforgeability under chosen-message attacks: an attacker can't produce a new valid signature even after seeing signatures on messages of their choice.
+- **SUF-CMA secure**, as specified in RFC 8032: the verifier rejects any s that is not below ℓ, so an attacker can't turn a valid signature into a second one for the same message.
 - **Deterministic.** No randomness needed at signing time, eliminating an entire class of implementation bugs.
 
 ---

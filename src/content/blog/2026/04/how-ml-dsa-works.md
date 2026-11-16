@@ -10,7 +10,7 @@ draft: true
 
 ## The Big Picture
 
-ML-DSA (Module-Lattice-Based Digital Signature Algorithm), formerly known as CRYSTALS-Dilithium, is the primary post-quantum signature standard published by NIST as FIPS 204. It's built on the hardness of the Module Learning With Errors (MLWE) problem, which remains hard even for quantum computers.
+ML-DSA (Module-Lattice-Based Digital Signature Algorithm), formerly known as CRYSTALS-Dilithium, is the primary post-quantum signature standard published by NIST as FIPS 204. It's built on the hardness of the Module Learning With Errors (MLWE) problem and a short-integer-solution variant, both believed to remain hard even for quantum computers.
 
 This post explains the mathematical foundation and how the signing scheme works.
 
@@ -24,9 +24,9 @@ The **Learning With Errors (LWE)** problem, introduced by Oded Regev in 2005, is
 
 > Given a matrix **A** and a vector **b = As + e** (where **s** is a secret vector and **e** is a small error vector), recover **s**.
 
-Without the error, this is just solving a linear system, which is easy. The small error term makes it fundamentally hard. The best known algorithms for LWE run in exponential time, even on quantum computers.
+Without the error, this is just solving a linear system, which is easy. The small error term makes it hard: no efficient algorithm for LWE is known, classical or quantum.
 
-**Module-LWE** is a structured variant where the matrix entries come from a polynomial ring R_q = Z_q[X]/(X^n + 1). This structure makes operations faster (using NTT, the Number Theoretic Transform) and keys smaller, without compromising the security reduction.
+**Module-LWE** is a structured variant where the matrix entries come from a polynomial ring R_q = Z_q[X]/(X^n + 1). This structure makes operations faster (using NTT, the Number Theoretic Transform) and keys smaller.
 
 ---
 
@@ -55,6 +55,7 @@ The "abort" step is critical. Without it, an attacker could statistically recove
 | γ₂ | (q-1)/32 | Low-order rounding range |
 | τ | 49 | Challenge weight (number of ±1s) |
 | β | τ·η = 196 | Rejection bound |
+| d | 13 | Low bits of t left out of the public key |
 
 The "65" in ML-DSA-65 refers to (k, ℓ) = (6, 5), targeting NIST Security Level 3.
 
@@ -64,9 +65,9 @@ The "65" in ML-DSA-65 refers to (k, ℓ) = (6, 5), targeting NIST Security Level
 
 1. Sample a public matrix **A** ∈ R_q^(k×ℓ) from a seed (this is shared implicitly via the seed).
 2. Sample secret vectors **s₁** ∈ R_q^ℓ and **s₂** ∈ R_q^k with small coefficients (each coefficient in [-η, η]).
-3. Compute the public key **t = As₁ + s₂**.
+3. Compute **t = As₁ + s₂** and split every coefficient into high bits **t₁** and the low 13 bits **t₀**.
 
-The public key is (**seed for A**, **t**). The secret key includes **s₁**, **s₂**, and precomputed values for efficient signing.
+The public key is (**seed for A**, **t₁**). The secret key includes **s₁**, **s₂**, **t₀**, and a hash of the public key. Dropping t₀ is what keeps the public key at 1952 bytes; the full t would take 4448.
 
 The security assumption: given **A** and **t = As₁ + s₂**, recovering **s₁** and **s₂** is a Module-LWE instance.
 
@@ -76,7 +77,7 @@ The security assumption: given **A** and **t = As₁ + s₂**, recovering **s₁
 
 To sign a message M:
 
-1. Compute `μ = H(H(pk) || M)`, a hash of the public key and message.
+1. Compute `μ = H(H(pk) || 0 || len(ctx) || ctx || M)`, a hash that binds the public key, a context string and the message.
 2. **Commit:** Sample a masking vector **y** with coefficients in [-γ₁+1, γ₁]. Compute **w = Ay**.
 3. Decompose **w** into high bits **w₁** and low bits **w₀**.
 4. **Challenge:** Compute `c̃ = H(μ || w₁)`. Expand c̃ into a polynomial **c** with exactly τ coefficients equal to ±1 and the rest zero.
@@ -84,29 +85,29 @@ To sign a message M:
 6. **Check (abort if needed):**
    - If any coefficient of **z** is ≥ γ₁ - β, **restart from step 2**.
    - Compute **r₀ = w₀ - cs₂**. If any coefficient of **r₀** is ≥ γ₂ - β, **restart**.
-   - If too many hint bits are needed, **restart**.
+   - If **ct₀** is too large, or too many hint bits are needed, **restart**.
 7. Output signature **(c̃, z, h)** where h is a hint vector for verification.
 
-The expected number of restarts is ~4–7 for ML-DSA-65. Each attempt is fast, so this doesn't significantly impact performance.
+ML-DSA-65 needs 5.1 attempts on average. Each attempt is fast, so this doesn't significantly impact performance.
 
 ---
 
 ## Verification
 
-Given message M, public key (seed, **t**), and signature (c̃, **z**, **h**):
+Given message M, public key (seed, **t₁**), and signature (c̃, **z**, **h**):
 
 1. Recompute **A** from the seed.
 2. Expand c̃ into challenge polynomial **c**.
-3. Compute **w₁' = UseHint(h, Az - ct)**, recovering the high bits of the original commitment.
+3. Compute **w₁' = UseHint(h, Az - c·t₁·2ᵈ)**, recovering the high bits of the original commitment.
 4. Check that `c̃ = H(μ || w₁')`.
 5. Check that all coefficients of **z** are < γ₁ - β.
 
 This works because:
 ```
-Az - ct = A(y + cs₁) - c(As₁ + s₂) = Ay - cs₂ = w - cs₂
+Az - c·t₁·2ᵈ = A(y + cs₁) - c(As₁ + s₂ - t₀) = w - cs₂ + ct₀
 ```
 
-The hint h allows the verifier to recover exactly w₁ from w - cs₂ without knowing w₀ directly.
+The verifier only has t₁, so its result is off by the small term ct₀. The hint h tells it where that error would change the high bits, so it still recovers exactly w₁.
 
 ---
 
@@ -114,7 +115,7 @@ The hint h allows the verifier to recover exactly w₁ from w - cs₂ without kn
 
 Shor's algorithm breaks problems with **periodic structure**: integer factorization and discrete logarithms both reduce to period-finding. Lattice problems like Module-LWE have no known periodic structure for a quantum algorithm to exploit.
 
-The best known quantum attack on Module-LWE is a variant of lattice sieving, which still runs in exponential time. ML-DSA-65's parameters are chosen so that this attack requires at least 2¹²⁸ operations, matching NIST Security Level 3.
+The best known quantum attack on Module-LWE is a variant of lattice sieving, which still runs in exponential time. ML-DSA-65's parameters target NIST security category 3: breaking it should cost at least as much as a key search on AES-192. The Dilithium team's own Core-SVP estimate for the best known lattice attack is 182 bits classically and 165 bits against a quantum attacker.
 
 ---
 

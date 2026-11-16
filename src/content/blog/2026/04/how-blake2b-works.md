@@ -26,13 +26,13 @@ ChaCha (stream cipher)
        └─ BLAKE2b (optimized, simplified)
 ```
 
-BLAKE2 dropped the constants from BLAKE's compression function (they added no security but cost cycles) and reduced the number of rounds from 14 to 12.
+BLAKE2 dropped the constants from BLAKE's G function (their benefit wasn't worth the cycles) and reduced the number of rounds from 16 to 12.
 
 ---
 
 ## State and Initialization
 
-BLAKE2b maintains an internal state of **eight 64-bit words** (h₀ through h₇), initialized by XORing the IV (the first 8 fractional digits of π as 64-bit constants) with parameter block values:
+BLAKE2b maintains an internal state of **eight 64-bit words** (h₀ through h₇), initialized by XORing the IV (the fractional parts of the square roots of the first eight primes, the same constants SHA-512 uses) with parameter block values:
 
 ```
 h₀ = IV₀ ⊕ 0x01010000 ⊕ (kk << 8) ⊕ nn
@@ -49,7 +49,7 @@ where `nn` is the digest length (64 for BLAKE2b-512) and `kk` is the key length 
 
 BLAKE2b processes input in **128-byte blocks**. For each block, the compression function:
 
-1. **Initialize the working vector v** (16 words): the top 8 from the current state, the bottom 8 from the IV, with the counter and finalization flag mixed into the last 4 words.
+1. **Initialize the working vector v** (16 words): the top 8 from the current state, the bottom 8 from the IV, with the counter mixed into words 12 and 13 and the finalization flag into word 14.
 
 2. **Apply 12 rounds of mixing.** Each round consists of 8 calls to the **G function**: 4 on columns and 4 on diagonals of a 4×4 matrix of words.
 
@@ -70,7 +70,7 @@ c = c + d
 b = (b ⊕ c) >>> 63
 ```
 
-This is a modified ChaCha quarter-round. The additions provide diffusion, the XORs mix bits, and the rotations break alignment. The rotation amounts (32, 24, 16, 63) are chosen to maximize diffusion speed.
+This is a modified ChaCha quarter-round. The additions provide diffusion, the XORs mix bits, and the rotations break alignment. The rotation amounts (32, 24, 16, 63) were chosen for implementation speed: rotations by multiples of 8 are byte shuffles, and a rotation by 63 is a doubling plus a shift.
 
 ### The Permutation Schedule
 
@@ -81,11 +81,11 @@ Each of the 12 rounds selects 16 message words via a fixed permutation σ. The p
 ## Processing a Message
 
 1. **Pad** the message to a multiple of 128 bytes (zero-padding; no length encoding needed since the counter tracks it).
-2. **For each block**, call the compression function, incrementing a 128-bit counter by the number of bytes processed so far.
+2. **For each block**, call the compression function with a 128-bit counter that holds the number of message bytes fed in so far.
 3. **On the last block**, set the finalization flag.
 4. **Output** the first `nn` bytes of the final state as the hash digest.
 
-The counter serves two purposes: it acts as a block index (preventing block reordering attacks) and signals the total message length to the finalization step.
+Because the counter carries the message length into every block, and the flag marks the last one, the padding needs no length field of its own.
 
 ---
 
@@ -96,7 +96,7 @@ The counter serves two purposes: it acts as a block index (preventing block reor
 - **12 rounds vs. 80.** SHA-512 runs 80 rounds per block; BLAKE2b runs 12. Fewer rounds with a wider state achieves comparable diffusion at lower cost.
 - **Parallelism-friendly.** BLAKE2bp (the parallel variant) processes 4 lanes simultaneously, but even the sequential BLAKE2b benefits from instruction-level parallelism within each round.
 
-Typical throughput on modern x86-64: **~0.7 cycles/byte**, roughly 3× faster than SHA-512.
+Typical throughput on x86-64: **about 3 cycles/byte**, or roughly 1 GiB/s, about 3× faster than SHA-512.
 
 ---
 
@@ -104,9 +104,9 @@ Typical throughput on modern x86-64: **~0.7 cycles/byte**, roughly 3× faster th
 
 - **Collision resistance:** 2²⁵⁶ for BLAKE2b-512 (birthday bound on 512-bit output).
 - **Preimage resistance:** 2⁵¹² (full digest).
-- **Post-quantum:** Grover's algorithm halves the security level. BLAKE2b-512 retains 2²⁵⁶ collision resistance and 2²⁵⁶ preimage resistance in the quantum setting, which is more than sufficient.
+- **Post-quantum:** Grover's algorithm halves the exponent for preimages: 2²⁵⁶ instead of 2⁵¹². The best known quantum collision search only lowers collisions to roughly 2¹⁷⁰. Both are far out of reach.
 
-No practical attacks on the full 12-round BLAKE2b have been published. The best known attacks reach reduced-round variants (up to 7.5 rounds) with complexity far above practical.
+No attack on the full 12-round BLAKE2b has been published. On the hash function itself, the best preimage attacks reach 2.75 rounds; a pseudo-preimage attack on the bare compression function reaches 7.5 rounds.
 
 ---
 

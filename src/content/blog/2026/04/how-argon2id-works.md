@@ -10,9 +10,9 @@ draft: true
 
 ## The Big Picture
 
-Argon2 won the Password Hashing Competition in 2015 and was standardized as RFC 9106. It's designed so that hashing a password is cheap for a legitimate user (a few hundred milliseconds) but prohibitively expensive for an attacker with GPUs or ASICs.
+Argon2 won the Password Hashing Competition in 2015 and was published as RFC 9106. It's designed so that hashing a password is cheap for a legitimate user (a few hundred milliseconds) but prohibitively expensive for an attacker with GPUs or ASICs.
 
-The `id` variant combines two modes: Argon2i (data-independent memory access, side-channel resistant) for the first pass, and Argon2d (data-dependent access, harder to attack with GPUs) for subsequent passes.
+The `id` variant combines two modes: Argon2i (data-independent memory access, side-channel resistant) for the first half of the first pass, and Argon2d (data-dependent access, harder to attack with GPUs) for everything after that.
 
 ---
 
@@ -26,15 +26,15 @@ Argon2 is **memory-hard**: each instance requires a large, dedicated memory allo
 
 ## The Memory Matrix
 
-Argon2 allocates a matrix of **q blocks**, each 1024 bytes. The blocks are organized into:
+Argon2 allocates **m′ blocks** of 1024 bytes each and arranges them as a matrix:
 
-- **p lanes** (parallelism parameter): independent columns that can be computed concurrently.
-- **n passes** (iteration parameter): how many times the entire matrix is filled.
-- **4 segments per pass per lane**: the unit of sequential dependency within a lane.
+- **p lanes** (parallelism parameter): the rows, which can be computed concurrently and synchronize four times per pass.
+- **t passes** (iteration parameter): how many times the entire matrix is filled.
+- **4 slices per pass**: a lane's share of a slice is a segment, the unit of sequential work.
 
 For example, with 256 MiB memory and 1 lane:
 ```
-q = 256 × 1024 = 262,144 blocks
+m′ = 256 × 1024 = 262,144 blocks
 Each pass fills all 262,144 blocks
 3 passes = 786,432 block computations
 ```
@@ -43,15 +43,17 @@ Each pass fills all 262,144 blocks
 
 ## Block Generation
 
-Each block is computed from two previous blocks using the **GB compression function**, which is built from the BLAKE2b round function:
+Each block is computed from two previous blocks using the **compression function G**, which is built from the BLAKE2b round function:
 
 ```
-B[i] = G(B[ref], B[prev])
+B[i][j] = G(B[i][j-1], B[l][z])
 ```
 
 where:
-- **B[prev]** is the immediately preceding block in the lane.
-- **B[ref]** is a block selected by an indexing function.
+- **B[i][j-1]** is the immediately preceding block in the lane.
+- **B[l][z]** is a block selected by an indexing function, possibly from another lane.
+
+From the second pass on, the result is also XORed into the block it overwrites.
 
 ### Data-Independent vs. Data-Dependent Indexing
 
@@ -61,18 +63,18 @@ This is where the `id` in Argon2id comes in:
 
 - **Second half of pass 1 and all subsequent passes (Argon2d-style):** The reference index is derived from the **content of the previous block**. This makes the memory access pattern depend on the password, which means an attacker can't precompute the access pattern. They must actually fill the memory to know which blocks to read.
 
-The hybrid gives you side-channel resistance during the critical early phase (when the matrix is being initialized and patterns are most informative) and maximum GPU resistance for the bulk of the computation.
+The hybrid gives you side-channel resistance while the first part of the matrix is filled, and the stronger GPU resistance of data-dependent access for the bulk of the computation.
 
 ---
 
-## The GB Compression Function
+## The Compression Function G
 
-GB takes two 1024-byte blocks (8 × 128-byte rows), applies the BLAKE2b **G function** (the same quarter-round as in BLAKE2b hashing) in two steps:
+G takes two 1024-byte blocks, XORs them, and treats the result as an 8×8 matrix of 16-byte registers. It then applies a permutation P in two steps:
 
-1. **Column-wise mixing:** Apply G to each column of the 8×16 matrix of 64-bit words.
-2. **Row-wise mixing:** Apply G to each row.
+1. **Row-wise mixing:** Apply P to each of the 8 rows.
+2. **Column-wise mixing:** Apply P to each of the 8 columns.
 
-The output is XORed with the input to prevent trivial inversions. This makes each block depend on the full content of its two parent blocks, ensuring that skipping any block invalidates all subsequent blocks.
+P is one round of BLAKE2b with a twist: its quarter-round GB adds a 64-bit multiplication to every addition, which makes the function slower in custom hardware without costing much on a CPU. The output is XORed with the input to prevent trivial inversions. This makes each block depend on the full content of its two parent blocks, ensuring that skipping any block invalidates all subsequent blocks.
 
 ---
 
@@ -107,8 +109,8 @@ The general guidance: maximize memory first (it's the most effective defense), t
 Argon2id makes brute-force **slower**, not impossible. The math is straightforward:
 
 - At 256 MiB / 3 iterations, one hash ≈ 380 ms per core.
-- A 4-digit PIN has 10,000 candidates → cracked in 64 minutes on a single core.
-- A 4-word diceware passphrase has ~7776⁴ ≈ 3.66 × 10¹⁵ candidates → 22 million years on a single core.
+- A 4-digit PIN has 10,000 candidates → all tried in 64 minutes on a single core.
+- A 4-word diceware passphrase has 7776⁴ ≈ 3.66 × 10¹⁵ candidates → 44 million years on a single core.
 
 Memory-hardness buys orders of magnitude, but the password's entropy is still the dominant factor.
 
