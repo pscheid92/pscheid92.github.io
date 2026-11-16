@@ -628,3 +628,17 @@ a:hover > .ledger-title {
         max-width: calc(var(--index) + var(--gutter) + var(--measure) + var(--bleed) + 2 * var(--page-pad));
     }
 }
+
+/* Printed or saved as PDF, code can't scroll sideways: wrap it instead of cutting it off */
+@media print {
+    .prose pre {
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+        overflow: visible;
+    }
+
+    .prose table {
+        display: table;
+        overflow: visible;
+    }
+}
