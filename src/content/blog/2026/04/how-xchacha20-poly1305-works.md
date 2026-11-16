@@ -23,7 +23,7 @@ The scheme combines two primitives:
 
 The `X` variant adds a third piece:
 
-- **HChaCha20**: a key derivation step that stretches the 24-byte nonce into a subkey and 12-byte sub-nonce for standard ChaCha20.
+- **HChaCha20**: a key derivation step that mixes the key with the first 16 bytes of the nonce into a fresh subkey for standard ChaCha20.
 
 ---
 
@@ -74,7 +74,7 @@ XChaCha20 uses a 24-byte nonce. The first 16 bytes feed into **HChaCha20** to de
 
 The remaining 8 bytes of the nonce, prefixed with 4 zero bytes, become the 12-byte sub-nonce for standard ChaCha20.
 
-**Why this matters:** With a 12-byte nonce and random generation, birthday collisions become likely after ~2³² encryptions. With 24 bytes, the threshold is ~2⁴⁸, safe for any practical usage pattern.
+**Why this matters:** With a random 12-byte nonce, the chance of a collision reaches 2⁻³² after about 2³² encryptions, the usual safety limit. With 24 bytes, that limit moves to 2⁸⁰, and a collision only becomes likely around 2⁹⁶. That is safe for any practical usage pattern.
 
 ---
 
@@ -85,7 +85,7 @@ Poly1305 is a **one-time MAC**: it takes a single-use 256-bit key and a message,
 The math is polynomial evaluation over a prime field:
 
 ```
-tag = ((c₁·r^n + c₂·r^(n-1) + ... + cₙ·r) mod (2¹³⁰ - 5)) + s
+tag = (((c₁·r^n + c₂·r^(n-1) + ... + cₙ·r) mod (2¹³⁰ - 5)) + s) mod 2¹²⁸
 ```
 
 where:
@@ -111,7 +111,7 @@ To encrypt with XChaCha20-Poly1305:
    AAD || pad || ciphertext || pad || len(AAD) as u64 || len(ciphertext) as u64
    ```
    where pad is zero-padding to 16-byte alignment.
-5. **Output:** nonce || ciphertext || 16-byte tag.
+5. **Output:** ciphertext || 16-byte tag, usually stored after the nonce.
 
 Decryption reverses steps 3–4: recompute the tag, verify it in constant time, and only then decrypt.
 
@@ -133,4 +133,4 @@ This last property is why AEAD schemes don't need a separate "is this the right 
 
 - Daniel J. Bernstein, ["ChaCha, a variant of Salsa20"](https://cr.yp.to/chacha/chacha-20080128.pdf): the original ChaCha paper.
 - RFC 8439: ChaCha20-Poly1305 IETF specification.
-- RFC draft: XChaCha20-Poly1305 construction.
+- draft-irtf-cfrg-xchacha-03: the XChaCha20-Poly1305 construction (an expired Internet-Draft; there is no RFC).

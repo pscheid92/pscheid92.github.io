@@ -61,7 +61,7 @@ Since module-lattice-based post-quantum cryptography is not yet battle-tested, t
 
 In pqsign, Ed25519 is the classic algorithm. It’s widely used, has been studied for well over a decade, and is known for being fast and compact. Public keys are 32 bytes, and signatures are 64 bytes. Its security is well understood.
 
-The post-quantum signature algorithm we use is ML-DSA-65, which is based on the Module Learning with Errors (MLWE) problem, a mathematical method studied since 2005 and believed to resist classical and quantum threats. The “65” in its name refers to the parameter set targeting NIST Security Level 3, roughly equivalent to AES-192. There is a stronger option, ML-DSA-87 (targeting Security Level 5), but it bumps the already lengthy signatures from 3,309 bytes to 4,627 bytes. That's a 40% increase in signature size for a security margin beyond what most threat models require.
+The post-quantum signature algorithm we use is ML-DSA-65, which is based on the Module Learning with Errors (MLWE) problem, a mathematical method studied since 2005 and believed to resist classical and quantum threats. The “65” in its name stands for its 6 × 5 matrix, the parameter set that targets NIST Security Level 3, roughly equivalent to AES-192. There is a stronger option, ML-DSA-87 (targeting Security Level 5), but it bumps the already lengthy signatures from 3,309 bytes to 4,627 bytes. That's a 40% increase in signature size for a security margin beyond what most threat models require.
 
 ## Nested Signature Construction
 
@@ -99,7 +99,7 @@ A signature scheme is only as strong as its secret key storage. If someone can s
 
 ![Diagram of the secret key encryption](../../../../assets/2026/04/signing-files-for-a-post-quantum-world-secret-key-encryption.svg)
 
-**Argon2id** won the Password Hashing Competition in 2015 and is standardised as RFC 9106. The “id” variant combines the side-channel resistance of Argon2i with the GPU resistance of Argon2d. pqsign uses 256 MiB of memory, 3 iterations, and 1 degree of parallelism.
+**Argon2id** won the Password Hashing Competition in 2015 and is published as RFC 9106. The “id” variant combines the side-channel resistance of Argon2i with the GPU resistance of Argon2d. pqsign uses 256 MiB of memory, 3 iterations, and 1 degree of parallelism.
 
 A GPU can compute billions of SHA-256 hashes per second, but it can't run billions of 256 MiB allocations in parallel. An RTX 4090 with 24 GB of VRAM tops out at about 96 simultaneous Argon2id instances. That buys you time, but it doesn't fix weak passwords.
 
